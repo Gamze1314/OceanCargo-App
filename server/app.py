@@ -4,7 +4,8 @@ from flask_restful import Api, Resource
 
 from flask_migrate import Migrate
 
-# from models import db
+from models import db
+#import models
 
 # create a Flask application object
 app = Flask(__name__)
@@ -14,12 +15,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
 # disable modification tracking to use less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.json.compact = False
 
 # create a Migrate object to manage schema modifications
-# migrate = Migrate(app, db)
+migrate = Migrate(app, db)
 
 # # initialize the Flask application to use the database
-# db.init_app(app)
+db.init_app(app)
 
 
 if __name__ == '__main__':
