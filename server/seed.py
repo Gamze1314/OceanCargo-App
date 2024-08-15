@@ -1,19 +1,10 @@
-from faker import Faker
-import random
 from app import app, db
 from models import Customer, Shipment, Container, ShipmentContainerAssociation
+from faker import Faker
+import random
 
+# Initialize Faker
 fake = Faker()
-
-# Function to generate valid container numbers
-
-
-def generate_container_number():
-    prefixes = ['CBHU', 'ECHU', 'TRHU', 'MSDU']
-    prefix = random.choice(prefixes)
-    number = f"{random.randint(100000, 999999)}"
-    return f"{prefix}{number}"
-
 
 # Create an application context to access the database
 with app.app_context():
@@ -23,61 +14,73 @@ with app.app_context():
     # Create all tables
     db.create_all()
 
-    # Create customers
+    # Create 10 customers
     customers = []
     for _ in range(10):
         customer = Customer(
-            # Ensure username is between 5 and 10 characters
-            username=fake.user_name()[:10],
+            # Ensure username is 5-10 characters long
+            username=fake.user_name()[0:10],
             password_hash=fake.password(),
             email=fake.email(),
-            type=random.choice(['consignee', 'forwarder'])  # Valid types
+            type=fake.random_element(elements=("consignee", "forwarder")),
+            # Random credit amount
+            credit_amount=round(random.uniform(450000, 1000000), 2)
         )
-        db.session.add(customer)
         customers.append(customer)
 
-    # Create shipments
+    db.session.add_all(customers)
+    db.session.commit()
+
+    # Create 10 shipments
     shipments = []
     for _ in range(10):
         shipment = Shipment(
-            status=random.choice(
-                ['In Transit', 'Completed']),  # Valid statuses
-            vessel_name=fake.company(),
-            departure_time=fake.date_time_this_year(
-                before_now=True, after_now=False).strftime("%Y-%m-%d %H:%M:%S"),
-            arrival_time=fake.date_time_this_year(
-                before_now=False, after_now=True).strftime("%Y-%m-%d %H:%M:%S"),
+            status=fake.random_element(elements=("In Transit", "Completed")),
+            vessel_name=fake.word().capitalize() + " Vessel",
+            departure_time=fake.date_time_between(
+                start_date="-1y", end_date="now"),
+            arrival_time=fake.date_time_between(
+                start_date="now", end_date="+30d"),
             arrival_port=fake.city(),
-            origin=fake.country(),
-            freight_rate=round(random.uniform(500, 2000), 2),
+            origin=fake.city(),
+            freight_rate=round(random.uniform(500.0, 5000.0), 2),
             customer=random.choice(customers)
         )
-        db.session.add(shipment)
         shipments.append(shipment)
 
-    # Create containers
+    db.session.add_all(shipments)
+    db.session.commit()
+
+    # Create 10 containers
     containers = []
+    prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
     for _ in range(10):
+        container_number = fake.random_element(
+            elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
         container = Container(
-            container_number=generate_container_number(),
-            container_type=fake.word(),
-            weight=random.randint(1000, 5000),
-            price=round(random.uniform(100, 1000), 2),
+            container_number=container_number,
+            container_type=fake.word().capitalize() + " Type",
+            weight=random.randint(1000, 5000),  # Weight between 1000 and 5000
+            # Price between $500 and $5000
+            price=round(random.uniform(3500.0, 5000.0), 2),
             customer=random.choice(customers)
         )
-        db.session.add(container)
         containers.append(container)
 
-    # Create shipment-container associations
-    for _ in range(10):
-        association = ShipmentContainerAssociation(
-            comment=fake.sentence(nb_words=5),
-            shipment=random.choice(shipments),
-            container=random.choice(containers)
-        )
-        db.session.add(association)
+    db.session.add_all(containers)
+    db.session.commit()
 
-    # Commit all changes
+    # Create shipment-container associations ensuring container_id is unique
+    associations = [
+        ShipmentContainerAssociation(
+            comment='First container to be shipped early', shipment_id=1, container_id=1),
+        ShipmentContainerAssociation(
+            comment='Second container to be advised', shipment_id=1, container_id=2),
+        ShipmentContainerAssociation(
+            comment='Third container loaded', shipment_id=2, container_id=3),
+    ]
+
+    db.session.add_all(associations)
     db.session.commit()
 
     print("Seed data added successfully.")

@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: e18c5c0fea5b
+Revision ID: bcd150850cba
 Revises: 
-Create Date: 2024-08-14 22:34:41.303887
+Create Date: 2024-08-15 14:15:49.248579
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e18c5c0fea5b'
+revision = 'bcd150850cba'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,6 +24,8 @@ def upgrade():
     sa.Column('password_hash', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('type', sa.String(), nullable=False),
+    sa.Column('credit_amount', sa.Float(), nullable=False),
+    sa.CheckConstraint('credit_amount >= 3000.0', name=op.f('ck_customers_credit_amount_positive')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_customers')),
     sa.UniqueConstraint('email', name=op.f('uq_customers_email')),
     sa.UniqueConstraint('username', name=op.f('uq_customers_username'))
@@ -36,7 +38,8 @@ def upgrade():
     sa.Column('price', sa.Float(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], name=op.f('fk_containers_customer_id_customers')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_containers'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_containers')),
+    sa.UniqueConstraint('container_number', name=op.f('uq_containers_container_number'))
     )
     op.create_table('shipments',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -58,7 +61,9 @@ def upgrade():
     sa.Column('container_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['container_id'], ['containers.id'], name=op.f('fk_shipment_container_association_container_id_containers')),
     sa.ForeignKeyConstraint(['shipment_id'], ['shipments.id'], name=op.f('fk_shipment_container_association_shipment_id_shipments')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_shipment_container_association'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_shipment_container_association')),
+    sa.UniqueConstraint('container_id', name='uq_container_id'),
+    sa.UniqueConstraint('container_id', name=op.f('uq_shipment_container_association_container_id'))
     )
     # ### end Alembic commands ###
 
