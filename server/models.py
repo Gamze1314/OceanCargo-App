@@ -2,7 +2,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
-from sqlalchemy.ext.associationproxy import association_proxy
+# from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 
 
@@ -43,6 +43,16 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
         'Shipment', back_populates='shipment_container_associations')
     container = db.relationship(
         'Container', back_populates='shipment_container_associations')
+    
+    #validations
+    @validates('comment')
+    def validate_comment(self, key, value):
+        # Comment must be between 1 and 50 characters long and not empty
+        if value is None or len(value) == 0 or len(value) > 50:
+            raise ValueError(
+                'Comment must be between 1 and 50 characters long and not empty.')
+        return value
+    
 
     def __repr__(self):
         return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id})>'
@@ -63,6 +73,23 @@ class Customer(db.Model, SerializerMixin):
     shipments = db.relationship('Shipment', back_populates='customer')
     # relationship to Containers
     containers = db.relationship('Container', back_populates='customer')
+
+    # Validations
+    @validates('username')
+    def validate_username(self, key, value):
+        # Username must be between 5 and 10 characters long and not empty
+        if len(value) < 5 or len(value) > 10 or value == '':
+            raise ValueError('Username must be between 5 and 10 characters long and not empty.')
+        return value
+
+    @validates('type')
+    def validate_type(self, key, value):
+        # Type must be either 'consignee' or 'forwarder'
+        if value not in ['consignee', 'forwarder']:
+            raise ValueError('Type must be either consignee or forwarder.')
+        return value
+
+
 
     def __repr__(self):
         return f'Customer(id={self.id}, username={self.username}, email={self.email}, type={self.type})'
@@ -87,6 +114,8 @@ class Container(db.Model, SerializerMixin):
 
     # relationship to customer
     customer = db.relationship('Customer', back_populates='containers')
+
+    # validations
 
     def __repr__(self):
         return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price})'
@@ -113,6 +142,16 @@ class Shipment(db.Model, SerializerMixin):
     # Relationship to ShipmentContainerAssociation
     shipment_container_associations = db.relationship(
         'ShipmentContainerAssociation', back_populates='shipment')
+    
+    # validations
+    @validates('status')
+    def validate_status(self, key, value):
+        #status can either be In Transit or Completed
+        if value not in ['In Transit', 'Completed']:
+            raise ValueError('Status must be either In Transit or Completed.')
+        else:
+            return value
+
 
     def __repr__(self):
         return f'Shipment(id={self.id}, status={self.status}, vessel_name={self.vessel_name}, departure_time={self.departure_time}, arrival_time={self.arrival_time}, arrival_port={self.arrival_port}, origin={self.origin}, freight_rate={self.freight_rate})'
