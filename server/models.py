@@ -19,68 +19,54 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 
 
+# shipment.customer.containers => access the customers' containers through shipment's table.
+# customer.shipments
 
-# // destination belongs to a shipment if we create another table.
-# // dropdown for destinations, and show shipments based on destination.
-
-
-
-# Customers have many containers
-# Container can have many customers(consignee or forwarder)
-
-# Container_customer_association = > is a join table to define the relationship between containers and customers(if a container is already hired or who it belongs to.)
-
-# Customer has many shipments.
-# Shipment belongs to a customer.
-
-# Shipment can have many containers
-# Container belongs to a shipment.
+# shipments & containers => many to many
+# shipments & customers => one to many
+# customer & container => one to many
 
 
-#class Customer=> has customers login/logout information.
-# add validations/relationships
+class ShipmentContainerAssociation(db.Model, SerializerMixin):
+    __tablename__ = 'shipment_container_association'
 
-# def __repr__(self):
+    id = db.Column(db.Integer, primary_key=True)
+    # user submittable attribute
 
-#     id integer[primary key]
-#     first_name string
-#     last_name string
-#     username string
-#     password_hash string
-#     email string
-#     phone string
-#     address string
-#     type string
+    shipment_id = db.Column(db.Integer, db.ForeignKey(
+        'shipments.id'), nullable=False)
+    container_id = db.Column(db.Integer, db.ForeignKey(
+        'containers.id'), nullable=False)
+
+    shipment = db.relationship(
+        'Shipment', back_populates='shipment_container_associations')
+    container = db.relationship(
+        'Container', back_populates='shipment_container_associations')
+
+    def __repr__(self):
+        return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id})>'
+
+# Customer model with relationships
 
 class Customer(db.Model, SerializerMixin):
-    __tablenme__ = 'customers'
+    __tablename__ = 'customers'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    type = db.Column(db.String, nullable=False)  # type of customer (consignee, forwarder, etc.)
+    # type of customer (consignee, forwarder, etc.)
+    type = db.Column(db.String, nullable=False)
+
+    # Relationship to Shipment
+    shipments = db.relationship('Shipment', back_populates='customer')
+    # relationship to Containers
+    containers = db.relationship('Container', back_populates='customer')
 
     def __repr__(self):
-        return f'Customer(id={self.id}, username={self.username}, name={self.name} {self.last_name}, email={self.email}, phone={self.phone}, address={self.address}, type={self.type})'
+        return f'Customer(id={self.id}, username={self.username}, email={self.email}, type={self.type})'
 
-
-
-#class Container => defines cont type, weight, price
-#add validation for types, weight, and price columns
-
-
-# def __repr__(self):
-
-# Table containers {
-#     id integer[primary key]
-#     container_number string
-#     container_type string
-#     weight integer
-#     price float
-#     owner string
-#     shipment_id integer
-# }
+# Container model with relationships
 
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
@@ -91,35 +77,24 @@ class Container(db.Model, SerializerMixin):
     weight = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    #foreign key to define relationship btw shipments and containers.
-    #shipment can have many containers, container belongs to a shipment.
-    shipment_id = db.Column(db.Integer, db.ForeignKey('shipments.id'))
+    customer_id = db.Column(db.Integer, db.ForeignKey(
+        'customers.id'), nullable=False)
 
+    # Relationship to ShipmentContainerAssociation
+    shipment_container_associations = db.relationship(
+        'ShipmentContainerAssociation', back_populates='container')
 
+    # relationship to customer
+    customer = db.relationship('Customer', back_populates='containers')
 
     def __repr__(self):
-        return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price}, owner={self.owner}, shipment_id={self.shipment_id})'
+        return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price})'
 
-#class Shipment => holds foreign keys.
-#add validations/relationships
-
-# def __repr__(self):
-
-# Table shipments{
-#     id integer[primary key]
-#     status string
-#     vessel_name string
-#     departure_time string
-#     arrival_time string
-#     arrival_port string
-#     origin string
-#     freight_rate float
-#     customer_id integer
-# }
+# Shipment model with relationships
 
 class Shipment(db.Model, SerializerMixin):
 
-    __tablename__ ='shipments'
+    __tablename__ = 'shipments'
 
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String, nullable=False)
@@ -130,60 +105,13 @@ class Shipment(db.Model, SerializerMixin):
     origin = db.Column(db.String, nullable=False)
     freight_rate = db.Column(db.Float, nullable=False)
 
-    #foreign key to define relationship btw shipments and customers.
+    # Relationship to Customer
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    customer = db.relationship('Customer', back_populates='shipments')
+
+    # Relationship to ShipmentContainerAssociation
+    shipment_container_associations = db.relationship(
+        'ShipmentContainerAssociation', back_populates='shipment')
 
     def __repr__(self):
-        return f'Shipment(id={self.id}, status={self.status}, vessel_name={self.vessel_name}, departure_time={self.departure_time}, arrival_time={self.arrival_time}, arrival_port={self.arrival_port}, origin={self.origin}, freight_rate={self.freight_rate}, customer_id={self.customer_id})'
-
-
-
-
-#join = customer_container_association
-
-# Table container_customer_association {
-#     id integer[primary key]
-#     hire_date string
-#     status string
-#     total_price float
-#     container_id integer
-#     customer_id integer
-#     shipment_id integer // Added to link to shipments
-# }
-
-class customer_container_association(db.Model, SerializerMixin):
-    __tablename__ = 'container_customer_association'
-
-    id = db.Column(db.Integer, primary_key=True)
-    hire_date = db.Column(db.String, nullable=False)
-    status = db.Column(db.String, nullable=False)
-    total_price = db.Column(db.Float, nullable=False)
-
-    #foreign key to define relationship btw containers and customers.
-    container_id = db.Column(db.Integer, db.ForeignKey('containers.id'))
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
-    shipment_id = db.Column(db.Integer, db.ForeignKey('shipments.id'))  # Added to link to shipments
-
-    def __repr__(self):
-        return f'customer_container_association(id={self.id}, hire_date={self.hire_date}, status={self.status}, total_price={self.total_price}, container_id={self.container_id}, customer_id={self.customer_id}, shipment_id={self.shipment_id})'
-    
-
-class ShipmentContainerAssociation(db.Model, SerializerMixin):
-    __tablename__ = 'shipment_container_association'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-
-    shipment_id = db.Column(db.Integer, db.ForeignKey(
-        'shipments.id'), nullable=False)
-    container_id = db.Column(db.Integer, db.ForeignKey(
-        'containers.id'), nullable=False)
-
-    # Relationships
-    # shipment = db.relationship(
-    #     'Shipment', back_populates='shipment_container_associations')
-    # container = db.relationship(
-    #     'Container', back_populates='shipment_container_associations')
-
-    def __repr__(self):
-        return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id})>'
+        return f'Shipment(id={self.id}, status={self.status}, vessel_name={self.vessel_name}, departure_time={self.departure_time}, arrival_time={self.arrival_time}, arrival_port={self.arrival_port}, origin={self.origin}, freight_rate={self.freight_rate})'
