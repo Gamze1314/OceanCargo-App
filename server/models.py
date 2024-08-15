@@ -1,4 +1,3 @@
-# models goes here
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
@@ -128,7 +127,7 @@ class Customer(db.Model, SerializerMixin):
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
 
-    serialize_only = ('id', 'container_number', 'container_type', 'weight', 'price', 'customer_id', 'customer')
+    serialize_only = ('id', 'container_number', 'container_type', 'weight', 'price', 'customer')
 
     id = db.Column(db.Integer, primary_key=True)
     container_number = db.Column(db.String, nullable=False, unique=True)
