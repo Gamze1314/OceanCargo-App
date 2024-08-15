@@ -29,7 +29,9 @@ db = SQLAlchemy(metadata=metadata)
 
 
 class ShipmentContainerAssociation(db.Model, SerializerMixin):
-    __tablename__ = 'shipment_container_association'
+    __tablename__ = 'shipment_container_associations'
+
+    serialize_only = ('id', 'comment', 'shipment_id', 'container_id')
 
     id = db.Column(db.Integer, primary_key=True)
     # user submittable attribute
@@ -63,13 +65,15 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
         return value
 
     def __repr__(self):
-        return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id})>'
+        return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id}, comment: {self.comment})>'
+
+
 
 # Customer model with relationships
-
-
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
+
+    serialize_only = ('id', 'username', 'email', 'credit_amount')
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -116,13 +120,15 @@ class Customer(db.Model, SerializerMixin):
         return value
 
     def __repr__(self):
-        return f'Customer(id={self.id}, username={self.username}, email={self.email}, type={self.type})'
+        return f'Customer (id: {self.id}, username: {self.username}, passw_hash: {self.password_hash} email: {self.email}, type: {self.type}, credit_amount: {self.credit_amount})'
+
+
 
 # Container model with relationships
-
-
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
+
+    serialize_only = ('id', 'container_number', 'container_type', 'weight', 'price', 'customer_id', 'customer')
 
     id = db.Column(db.Integer, primary_key=True)
     container_number = db.Column(db.String, nullable=False, unique=True)
@@ -151,12 +157,14 @@ class Container(db.Model, SerializerMixin):
     def __repr__(self):
         return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price})'
 
+
+
 # Shipment model with relationships
-
-
 class Shipment(db.Model, SerializerMixin):
 
     __tablename__ = 'shipments'
+
+    serialize_only = ('id', 'status', 'vessel_name', 'departure_time', 'arrival_time', 'arrival_port', 'origin', 'freight_rate', 'customer_id')
 
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String, nullable=False)
@@ -168,7 +176,7 @@ class Shipment(db.Model, SerializerMixin):
     freight_rate = db.Column(db.Float, nullable=False)
 
     # Relationship to Customer
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     customer = db.relationship('Customer', back_populates='shipments')
 
     # Relationship to ShipmentContainerAssociation
@@ -183,9 +191,11 @@ class Shipment(db.Model, SerializerMixin):
             raise ValueError('Status must be either In Transit or Completed.')
         else:
             return value
+        
+
 
     def __repr__(self):
-        return f'Shipment(id={self.id}, status={self.status}, vessel_name={self.vessel_name}, departure_time={self.departure_time}, arrival_time={self.arrival_time}, arrival_port={self.arrival_port}, origin={self.origin}, freight_rate={self.freight_rate})'
+        return f'Shipment (id: {self.id}, status: {self.status}, vessel_name: {self.vessel_name}, departure_time: {self.departure_time}, arrival_time: {self.arrival_time}, arrival_port: {self.arrival_port}, origin: {self.origin}, freight_rate: {self.freight_rate}, customer_id: {self.customer_id})'
 
 
 # shipment.customer.containers => access the customers' containers through shipment's table.
