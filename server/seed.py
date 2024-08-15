@@ -59,7 +59,8 @@ with app.app_context():
     for _ in range(10):
         association = ShipmentContainerAssociation(
             shipment=random.choice(shipments),
-            container=random.choice(containers)
+            container=random.choice(containers),
+            comment=fake.text(max_nb_chars=50)  # User submittable attribute, maximum 100 characters.
         )
         associations.append(association)
 

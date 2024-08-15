@@ -32,6 +32,7 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     # user submittable attribute
+    comment = db.Column(db.String, nullable=False)
 
     shipment_id = db.Column(db.Integer, db.ForeignKey(
         'shipments.id'), nullable=False)
