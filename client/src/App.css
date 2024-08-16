@@ -36,3 +36,36 @@
     transform: rotate(360deg);
   }
 }
+
+/* nav .nav-items {
+	display: flex;
+	justify-content: space-between;
+	height: 100%;
+	align-items: center;
+}
+
+.nav-items ul {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.nav-items ul li {
+	list-style: none;
+	margin-left: 20px;
+	font-size: 18px;
+	font-weight: 600;
+	color: #000;
+}
+
+.nav-items ul li a {
+	color: #000;
+}
+
+.nav-items ul li a:hover {
+	color: #00a8ff;
+}
+
+.nav-items ul li a.active {
+	color: #00a8ff;
+} */

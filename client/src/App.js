@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import NavBar from "./NavBar";
+import logo from "./assests/logo.jpg";
+// import { Outlet } from "react-router-dom";
 
+// Tailwind utility class for header.
 function App() {
+  console.log("App is rendering");
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    // use fragment for rendering
+    <div>
+      <header className="bg-gray-800 text-1xl text-blue-400 flex justify-center items-center p-2 hover:underline">
+        There is always a new way to keep your goods moving!
       </header>
+      <NavBar logo={logo} />
+      {/* <header className="text-2xl text-blue-800 ">Welcome</header> */}
     </div>
+    // <Outlet />
   );
 }
 
