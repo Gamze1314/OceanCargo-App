@@ -21,45 +21,62 @@ migrate = Migrate(app, db)
 # # initialize the Flask application to use the database
 db.init_app(app)
 
+api = Api(app)
 
 
-@app.route('/shipments')
-def shipments():
-    #return all shipments
-    shipments = db.session.query(Shipment).all()
-    response_body = [shipment.to_dict() for shipment in shipments]
+class Shipments(Resource):
 
-    return make_response(response_body, 200)
+    def get(self):
+        try:
+            # Fetch all shipments from the database
+            shipments = Shipment.query.all()
 
+            # Check if shipments are found
+            if shipments:
+                # Convert each shipment to a dictionary and prepare the response body
+                response_body = [shipment.to_dict() for shipment in shipments]
+                return make_response(response_body, 200)
+            else:
+                return make_response({'message': 'No shipments found'}, 404)
 
-@app.route('/shipments/<int:id>', methods=['GET'])
-def get_shipment(id):
-    # return a single shipment by its ID
-    shipment = db.session.query(Shipment).filter_by(id=id).first()
-
-    if shipment:
-        return make_response(shipment.to_dict(), 200)
-    else:
-        return make_response({'message': 'Shipment not found'}, 404)
-
-
-@app.route('/customers')
-def customers():
-    # return all customers
-    customers = db.session.query(Customer).all()
-    response_body = [customer.to_dict() for customer in customers]
-
-    return make_response(response_body, 200)
+        except Exception as e:
+            # Handle any unexpected errors
+            return {'message': f'Error fetching shipments: {e}'}, 500
+        
+        
 
 
+api.add_resource(Shipments, '/shipments')
 
-@app.route('/containers')
-def containers():
-    # return all containers
-    containers = db.session.query(Container).all()
-    response_body = [container.to_dict() for container in containers]
 
-    return make_response(response_body, 200)
+# @app.route('/shipments/<int:id>', methods=['GET'])
+# def get_shipment(id):
+#     # return a single shipment by its ID
+#     shipment = db.session.query(Shipment).filter_by(id=id).first()
+
+#     if shipment:
+#         return make_response(shipment.to_dict(), 200)
+#     else:
+#         return make_response({'message': 'Shipment not found'}, 404)
+
+
+# @app.route('/customers')
+# def customers():
+#     # return all customers
+#     customers = db.session.query(Customer).all()
+#     response_body = [customer.to_dict() for customer in customers]
+
+#     return make_response(response_body, 200)
+
+
+
+# @app.route('/containers')
+# def containers():
+#     # return all containers
+#     containers = db.session.query(Container).all()
+#     response_body = [container.to_dict() for container in containers]
+
+#     return make_response(response_body, 200)
 
 
 
