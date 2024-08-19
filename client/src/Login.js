@@ -23,7 +23,6 @@ function Login() {
 
   return (
     <div className="flex justify-center items-center min-h">
-      <header>{/* Save space for NavBar */}</header>
       <main>
         <h1>Login</h1>
         <form className={formClass} onSubmit={handleSubmit}>
