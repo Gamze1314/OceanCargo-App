@@ -7,7 +7,8 @@ function Home() {
   // access credit amount
   const { customer, customerShipments } = useOutletContext()
 
-  // in the dashbard show remaning credit amount, and customer's shipments.
+  // in the dashbard show remaning credit amount, and customer's shipments/container.
+  
 
 
   return (
@@ -25,9 +26,9 @@ function Home() {
             {customerShipments.length > 0 ? (
               customerShipments.map((shipment) => (
                 <div key={shipment.id}>
-                  <p>
-                    Departure: {shipment.departure_time}, Arrival:{" "}
-                    {shipment.arrival_time}
+                  <p className="bg-gray-200">
+                    Status: {shipment.status}, Arrival:{" "}
+                    {shipment.arrival_time}, {shipment.arrival_port}
                   </p>
                 </div>
               ))
@@ -39,7 +40,7 @@ function Home() {
             <h3 className="text-lg font-medium text-blue-900">
               Remaining Credit Amount
             </h3>
-            <p>
+            <p className="bg-gray-200">
               {customer
                 ? `$${customer.credit_amount}`
                 : "No available credit amount."}

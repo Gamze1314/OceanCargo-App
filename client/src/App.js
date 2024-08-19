@@ -7,12 +7,13 @@ import { useState, useEffect } from "react";
 
 // Tailwind utility class for header.
 function App() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // useNavigate hook returns a function that lets you navigate programmatically.
+  // navigate(-1) : is equals to hitting back button.
 
   console.log("App is rendering");
   const [shipments, setShipments] = useState([]);
   const [customer, setCustomer] = useState(null);
-  const [customerShipments, setCustomerShipments] = useState([])
+  const [customerShipments, setCustomerShipments] = useState([]);
   // if customer's initial state is null,not logged in. {username: username}
 
   // get customer data from the backend , check session to see if customer is already logged in when the component is first mounted. (every time we refresh the page, this code runs to check if they are logged in)
@@ -22,14 +23,16 @@ function App() {
         response.json().then((customer) => {
           // if customer is logged in, their data is fetched and stored in the customer state.
           setCustomer(customer);
-          navigate("/");
+          navigate("/"); // navigates to home page
         });
       } else if (response.status === 401) {
         response.json().then((errData) => alert(`Error: ${errData.error}`));
-        navigate("/login"); // redirect to login page
+        navigate("/login"); // redirect to login page, error property i coming from error property in API.
       }
     });
   }, [navigate]);
+
+  console.log("session check completed");
 
   useEffect(() => {
     // fetch shipments data from API
@@ -44,9 +47,7 @@ function App() {
     });
   }, []);
 
-  console.log("session check completed");
-
-  // handle API call to /shipments/customer/<int:customer_id> API call here to get a customer's shipments 
+  // handle API call to /shipments/customer/<int:customer_id> API call here to get a customer's shipments
   useEffect(() => {
     // Fetch customer-specific shipments if a customer is logged in and has a valid ID
     if (customer && customer.id) {
@@ -67,8 +68,6 @@ function App() {
       });
     }
   }, [customer]);
-
-
 
   function logInCustomer(loginData) {
     // POST request to log in customer with loginData.
@@ -108,6 +107,9 @@ function App() {
     });
   }
 
+  // get container data to show on dashboard.
+  // dashboard should include container information for the customer.
+
   return (
     <>
       <div>
@@ -126,7 +128,9 @@ function App() {
         </h1>
       ) : null}
       {!customer ? <Navigate to="/login" /> : null}
-      <Outlet context={{ shipments, logInCustomer, customer , customerShipments}} />
+      <Outlet
+        context={{ shipments, logInCustomer, customer, customerShipments }}
+      />
     </>
   );
 }
