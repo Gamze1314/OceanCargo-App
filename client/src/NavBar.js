@@ -2,7 +2,7 @@
 import React from "react";
 import { NavLink, Navigate } from "react-router-dom";
 
-function NavBar({ logo, customer }) {
+function NavBar({ logo, customer, logOutCustomer }) {
   console.log(customer);
 
   const linkClasses =
@@ -32,7 +32,9 @@ function NavBar({ logo, customer }) {
           <NavLink to="/aboutus" className={linkClasses}>
             About us
           </NavLink>
-          <NavLink to="logout" className={linkClasses}>
+          <NavLink
+          onClick={() => logOutCustomer()}
+          to="logout" className={linkClasses}>
             Log Out
           </NavLink>
         </nav>

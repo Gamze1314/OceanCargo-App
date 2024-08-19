@@ -9,7 +9,7 @@ import ipdb
 # create a Flask application object
 app = Flask(__name__)
 
-#set secret key to use session, to generate/change a secret key: run in terminal; python -c 'immport os; print('os.urandom(16))'.
+# set secret key to use session, to generate/change a secret key: run in terminal; python -c 'immport os; print('os.urandom(16))'.
 # <SecureCookieSession {'test': 'testing 123'}>
 app.secret_key = b'\x86\xa8\xc1)\xc42\xdd\x15s\x81\x86\xc1\x18\x99B\xea'
 
@@ -29,24 +29,22 @@ db.init_app(app)
 api = Api(app)
 
 
-
 class Login(Resource):
 
     def get(self):
         pass
 
-
     def post(self):
-    # request.json => username, we can search the customer by their username
+        # request.json => username, we can search the customer by their username
         # POST request to login the user. we need to access the session.
         data = request.json.get('username')
         customer = Customer.query.filter(Customer.username == data).first()
         if customer:
             # if customer is found, store id the id in the session, and return 201 if successful.
-            #keep them logged in with session ; customer.id => unique
+            # keep them logged in with session ; customer.id => unique
             session['customer_id'] = customer.id
-            #session.get('customer_id')
-            #cookie is saved in the browser.
+            # session.get('customer_id')
+            # cookie is saved in the browser.
             # ipdb.set_trace()
             response_body = customer.to_dict()
             return make_response(response_body, 201)
@@ -62,15 +60,16 @@ api.add_resource(Login, '/login')
 
 # Resource : check_session => browser can save cookies thru proxy, keeps them logged in. when user logged in, remembers the username.
 
+
 class CheckSession(Resource):
 
     def get(self):
         # ipdb.set_trace()
-    # Check if a customer ID is present in the session
+        # Check if a customer ID is present in the session
         customer = db.session.get(Customer, session.get('customer_id'))
         if customer:
             # Return the customer information. and its shipments.
-            response_body = customer.to_dict() 
+            response_body = customer.to_dict()
             return make_response(response_body, 200)
         else:
             # Return a 401 Unauthorized response if no customer ID is found
@@ -83,12 +82,15 @@ api.add_resource(CheckSession, '/check_session')
 class LogOut(Resource):
 
     def delete(self):
-        # Clear the session and return a 200 OK response
-        session['customer_id'] = None
-        return {'message': 'Logged out successfully'}, 204
+        # Clear the session if user logs out.(delete the cookie)
+        if session.get('customer_id'):
+            del (session['customer_id'])
+
+        response_body = {}
+        return make_response(response_body, 204)
+
 
 api.add_resource(LogOut, '/logout')
-
 
 
 class Shipments(Resource):
@@ -109,11 +111,34 @@ class Shipments(Resource):
         except Exception as e:
             # Handle any unexpected errors
             return {'message': f'Error fetching shipments: {e}'}, 500
-        
-        
 
 
 api.add_resource(Shipments, '/shipments')
+
+# Endpoint to get shipments by customer ID
+
+
+class ShipmentsByCustomer(Resource):
+
+    def get(self, customer_id):
+        try:
+            # Fetch all shipments associated with the given customer ID
+            shipments = Shipment.query.filter_by(customer_id=customer_id).all()
+
+            # Check if shipments are found
+            if shipments:
+                # Convert each shipment to a dictionary and prepare the response body
+                response_body = [shipment.to_dict() for shipment in shipments]
+                return make_response(response_body, 200)
+            else:
+                return make_response({'message': 'No shipments found for this customer'}, 404)
+
+        except Exception as e:
+            # Handle any unexpected errors
+            return {'message': f'Error fetching shipments for customer {customer_id}: {e}'}, 500
+
+
+api.add_resource(ShipmentsByCustomer, '/shipments/customer/<int:customer_id>')
 
 
 # @app.route('/shipments/<int:id>', methods=['GET'])
@@ -136,7 +161,6 @@ api.add_resource(Shipments, '/shipments')
 #     return make_response(response_body, 200)
 
 
-
 # @app.route('/containers')
 # def containers():
 #     # return all containers
@@ -144,7 +168,6 @@ api.add_resource(Shipments, '/shipments')
 #     response_body = [container.to_dict() for container in containers]
 
 #     return make_response(response_body, 200)
-
 
 
 # @app.route('/shipments/<int:shipment_id>/book', methods=['POST'])

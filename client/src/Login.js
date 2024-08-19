@@ -28,7 +28,7 @@ function Login() {
         <h1>Login</h1>
         <form className={formClass} onSubmit={handleSubmit}>
           <div>
-            <label for="username">Username </label>
+            <label for="username">Please enter your username: </label>
             <input
               className="bg-gray-50 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-72 md:w-72 sm:w-32 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-blue-200 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-4"
               id="username"
