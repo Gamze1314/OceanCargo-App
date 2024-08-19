@@ -38,7 +38,6 @@ const router = createBrowserRouter([
         element: <NewBookingForm />,
         errorElement: <ErrorPage />,
       },
-      //... more routes for other views
       {
         path: "/login",
         element: <Login />,
@@ -47,8 +46,9 @@ const router = createBrowserRouter([
       {
         path: "/logout",
         element: <LogOut />,
-        errorElement: <ErrorPage />
-      },
+        errorElement: <ErrorPage />,
+      }
+      //... more routes for other views
     ],
   },
 ]);

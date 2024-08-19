@@ -2,7 +2,7 @@ import React from 'react'
 
 function LogOut() {
   return (
-    <div>LogOut</div>
+    <div>You have logged out successfully!</div>
   )
 }
 

@@ -29,7 +29,7 @@ function Shipments() {
       <div>
         {shipments.map((shipment) => (
           <div>
-            <Shipment shipment={shipment} />
+            <Shipment key={shipment.id} shipment={shipment} />
           </div>
         ))}
       </div>

@@ -12,26 +12,27 @@ function Shipment({ shipment }) {
       <p className="mb-1">Origin: {shipment.origin}</p>
       <p>Status: {shipment.status}</p> */}
 
-      <table class="border-separate border border-slate-500 ...">
+      <table className="border-separate border border-slate-500 ...">
         <thead>
           <tr>
-            <th class="border border-slate-600 ...">Vessel Name</th>
-            <th class="border border-slate-600 ...">Arrival Time</th>
-            <th class="border border-slate-600 ...">Origin</th>
-            <th class="border border-slate-600 ...">Departure Time</th>
-            <th class="border border-slate-600 ...">Status</th>
+            <th className="border border-slate-600 ...">Vessel Name</th>
+            <th className="border border-slate-600 ...">Arrival Time</th>
+            <th className="border border-slate-600 ...">Origin</th>
+            <th className="border border-slate-600 ...">Departure Time</th>
+            <th className="border border-slate-600 ...">Status</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="border border-slate-700 ...">{shipment.vessel_name}</td>
-            <td class="border border-slate-700 ...">{shipment.arrival_time}</td>
-            <td class="border border-slate-700 ...">{shipment.origin}</td>
-            <td class="border border-slate-700 ...">{shipment.departure_time}</td>
-            <td class="border border-slate-700 ...">{shipment.status}</td>
+            <td className="border border-slate-700 ...">{shipment.vessel_name}</td>
+            <td className="border border-slate-700 ...">{shipment.arrival_time}</td>
+            <td className="border border-slate-700 ...">{shipment.origin}</td>
+            <td className="border border-slate-700 ...">{shipment.departure_time}</td>
+            <td className="border border-slate-700 ...">{shipment.status}</td>
           </tr>
         </tbody>
       </table>
+      <p>This shipment is currently under "{shipment.status}" status. For more details, please submit a booking request.</p>
     </div>
   );
 }
