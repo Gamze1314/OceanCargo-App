@@ -1,42 +1,49 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 //  useState for component state, useEffect for side effects.
 // yup for form validation
 //  form handling => formik.
 
-
 const NewBookingForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  // access bookShipment with outletcontext
+  const { bookShipment, shipments } = useOutletContext();
+  // shipments state to access, vessel_name, origin
+  // container types: 40SD, 40HC, 20SD for options
+  // comment ; string, input field.
 
   //  define the validation rules for the form. required fields, length, type.
   const formSchema = yup.object().shape({
-    vesselName: yup.string().required("Must enter vessel name"),
-    origin: yup.string().required("Must enter the origin port"),
-    containerType: yup.string().required("Must enter container type"),
+    vessel_name: yup.string().required("Must select a vessel name."),
+    origin: yup.string().required("Must select an origin port."),
+    container_type: yup.string().required("Must select a container type."),
+    // Comment must be between 1 and 50 characters long and not empty
+    comment: yup.string().required("Comment field must be between 1 and 50 characters.").max(50).min(1),
   });
 
   // formik is a hook used to hold form data and handle validations/form submission.
   const formik = useFormik({
     initialValues: {
-      vesselName: "",
       origin: "",
-      containerType: "",
+      container_type: "",
+      vessel_name: "",
+      comment: "",
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      // handle POST request and error response here.
-      console.log("Form values:", values); // values is an object holds the form data.
+      console.log("Submitting form with values:", values); // Log form values
+      bookShipment(values)
+        .then((response) => {
+          console.log("Response from server:", response);
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+        });
     },
   });
-
-
-// 
-
-
-
 
   return (
     <div className="flex justify-center items-center min-h">
@@ -45,29 +52,35 @@ const NewBookingForm = () => {
           Please enter required fields to book a shipment with us!
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
+          {/* vessel name dropdown */}
           <div>
             <label
-              htmlFor="vesselName"
+              htmlFor="vessel_name"
               className="block text-sm font-medium text-gray-700"
             >
               Vessel Name:
             </label>
-            <input
-              id="vesselName"
-              name="vesselName"
-              type="text"
-              placeholder="Please view shipments page for vessel name.."
+            <select
+              id="vessel_name"
+              name="vessel_name"
               onChange={formik.handleChange}
-              value={formik.values.vesselName}
+              value={formik.values.vessel_name}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
-            />
-            {formik.errors.vesselName && formik.touched.vesselName ? (
+            >
+              <option value="" label="Select vessel name" />
+              {shipments.map((shipment) => (
+                <option key={shipment.id} value={shipment.vessel_name}>
+                  {shipment.vessel_name}
+                </option>
+              ))}
+            </select>
+            {formik.errors.vessel_name && formik.touched.vessel_name ? (
               <p className="text-red-500 text-xs mt-1">
-                {formik.errors.vesselName}
+                {formik.errors.vessel_name}
               </p>
             ) : null}
           </div>
-
+          {/* Origin dropdown */}
           <div>
             <label
               htmlFor="origin"
@@ -75,21 +88,27 @@ const NewBookingForm = () => {
             >
               Origin:
             </label>
-            <input
+            <select
               id="origin"
               name="origin"
-              type="text"
-              placeholder="Enter origin port.Karachi, Guangzong ..etc "
               onChange={formik.handleChange}
               value={formik.values.origin}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
-            />
+            >
+              <option value="" label="Select origin" />
+              {shipments.map((shipment) => (
+                <option key={shipment.id} value={shipment.origin}>
+                  {shipment.origin}
+                </option>
+              ))}
+            </select>
             {formik.errors.origin && formik.touched.origin ? (
               <p className="text-red-500 text-xs mt-1">
                 {formik.errors.origin}
               </p>
             ) : null}
           </div>
+          {/* container type dropdown */}
 
           <div>
             <label
@@ -98,21 +117,50 @@ const NewBookingForm = () => {
             >
               Container Type:
             </label>
-            <input
-              id="containerType"
-              name="containerType"
-              type="text"
-              placeholder="40HC, 20SD.."
+            <select
+              id="container_type"
+              name="container_type"
               onChange={formik.handleChange}
               value={formik.values.containerType}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
-            />
-            {formik.errors.containerType && formik.touched.containerType ? (
+            >
+              <option value="" label="Select container type" />
+              {/* cont types: 40SD, 20SD, 40HC */}
+              <option value="40SD">40SD</option>
+              <option value="20SD">20SD</option>
+              <option value="40HC">40HC</option>
+            </select>
+            {formik.errors.container_type && formik.touched.container_type ? (
               <p className="text-red-500 text-xs mt-1">
-                {formik.errors.containerType}
+                {formik.errors.container_type}
               </p>
             ) : null}
           </div>
+
+          {/* Comment Input Field */}
+          <div>
+            <label
+              htmlFor="comment"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Comment:
+            </label>
+            <input
+              id="comment"
+              name="comment"
+              type="text"
+              placeholder="Enter your comment..."
+              onChange={formik.handleChange}
+              value={formik.values.comment}
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+            />
+            {formik.errors.comment && formik.touched.comment ? (
+              <p className="text-red-500 text-xs mt-1">
+                {formik.errors.comment}
+              </p>
+            ) : null}
+          </div>
+
           <button
             type="submit"
             className="w-full bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900"
@@ -144,6 +192,6 @@ const NewBookingForm = () => {
       </div>
     </div>
   );
-}
+};
 
 export default NewBookingForm;

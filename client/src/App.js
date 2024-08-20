@@ -11,6 +11,7 @@ function App() {
   // navigate(-1) : is equals to hitting back button.
 
   console.log("App is rendering");
+  const [containers, setContainers] = useState([])
   const [shipments, setShipments] = useState([]);
   const [customer, setCustomer] = useState(null);
   const [customerShipments, setCustomerShipments] = useState([]);
@@ -33,6 +34,19 @@ function App() {
   }, [navigate]);
 
   console.log("session check completed");
+
+  useEffect(() => {
+    // fetch containers data from API
+    fetch("/containers").then((response) => {
+      if (!response.ok) {
+        alert("Error fetching data from API.");
+      } else {
+        return response
+         .json()
+         .then((containerData) => setContainers(containerData));
+      }
+    });
+  }, [])
 
   useEffect(() => {
     // fetch shipments data from API
@@ -110,6 +124,32 @@ function App() {
   // get container data to show on dashboard.
   // dashboard should include container information for the customer.
 
+  //POST request for shipment booking. 
+
+  function bookShipment(shipmentData) {
+    console.log(shipmentData)
+
+        if (customer && customer.id) {
+          fetch(`/shipments/customer/${customer.id}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(shipmentData)
+          })
+          .then(res => {
+            if (res.ok) {
+              alert("Shipment booked successfully!");
+              // navigate("/");
+            }
+            else {
+              alert("Error: Unable to book shipment.Please try again!");
+            }
+          })
+        }
+  }
+
   return (
     <>
       <div>
@@ -129,7 +169,7 @@ function App() {
       ) : null}
       {!customer ? <Navigate to="/login" /> : null}
       <Outlet
-        context={{ shipments, logInCustomer, customer, customerShipments }}
+        context={{ shipments, logInCustomer, customer, customerShipments, bookShipment, containers }}
       />
     </>
   );

@@ -45,7 +45,7 @@ with app.app_context():
     shipments = []
     for _ in range(10):
         shipment = Shipment(
-            status=fake.random_element(elements=("In Transit", "Completed")),
+            status=fake.random_element(elements=("In Transit", "Completed", "Pending")),
             vessel_name=fake.word().capitalize() + " Vessel",
             departure_time=fake.date_time_between(
                 start_date="-1y", end_date="now"),

@@ -186,7 +186,7 @@ class Shipment(db.Model, SerializerMixin):
     @validates('status')
     def validate_status(self, key, value):
         # status can either be In Transit or Completed
-        if value not in ['In Transit', 'Completed']:
+        if value not in ['In Transit', 'Completed', 'Pending']:
             raise ValueError('Status must be either In Transit or Completed.')
         else:
             return value

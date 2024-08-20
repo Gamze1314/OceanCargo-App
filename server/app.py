@@ -138,61 +138,109 @@ class ShipmentsByCustomer(Resource):
             return {'message': f'Error fetching shipments for customer {customer_id}: {e}'}, 500
 
 
+
+    # handle shiipment booking POST request
+    # POST request to book a shipment. we need to access the session.
+    def post(self, customer_id):
+        # breakpoint()
+        # Fetch customer from the session
+        customer = db.session.get(Customer, session.get('customer_id'))
+
+        if not customer:
+            return make_response({'error': 'Please log in'}, 401)
+
+        data = request.get_json()
+
+        # Check if required fields are provided
+        if 'origin' not in data or 'vessel_name' not in data or 'container_type' not in data or 'comment' not in data:
+            return make_response({'error': 'Missing required fields'}, 400)
+
+        origin = data['origin']
+        vessel_name = data['vessel_name']
+        container_type = data['container_type']
+        comment = data['comment']
+
+        # Find the shipment in the database
+        existing_shipment = Shipment.query.filter_by(
+            origin=origin,
+            vessel_name=vessel_name
+        ).first()
+
+        # breakpoint()
+#existing shipment cant be found ?
+        if existing_shipment and existing_shipment.status == 'In Transit':
+            return make_response({'error': 'Shipment is currently not available to book.'}, 409)
+        
+
+        elif existing_shipment:
+            # Use data from the existing shipment
+            departure_time = existing_shipment.departure_time
+            arrival_time = existing_shipment.arrival_time
+            arrival_port = existing_shipment.arrival_port
+            freight_rate = existing_shipment.freight_rate
+
+            # Create a new shipment record
+            new_shipment = Shipment(
+                origin=origin,
+                customer_id=customer_id,
+                vessel_name=vessel_name,
+                departure_time=departure_time,
+                arrival_time=arrival_time,
+                arrival_port=arrival_port,
+                freight_rate=freight_rate,
+                status='Pending'  # Adjust status
+            )
+            db.session.add(new_shipment)
+
+            # create the container
+            container = Container(
+                container_type=container_type,
+                customer_id=customer_id,
+                price="pending",
+                container_number="pending",
+                weight=22000
+            )
+
+            db.session.add(container)
+            db.session.commit()
+
+            # Create a new association between the shipment and container
+            shipment_container_association = ShipmentContainerAssociation(
+                shipment_id=new_shipment.id,
+                container_id=container.id,
+                comment=comment
+            )
+            db.session.add(shipment_container_association)
+
+            db.session.commit()
+
+            return make_response(new_shipment.to_dict(), 201)
+
+        else:
+            # Handle the case where no matching shipment is found
+            return make_response({'error': 'No existing shipment found with the given criteria.'}, 404)
+
+
 api.add_resource(ShipmentsByCustomer, '/shipments/customer/<int:customer_id>')
 
 
-# @app.route('/shipments/<int:id>', methods=['GET'])
-# def get_shipment(id):
-#     # return a single shipment by its ID
-#     shipment = db.session.query(Shipment).filter_by(id=id).first()
 
-#     if shipment:
-#         return make_response(shipment.to_dict(), 200)
-#     else:
-#         return make_response({'message': 'Shipment not found'}, 404)
+class Containers(Resource):
 
+    def get(self):
+        # return all containers
+        try:
+            containers = db.session.query(Container).all()
+            response_body = [container.to_dict(only=("id", "container_type", "price", "weight", "container_number")) for container in containers]
 
-# @app.route('/customers')
-# def customers():
-#     # return all customers
-#     customers = db.session.query(Customer).all()
-#     response_body = [customer.to_dict() for customer in customers]
+            return make_response(response_body, 200)
+        
+        except Exception as e:
+            return {'error': f'Error fetching containers: {e}'}, 500
+    
 
-#     return make_response(response_body, 200)
+api.add_resource(Containers, '/containers')
 
-
-# @app.route('/containers')
-# def containers():
-#     # return all containers
-#     containers = db.session.query(Container).all()
-#     response_body = [container.to_dict() for container in containers]
-
-#     return make_response(response_body, 200)
-
-
-# @app.route('/shipments/<int:shipment_id>/book', methods=['POST'])
-# def book_shipment(shipment_id):
-#     # Get the shipment by its ID
-#     shipment = db.session.query(Shipment).filter_by(id=shipment_id).first()
-
-#     # Check if the shipment is intransit
-#     if shipment.status == 'intransit':
-#         return jsonify({'message': 'This shipment is not bookable. It is currently in transit.'}), 400
-#     else:
-#         # Get the comment from the request payload
-#         comment = request.json.get('comment', None)
-
-#         # Create a new ShipmentContainerAssociation instance with the comment
-#         new_association = ShipmentContainerAssociation(comment=comment)
-
-#         # Associate the new ShipmentContainerAssociation instance with the shipment
-#         new_association.shipment_id = shipment_id
-
-#         # Save the new ShipmentContainerAssociation instance to the database
-#         db.session.add(new_association)
-#         db.session.commit()
-
-#         return jsonify({'message': 'Shipment booked successfully'}), 201
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 // get news to show on home page.
 import React from "react";
 import { Link } from "react-router-dom";
-import img1 from "./assests/img1.jpg"
-import img2 from "./assests/img2.jpg"
+import img1 from "./assests/img1.jpg";
+import img2 from "./assests/img2.jpg";
 
 function NewsSection() {
   const linkStyle =
@@ -10,7 +10,9 @@ function NewsSection() {
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-11 w-1/3">
-      <h2 className="text-xl font-semibold text-blue-900 mb-4">Category: Transportation News</h2>
+      <h2 className="text-xl font-semibold text-blue-900 mb-4">
+        Category: Transportation News
+      </h2>
       <div className="space-y-4">
         <Link
           className={linkStyle}
