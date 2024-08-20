@@ -11,6 +11,7 @@ flask-migrate = "*"
 sqlalchemy-serializer = "*"
 faker = "*"
 ipdb = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -16,17 +16,27 @@ with app.app_context():
 
     # Create 10 customers
     customers = []
-    for _ in range(10):
-        customer = Customer(
-            # Ensure username is 5-10 characters long
-            username=fake.user_name()[0:10],
-            password_hash=fake.password(),
-            email=fake.email(),
-            type=fake.random_element(elements=("consignee", "forwarder")),
-            # Random credit amount
-            credit_amount=round(random.uniform(450000, 1000000), 2)
-        )
-        customers.append(customer)
+    # for _ in range(10):
+    #     customer = Customer(
+    #         # Ensure username is 5-10 characters long
+    #         username=fake.user_name()[0:10],
+    #         password_hash=fake.password(),
+    #         email=fake.email(),
+    #         type=fake.random_element(elements=("consignee", "forwarder")),
+    #         # Random credit amount
+    #         credit_amount=round(random.uniform(450000, 1000000), 2)
+    #     )
+
+    customer1 = Customer(
+        username="gamze1314",
+        password_hash=fake.password(),
+        email="gamze@gmail.com",
+        type="consignee",
+        credit_amount=600000
+    )
+
+    customers.append(customer1)
+    # customers.append(customer)
 
     db.session.add_all(customers)
     db.session.commit()
@@ -54,12 +64,13 @@ with app.app_context():
     # Create 10 containers
     containers = []
     prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
+    types = ["40SD", "20SD", "40HC"]
     for _ in range(10):
         container_number = fake.random_element(
             elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
         container = Container(
             container_number=container_number,
-            container_type=fake.word().capitalize() + " Type",
+            container_type=fake.random_element(elements=types),
             weight=random.randint(1000, 5000),  # Weight between 1000 and 5000
             # Price between $500 and $5000
             price=round(random.uniform(3500.0, 5000.0), 2),

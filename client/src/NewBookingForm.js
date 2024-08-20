@@ -1,12 +1,16 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 //  useState for component state, useEffect for side effects.
 // yup for form validation
 //  form handling => formik.
 
+
 const NewBookingForm = () => {
+  const navigate = useNavigate()
+
   //  define the validation rules for the form. required fields, length, type.
   const formSchema = yup.object().shape({
     vesselName: yup.string().required("Must enter vessel name"),
@@ -28,7 +32,12 @@ const NewBookingForm = () => {
     },
   });
 
-  console.log(formik.handleSubmit)
+
+// 
+
+
+
+
   return (
     <div className="flex justify-center items-center min-h">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
@@ -109,6 +118,27 @@ const NewBookingForm = () => {
             className="w-full bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900"
           >
             Submit
+          </button>
+          <button
+            type="button"
+            className="flex items-center justify-center w-full bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900 mt-2"
+            onClick={() => navigate("/shipments")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-5 h-5 mr-2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Shipments Page
           </button>
         </form>
       </div>
