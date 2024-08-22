@@ -4,14 +4,6 @@ import React from 'react'
 function Shipment({ shipment }) {
   return (
     <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-blue-600 transition-colors">
-      {/* <h2 className="text-xl font-semibold mb-2">
-        Shipment to {shipment.arrival_port}
-      </h2>
-      <p className="mb-1">Arrival: {shipment.arrival_time}</p>
-      <p className="mb-1">Departure: {shipment.departure_time}</p>
-      <p className="mb-1">Origin: {shipment.origin}</p>
-      <p>Status: {shipment.status}</p> */}
-
       <table className="border-separate border border-slate-500 ...">
         <thead>
           <tr>

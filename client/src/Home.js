@@ -1,12 +1,14 @@
 import React from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import NewsSection from "./NewsSection";
+//import Buttons
+import Buttons from "./Buttons";
 
 // use useOutletContext hook to access shipments, customers.
 
 function Home() {
   // access credit amount
-  const { customer, customerShipments } = useOutletContext();
+  const { customer, customerShipments , handleUpdate, handleDelete } = useOutletContext();
 
   // in the dashbard show remaning credit amount, and customer's shipments.
   // flexbox with 2 columns for news section and dashboard.
@@ -31,9 +33,16 @@ function Home() {
                   className="bg-white shadow-md p-4 mb-2 rounded-lg border border-gray-300"
                 >
                   <span className="text-md font-semibold text-gray-700">
-                    Status: {shipment.status}, Arrival: {shipment.arrival_time},{" "}
+                    Status: 
+                    {shipment.status}, 
+                    Arrival: {shipment.arrival_time},{" "}
                     {shipment.arrival_port}
                   </span>
+                  <Buttons 
+                  shipment={shipment}
+                  handleUpdate={handleUpdate}
+                  handleDelete={handleDelete}
+                  />
                 </div>
               ))
             ) : (
@@ -42,9 +51,7 @@ function Home() {
           </div>
           {/* Credit Amount */}
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 className="text-lg font-medium text-blue-900">
-              Remaining Credit Amount
-            </h3>
+            <h3 className="text-lg font-medium text-blue-900">Credit Amount</h3>
             <p className="bg-gray-200">
               {customer
                 ? `$${customer.credit_amount}`

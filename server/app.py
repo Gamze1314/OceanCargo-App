@@ -5,6 +5,10 @@ from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer, ShipmentContainerAssociation
 import ipdb
+from faker import Faker
+import random
+
+fake = Faker()
 
 # create a Flask application object
 app = Flask(__name__)
@@ -137,10 +141,9 @@ class ShipmentsByCustomer(Resource):
             # Handle any unexpected errors
             return {'message': f'Error fetching shipments for customer {customer_id}: {e}'}, 500
 
-
-
     # handle shiipment booking POST request
     # POST request to book a shipment. we need to access the session.
+
     def post(self, customer_id):
         # breakpoint()
         # Fetch customer from the session
@@ -155,6 +158,7 @@ class ShipmentsByCustomer(Resource):
         if 'origin' not in data or 'vessel_name' not in data or 'container_type' not in data or 'comment' not in data:
             return make_response({'error': 'Missing required fields'}, 400)
 
+# data from frontend to be used in creation of shipment, container, shipment_container_association
         origin = data['origin']
         vessel_name = data['vessel_name']
         container_type = data['container_type']
@@ -167,10 +171,9 @@ class ShipmentsByCustomer(Resource):
         ).first()
 
         # breakpoint()
-#existing shipment cant be found ?
+# existing shipment cant be found ?
         if existing_shipment and existing_shipment.status == 'In Transit':
             return make_response({'error': 'Shipment is currently not available to book.'}, 409)
-        
 
         elif existing_shipment:
             # Use data from the existing shipment
@@ -191,38 +194,134 @@ class ShipmentsByCustomer(Resource):
                 status='Pending'  # Adjust status
             )
             db.session.add(new_shipment)
+            db.session.commit()
 
-            # create the container
-            container = Container(
+            # create new container=> unique constraint in association table.
+            prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
+            new_container_number = fake.random_element(
+                elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
+
+            new_container = Container(
+                container_number=new_container_number,
                 container_type=container_type,
-                customer_id=customer_id,
-                price="pending",
-                container_number="pending",
-                weight=22000
+                weight=23000,
+                price=5000 if container_type == '20SD' else 7500,
+                customer_id=customer_id
             )
 
-            db.session.add(container)
+            db.session.add(new_container)
             db.session.commit()
 
             # Create a new association between the shipment and container
             shipment_container_association = ShipmentContainerAssociation(
+                comment=comment,
                 shipment_id=new_shipment.id,
-                container_id=container.id,
-                comment=comment
+                container_id=new_container.id
             )
-            db.session.add(shipment_container_association)
 
+            db.session.add(shipment_container_association)
             db.session.commit()
 
-            return make_response(new_shipment.to_dict(), 201)
+            # response_body => return shipment, and container serialized?
+            response_body = {
+                'id': new_shipment.id,
+                'origin': new_shipment.origin,
+                'customer_id': new_shipment.customer_id,
+                'vessel_name': new_shipment.vessel_name,
+                'departure_time': new_shipment.departure_time,
+                'arrival_time': new_shipment.arrival_time,
+                'arrival_port': new_shipment.arrival_port,
+                'freight_rate': new_shipment.freight_rate,
+                'comment': comment,
+                'status': new_shipment.status,
+                'container': new_container.to_dict()
+            }
+
+            return make_response(response_body, 201)
 
         else:
             # Handle the case where no matching shipment is found
             return make_response({'error': 'No existing shipment found with the given criteria.'}, 404)
 
+    # patch request => request data " comment"
+    # find the shipment in the shipment_container_association table to update comment
+
+    def patch(self, customer_id):
+
+        # Get customer ID from the session
+        customer_id = session.get('customer_id')
+
+        # Return error if unauthorized
+        if not customer_id:
+            return make_response({'error': 'Please log in'}, 401)
+
+        # Get comment from the request body
+        data = request.get_json()
+        comment = data.get('comment')
+        shipment_id = data.get('shipment_id')
+
+        # Get the shipment by shipment_id and customer_id
+        shipment = db.session.query(ShipmentContainerAssociation).filter_by(
+            shipment_id=shipment_id
+        ).first()
+
+        # breakpoint()
+
+        if not shipment:
+            return make_response({'error': 'Shipment not found or not authorized'}, 404)
+
+        # Check if comment is provided
+        if not comment:
+            return make_response({'error': 'Comment is required'}, 400)
+
+        # Validate comment length
+        if len(comment) < 1 or len(comment) > 50:
+            return make_response({'error': 'Comment must be between 1 and 50 characters long'}, 400)
+
+        # Update the comment
+        shipment.comment = comment
+        db.session.commit()
+
+        # Return success message
+        return make_response(shipment.to_dict(), 200)
+
+    # handle delete request
+
+    def delete(self, customer_id):
+        # if a shipment is deleted, delete the association, and containers associated with the shipment.
+        # Get customer ID from the session
+        customer_id = session.get('customer_id')
+
+        # Return error if unauthorized
+        if not customer_id:
+            return make_response({'error': 'Please log in'}, 401)
+
+        # get shipment id
+        data = request.get_json()
+        shipment_id = data.get('id')
+        # breakpoint()
+        shipment = Shipment.query.filter_by(id=shipment_id).first()
+
+        # breakpoint()
+        if not shipment:
+            return make_response({'error': 'The shipment can not be found.'})
+
+        # delete shipment from shipment table
+        shipment_cont_association = ShipmentContainerAssociation.query.filter_by(
+            shipment_id=shipment_id).first()
+        
+        db.session.delete(shipment)
+        db.session.commit()
+
+        if shipment_cont_association:
+            db.session.delete(shipment_cont_association)
+            db.session.commit()
+
+
+        return make_response({'message': 'The shipment and associated containers have been deleted.'}, 200)
+
 
 api.add_resource(ShipmentsByCustomer, '/shipments/customer/<int:customer_id>')
-
 
 
 class Containers(Resource):
@@ -231,16 +330,16 @@ class Containers(Resource):
         # return all containers
         try:
             containers = db.session.query(Container).all()
-            response_body = [container.to_dict(only=("id", "container_type", "price", "weight", "container_number")) for container in containers]
+            response_body = [container.to_dict(only=(
+                "id", "container_type", "price", "weight", "container_number")) for container in containers]
 
             return make_response(response_body, 200)
-        
+
         except Exception as e:
             return {'error': f'Error fetching containers: {e}'}, 500
-    
+
 
 api.add_resource(Containers, '/containers')
-
 
 
 if __name__ == '__main__':

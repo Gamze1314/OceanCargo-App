@@ -11,7 +11,6 @@ function App() {
   // navigate(-1) : is equals to hitting back button.
 
   console.log("App is rendering");
-  const [containers, setContainers] = useState([])
   const [shipments, setShipments] = useState([]);
   const [customer, setCustomer] = useState(null);
   const [customerShipments, setCustomerShipments] = useState([]);
@@ -36,19 +35,6 @@ function App() {
   console.log("session check completed");
 
   useEffect(() => {
-    // fetch containers data from API
-    fetch("/containers").then((response) => {
-      if (!response.ok) {
-        alert("Error fetching data from API.");
-      } else {
-        return response
-         .json()
-         .then((containerData) => setContainers(containerData));
-      }
-    });
-  }, [])
-
-  useEffect(() => {
     // fetch shipments data from API
     fetch("/shipments").then((response) => {
       if (!response.ok) {
@@ -59,7 +45,7 @@ function App() {
           .then((shipmentData) => setShipments(shipmentData));
       }
     });
-  }, []);
+  }, [customer]);
 
   // handle API call to /shipments/customer/<int:customer_id> API call here to get a customer's shipments
   useEffect(() => {
@@ -82,6 +68,75 @@ function App() {
       });
     }
   }, [customer]);
+
+
+function handleUpdate(comment, shipment_id) {
+  // Check if the customer object exists and has an id
+  if (customer && customer.id) {
+    fetch(`/shipments/customer/${customer.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ comment, shipment_id }), //  necessary fields
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json(); // Parse JSON if the response is okay
+        } else {
+          return response.json().then((error) => {
+            console.error("Failed to update shipment:", error);
+            alert("Failed to update shipment, or the shipment does not exist.");
+          });
+        }
+      })
+      .then((data) => {
+        console.log("Shipment updated successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert(error.message);
+      });
+  } else {
+    console.error("Customer not found or not logged in.");
+  }
+}
+
+
+  // handle DELETE request here /shipments/customer/id
+function handleDelete(id) {
+  console.log(id);
+
+  if (customer && customer.id) {
+    fetch(`/shipments/customer/${customer.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }), // Sending shipment ID in request body
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log("Shipment deleted successfully.");
+          alert("Shipment deleted successfully")
+          console.log(customerShipments)
+          // Update shipments state by filtering out the deleted shipment
+          setCustomerShipments((prevShipments) =>
+            prevShipments.filter((shipment) => shipment.id !== id)
+          // console.log(customerShipments)
+          );
+          console.log(customerShipments);
+          return res.json(); // Return response JSON to the next .then (if needed)
+        } else {
+          alert("Failed to delete shipment");
+        }
+      })
+  } else {
+    console.error("Customer not found or not logged in.");
+  }
+}
+
+
 
   function logInCustomer(loginData) {
     // POST request to log in customer with loginData.
@@ -121,33 +176,49 @@ function App() {
     });
   }
 
-  // get container data to show on dashboard.
-  // dashboard should include container information for the customer.
-
-  //POST request for shipment booking. 
+  //POST request for shipment booking.
 
   function bookShipment(shipmentData) {
-    console.log(shipmentData)
+    console.log(shipmentData);
 
-        if (customer && customer.id) {
-          fetch(`/shipments/customer/${customer.id}`, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(shipmentData)
-          })
-          .then(res => {
-            if (res.ok) {
-              alert("Shipment booked successfully!");
-              // navigate("/");
-            }
-            else {
-              alert("Error: Unable to book shipment.Please try again!");
-            }
-          })
-        }
+    if (customer && customer.id) {
+      fetch(`/shipments/customer/${customer.id}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(shipmentData),
+      })
+        .then((res) =>
+          res.json().then((data) => ({ status: res.status, body: data }))
+        )
+        .then(({ status, body }) => {
+          if (status === 201) {
+            alert("Shipment booked successfully!");
+            //update state
+            setCustomerShipments((prev) => [...prev, body]);
+            // console.log(customerShipments)
+            navigate("/");
+          } else if (
+            status === 404 &&
+            body.error === "No existing shipment found with the given criteria."
+          ) {
+            alert(
+              "Error: No shipment found matching the given criteria. Please try again with different details."
+            );
+          } else if (
+            status === 409 &&
+            body.error === "Shipment is currently not available to book."
+          ) {
+            alert(
+              "Error: The shipment is currently in transit and not available for booking. Please try again later."
+            );
+          } else {
+            alert("Error: Unable to book shipment. Please try again later!");
+          }
+        });
+    }
   }
 
   return (
@@ -169,7 +240,15 @@ function App() {
       ) : null}
       {!customer ? <Navigate to="/login" /> : null}
       <Outlet
-        context={{ shipments, logInCustomer, customer, customerShipments, bookShipment, containers }}
+        context={{
+          shipments,
+          logInCustomer,
+          customer,
+          customerShipments,
+          bookShipment,
+          handleUpdate,
+          handleDelete
+        }}
       />
     </>
   );

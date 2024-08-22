@@ -149,7 +149,7 @@ const NewBookingForm = () => {
               id="comment"
               name="comment"
               type="text"
-              placeholder="Enter your comment..."
+              placeholder="Please enter your comment..."
               onChange={formik.handleChange}
               value={formik.values.comment}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
