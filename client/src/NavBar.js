@@ -29,9 +29,6 @@ function NavBar({ logo, customer, logOutCustomer }) {
           <NavLink to="/shipments" className={linkClasses}>
             Shipments
           </NavLink>
-          <NavLink to="/aboutus" className={linkClasses}>
-            About us
-          </NavLink>
           <NavLink
           onClick={() => logOutCustomer()}
           to="logout" className={linkClasses}>

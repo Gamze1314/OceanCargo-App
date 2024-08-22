@@ -1,4 +1,5 @@
 import React from "react";
+import "./index.css";
 import NavBar from "./NavBar";
 import logo from "./assests/logo.jpg";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
@@ -125,7 +126,7 @@ function App() {
               (shipment) => shipment.id !== id
             );
             console.log("Updated shipments:", updatedShipments); // Confirm the updated state
-            return updatedShipments;
+            return updatedShipments; 
           });
           console.log(customerShipments);
           return res.json(); // Return response JSON to the next .then (if needed)

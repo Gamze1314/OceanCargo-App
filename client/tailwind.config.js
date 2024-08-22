@@ -6,6 +6,9 @@ module.exports = {
       spacing: {
         "5px": "5px",
       },
+      fontFamily: {
+        sans: ["Times New Roman", "serif"],
+      },
       colors: {
         navy: "#001f3f",
       },
