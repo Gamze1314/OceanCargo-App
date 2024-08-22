@@ -69,74 +69,74 @@ function App() {
     }
   }, [customer]);
 
-
-function handleUpdate(comment, shipment_id) {
-  // Check if the customer object exists and has an id
-  if (customer && customer.id) {
-    fetch(`/shipments/customer/${customer.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ comment, shipment_id }), //  necessary fields
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json(); // Parse JSON if the response is okay
-        } else {
-          return response.json().then((error) => {
-            console.error("Failed to update shipment:", error);
-            alert("Failed to update shipment, or the shipment does not exist.");
-          });
-        }
+  function handleUpdate(comment, shipment_id) {
+    // Check if the customer object exists and has an id
+    if (customer && customer.id) {
+      fetch(`/shipments/customer/${customer.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ comment, shipment_id }), //  necessary fields
       })
-      .then((data) => {
-        console.log("Shipment updated successfully:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert(error.message);
-      });
-  } else {
-    console.error("Customer not found or not logged in.");
+        .then((response) => {
+          if (response.ok) {
+            return response.json(); // Parse JSON if the response is okay
+          } else {
+            return response.json().then((error) => {
+              console.error("Failed to update shipment:", error);
+              alert(
+                "Failed to update shipment, or the shipment does not exist."
+              );
+            });
+          }
+        })
+        .then((data) => {
+          console.log("Shipment updated successfully:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert(error.message);
+        });
+    } else {
+      console.error("Customer not found or not logged in.");
+    }
   }
-}
-
 
   // handle DELETE request here /shipments/customer/id
-function handleDelete(id) {
-  console.log(id);
+  function handleDelete(id) {
+    console.log(id);
 
-  if (customer && customer.id) {
-    fetch(`/shipments/customer/${customer.id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }), // Sending shipment ID in request body
-    })
-      .then((res) => {
+    if (customer && customer.id) {
+      fetch(`/shipments/customer/${customer.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }), // Sending shipment ID in request body
+      }).then((res) => {
         if (res.ok) {
           console.log("Shipment deleted successfully.");
-          alert("Shipment deleted successfully")
-          console.log(customerShipments)
+          alert("Shipment deleted successfully");
+          console.log(customerShipments);
           // Update shipments state by filtering out the deleted shipment
-          setCustomerShipments((prevShipments) =>
-            prevShipments.filter((shipment) => shipment.id !== id)
-          // console.log(customerShipments)
-          );
+          setCustomerShipments((prevShipments) => {
+            const updatedShipments = prevShipments.filter(
+              (shipment) => shipment.id !== id
+            );
+            console.log("Updated shipments:", updatedShipments); // Confirm the updated state
+            return updatedShipments;
+          });
           console.log(customerShipments);
           return res.json(); // Return response JSON to the next .then (if needed)
         } else {
           alert("Failed to delete shipment");
         }
-      })
-  } else {
-    console.error("Customer not found or not logged in.");
+      });
+    } else {
+      console.error("Customer not found or not logged in.");
+    }
   }
-}
-
-
 
   function logInCustomer(loginData) {
     // POST request to log in customer with loginData.
@@ -196,9 +196,16 @@ function handleDelete(id) {
         .then(({ status, body }) => {
           if (status === 201) {
             alert("Shipment booked successfully!");
+            console.log(customer.credit_amount);
             //update state
             setCustomerShipments((prev) => [...prev, body]);
             // console.log(customerShipments)
+            // update customer's credit amount
+            setCustomer((prev) => ({
+              ...prev,
+              credit_amount: Math.round(
+                prev.credit_amount - body.total_cost)// rounded to 2 decimal points.
+            }));
             navigate("/");
           } else if (
             status === 404 &&
@@ -247,7 +254,7 @@ function handleDelete(id) {
           customerShipments,
           bookShipment,
           handleUpdate,
-          handleDelete
+          handleDelete,
         }}
       />
     </>

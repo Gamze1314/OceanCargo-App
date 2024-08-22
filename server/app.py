@@ -222,11 +222,21 @@ class ShipmentsByCustomer(Resource):
             db.session.add(shipment_container_association)
             db.session.commit()
 
+            # update customer's credit amount, - freight_rate, price
+            customer = Customer.query.get(customer_id)
+            if customer:
+                # Subtract the total cost from the customer's credit amount
+                total_cost = round(new_container.price +
+                                   new_shipment.freight_rate, 2)
+                updated_credit_amount = round(customer.credit_amount, 2) - total_cost
+                customer.credit_amount = updated_credit_amount
+                # breakpoint()
+            db.session.commit()
+
             # response_body => return shipment, and container serialized?
             response_body = {
                 'id': new_shipment.id,
                 'origin': new_shipment.origin,
-                'customer_id': new_shipment.customer_id,
                 'vessel_name': new_shipment.vessel_name,
                 'departure_time': new_shipment.departure_time,
                 'arrival_time': new_shipment.arrival_time,
@@ -234,7 +244,9 @@ class ShipmentsByCustomer(Resource):
                 'freight_rate': new_shipment.freight_rate,
                 'comment': comment,
                 'status': new_shipment.status,
-                'container': new_container.to_dict()
+                'container': new_container.to_dict(),
+                'total_cost': total_cost,
+                'customer': customer.to_dict()
             }
 
             return make_response(response_body, 201)
@@ -306,17 +318,20 @@ class ShipmentsByCustomer(Resource):
         if not shipment:
             return make_response({'error': 'The shipment can not be found.'})
 
-        # delete shipment from shipment table
-        shipment_cont_association = ShipmentContainerAssociation.query.filter_by(
-            shipment_id=shipment_id).first()
-        
+        # Delete associated records first, get all records associated with this shipment.
+        associations = ShipmentContainerAssociation.query.filter_by(
+            shipment_id=shipment_id).all()
+
+        for association in associations:
+            db.session.delete(association)
+
         db.session.delete(shipment)
-        db.session.commit()
-
-        if shipment_cont_association:
-            db.session.delete(shipment_cont_association)
+        try:
             db.session.commit()
-
+        except Exception as e:
+            print(f"Error deleting shipment: {e}")
+            db.session.rollback()
+            return make_response({'error': 'Failed to delete shipment and associated containers.'}, 500)
 
         return make_response({'message': 'The shipment and associated containers have been deleted.'}, 200)
 
