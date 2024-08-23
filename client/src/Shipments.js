@@ -32,8 +32,8 @@ function Shipments() {
       <p>
         Make sure you have enough credit to cover your bookings. You can check
         your credit balance by visiting your{" "}
-        <a href="/profile" className="text-red-600 hover:underline">
-          Profile
+        <a href="/" className="text-red-600 hover:underline">
+          Your Dashboard
         </a>
         .
       </p>

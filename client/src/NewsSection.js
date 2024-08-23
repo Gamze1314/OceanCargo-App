@@ -14,14 +14,22 @@ function NewsSection() {
         Category: Transportation News
       </h2>
       <div className="space-y-4">
+        {/* external Links to open new page for newsletters. */}
         <Link
           className={linkStyle}
+          target="_blank"
+          rel="noopener noreferrer"
           to="https://www.theguardian.com/sustainable-business/transport"
         >
           'The Guardian newsletter for Transportation business'
         </Link>
         <img className="w-full mb-4" src={img1} alt="news1"></img>
-        <Link className={linkStyle} to="https://www.maritime-executive.com">
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkStyle}
+          to="https://www.maritime-executive.com"
+        >
           'The Maritime Executive Newsletter'
         </Link>
         <img className="w-full mb-4" src={img2} alt="news2"></img>
