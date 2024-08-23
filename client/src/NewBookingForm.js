@@ -189,6 +189,13 @@ const NewBookingForm = () => {
             Back to Shipments Page
           </button>
         </form>
+        <p className="text-red-500 text-xs mt-1">
+          * Each shipment starts from a different origin and is carried by a
+          different vessel.
+        </p>
+        <p className="text-red-500 text-xs mt-1">
+          * Each container type can be booked for any route.
+        </p>
       </div>
     </div>
   );
