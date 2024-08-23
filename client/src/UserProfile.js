@@ -8,7 +8,12 @@ function UserProfile() {
 
   // form schema for validation
   const formSchema = yup.object().shape({
-    username: yup.string().required("Username is required"),
+    //username min 5 max 10 charc.
+
+    username: yup.string()
+     .min(5, "Username must be at least 5 characters long")
+      .max(10, "Username must be at most 10 characters long")
+    .required("Username is required"),
     email: yup
       .string()
       .email("Invalid email address")

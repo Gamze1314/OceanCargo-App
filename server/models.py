@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
-# from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 import re
 
@@ -46,7 +45,6 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
     container = db.relationship(
         'Container', back_populates='shipment_container_associations')
 
-    # what check constraints can be added ?
     #  check that the container is not already assigned to the shipment ;  shipment can have many unique containers.
     # Database-level constraints
     __table_args__ = (
@@ -54,7 +52,6 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
     )
 
     # validations
-
     @validates('comment')
     def validate_comment(self, key, value):
         # Comment must be between 1 and 50 characters long and not empty
@@ -82,11 +79,10 @@ class Customer(db.Model, SerializerMixin):
     type = db.Column(db.String, nullable=False)
     credit_amount = db.Column(db.Float, nullable=False)
 
-    # what check constraints can be added ?
     # (e.g., check that the customer has sufficient credit to cover the shipment's price)
     # Database-level constraints
     __table_args__ = (
-        db.CheckConstraint('credit_amount >= 3000.0',
+        db.CheckConstraint('credit_amount >= 20000.0',
                            name='credit_amount_positive'),
     )
 
@@ -195,11 +191,3 @@ class Shipment(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'Shipment (id: {self.id}, status: {self.status}, vessel_name: {self.vessel_name}, departure_time: {self.departure_time}, arrival_time: {self.arrival_time}, arrival_port: {self.arrival_port}, origin: {self.origin}, freight_rate: {self.freight_rate}, customer_id: {self.customer_id})'
-
-
-# shipment.customer.containers => access the customers' containers through shipment's table.
-# customer.shipments
-
-# shipments & containers => many to many
-# shipments & customers => one to many
-# customer & container => one to many

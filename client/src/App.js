@@ -4,7 +4,7 @@ import NavBar from "./NavBar";
 import logo from "./assests/logo.jpg";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-//navigation hook
+
 
 // Tailwind utility class for header.
 function App() {

@@ -124,11 +124,6 @@ api.add_resource(Shipments, '/shipments')
 
 class CustomerByID(Resource):
 
-    def get(self, customer_id):
-        pass
-
-
-
 
     def patch(self, id):
         #update existing customer info.
@@ -195,7 +190,7 @@ class ShipmentsByCustomer(Resource):
         if 'origin' not in data or 'vessel_name' not in data or 'container_type' not in data or 'comment' not in data:
             return make_response({'error': 'Missing required fields'}, 400)
 
-# data from frontend to be used in creation of shipment, container, shipment_container_association
+       # data from frontend to be used in creation of shipment, container, shipment_container_association
         origin = data['origin']
         vessel_name = data['vessel_name']
         container_type = data['container_type']
@@ -208,7 +203,7 @@ class ShipmentsByCustomer(Resource):
         ).first()
 
         # breakpoint()
-# existing shipment cant be found ?
+        #check existing shipment if exists.
         if existing_shipment and existing_shipment.status == 'In Transit':
             return make_response({'error': 'Shipment is currently not available to book.'}, 409)
 
@@ -355,7 +350,7 @@ class ShipmentsByCustomer(Resource):
         if not shipment:
             return make_response({'error': 'The shipment can not be found.'})
 
-        # Delete associated records first, get all records associated with this shipment.
+        # Delete associations first, get all records associated with this shipment.
         associations = ShipmentContainerAssociation.query.filter_by(
             shipment_id=shipment_id).all()
 
