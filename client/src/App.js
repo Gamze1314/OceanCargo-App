@@ -5,13 +5,10 @@ import logo from "./assests/logo.jpg";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-
 // Tailwind utility class for header.
 function App() {
   const navigate = useNavigate(); // useNavigate hook returns a function that lets you navigate programmatically.
-  // navigate(-1) : is equals to hitting back button.
 
-  console.log("App is rendering");
   const [shipments, setShipments] = useState([]);
   const [customer, setCustomer] = useState(null);
   const [customerShipments, setCustomerShipments] = useState([]);
@@ -32,8 +29,6 @@ function App() {
       }
     });
   }, [navigate]);
-
-  console.log("session check completed");
 
   useEffect(() => {
     // fetch shipments data from API
@@ -126,7 +121,7 @@ function App() {
               (shipment) => shipment.id !== id
             );
             console.log("Updated shipments:", updatedShipments); // Confirm the updated state
-            return updatedShipments; 
+            return updatedShipments;
           });
           console.log(customerShipments);
           return res.json(); // Return response JSON to the next .then (if needed)
@@ -163,7 +158,7 @@ function App() {
       });
   }
 
-  console.log("user logged in");
+  // console.log("user logged in");
 
   function logOutCustomer() {
     fetch("/logout", {
@@ -204,8 +199,7 @@ function App() {
             // update customer's credit amount
             setCustomer((prev) => ({
               ...prev,
-              credit_amount: Math.round(
-                prev.credit_amount - body.total_cost)// rounded to 2 decimal points.
+              credit_amount: Math.round(prev.credit_amount - body.total_cost), // rounded to 2 decimal points.
             }));
             navigate("/");
           } else if (
@@ -229,11 +223,8 @@ function App() {
     }
   }
 
-
   function handleAccountUpdate(values) {
-    console.log(values);
-
-  // If customer is logged in, send a PATCH request to '/customer/id'
+    // If customer is logged in, send a PATCH request to '/customer/id'
     if (customer) {
       fetch(`/customer/${customer.id}`, {
         method: "PATCH",
@@ -255,15 +246,11 @@ function App() {
           // Update customer state with the returned data from the server
           setCustomer((prev) => ({ ...prev, ...customerData }));
         })
-        .catch((error) => {
-          alert("Error: Unable to update account. Please try again later!");
-
+        .catch((err) => {
+          alert(`Error: Unable to update account. Please try again later!, ${err}`);
         });
     }
   }
-
-
-
 
   return (
     <>
@@ -292,7 +279,7 @@ function App() {
           bookShipment,
           handleUpdate,
           handleDelete,
-          handleAccountUpdate
+          handleAccountUpdate,
         }}
       />
     </>

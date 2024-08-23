@@ -1,5 +1,4 @@
-// Navigation bar includes Home link, Book Shipment Link, My profile, About Us and Log Out.
-import React from "react";
+// Navigation bar includes Home link, Book Shipment Link, My profile, and Log Out.
 import { NavLink, Navigate } from "react-router-dom";
 
 function NavBar({ logo, customer, logOutCustomer }) {

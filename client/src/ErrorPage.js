@@ -2,12 +2,11 @@ import { useRouteError, Link } from "react-router-dom";
 
 function ErrorPage() {
   const error = useRouteError();
-  console.error(error);
 
   return (
     <div>
       <h1 className="text-red-600 font-bold text-2xl flex justify-center items-center p-8 mt-8">
-        Whoops! Something went wrong!
+        {error}
       </h1>
       <Link
         className="text-blue-600 font-bold text-1xl flex justify-center items-center p-8 mt-8"

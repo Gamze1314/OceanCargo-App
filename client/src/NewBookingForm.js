@@ -1,15 +1,11 @@
-import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
-//  useState for component state, useEffect for side effects.
-// yup for form validation
-//  form handling => formik.
 
 const NewBookingForm = () => {
   const navigate = useNavigate();
-  // access bookShipment with outletcontext
+
   const { bookShipment, shipments } = useOutletContext();
   // shipments state to access, vessel_name, origin
   // container types: 40SD, 40HC, 20SD for options

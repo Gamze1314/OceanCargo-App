@@ -8,4 +8,4 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<RouterProvider router={router} />);
 
-// index.js is root file
+// index.js is the root file

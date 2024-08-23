@@ -1,4 +1,3 @@
-import React from "react";
 import Shipment from "./Shipment";
 // use useOutletContext to access shipment data
 import { useOutletContext } from "react-router-dom";

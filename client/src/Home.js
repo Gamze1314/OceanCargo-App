@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import NewsSection from "./NewsSection";
 //import Buttons
@@ -10,7 +9,6 @@ function Home() {
   // access credit amount
   const { customer, customerShipments , handleUpdate, handleDelete } = useOutletContext();
 
-  // in the dashbard show remaning credit amount, and customer's shipments.
   // flexbox with 2 columns for news section and dashboard.
 
   return (

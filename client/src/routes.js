@@ -47,8 +47,13 @@ const router = createBrowserRouter([
         path: "/logout",
         element: <LogOut />,
         errorElement: <ErrorPage />,
+      },
+      //...all other routes => redirect to Error page.
+      {
+        path: "*",
+        element: <ErrorPage />,
+        errorElement: <ErrorPage />,
       }
-      //... more routes for other views
     ],
   },
 ]);

@@ -1,5 +1,3 @@
-import React from 'react'
-
 
 function Shipment({ shipment }) {
   return (
