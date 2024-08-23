@@ -122,6 +122,43 @@ api.add_resource(Shipments, '/shipments')
 # Endpoint to get shipments by customer ID
 
 
+class CustomerByID(Resource):
+
+    def get(self, customer_id):
+        pass
+
+
+
+
+    def patch(self, id):
+        #update existing customer info.
+        # check if customer exists
+        customer = db.session.get(Customer, id)
+
+        if not customer:
+            return make_response({'error': 'Customer not found'}, 404)
+    
+
+        data = request.get_json()
+        # update customer info
+        customer.username = data.get('username', customer.username)
+        customer.email = data.get('email', customer.email)
+        customer.type = data.get('type', customer.type)
+        customer.credit_amount = data.get('credit_amount', customer.credit_amount)
+
+        try:
+            # save the changes to the database
+            db.session.commit()
+            return make_response(customer.to_dict(), 200)
+        except Exception as e:
+            # Handle any unexpected errors
+            return {'message': f'Error updating customer: {e}'}, 500
+
+api.add_resource(CustomerByID, '/customer/<int:id>')
+
+
+
+
 class ShipmentsByCustomer(Resource):
 
     def get(self, customer_id):

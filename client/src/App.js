@@ -229,6 +229,42 @@ function App() {
     }
   }
 
+
+  function handleAccountUpdate(values) {
+    console.log(values);
+
+  // If customer is logged in, send a PATCH request to '/customer/id'
+    if (customer) {
+      fetch(`/customer/${customer.id}`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json(); // Parse JSON response
+          } else {
+            alert("Failed to update account");
+          }
+        })
+        .then((customerData) => {
+          alert("Account updated successfully!");
+          // Update customer state with the returned data from the server
+          setCustomer((prev) => ({ ...prev, ...customerData }));
+        })
+        .catch((error) => {
+          alert("Error: Unable to update account. Please try again later!");
+
+        });
+    }
+  }
+
+
+
+
   return (
     <>
       <div>
@@ -256,6 +292,7 @@ function App() {
           bookShipment,
           handleUpdate,
           handleDelete,
+          handleAccountUpdate
         }}
       />
     </>
