@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, NavLink } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -36,7 +36,7 @@ const Login = () => {
         </h1>
         <form className={formClass} onSubmit={formik.handleSubmit}>
           <div>
-            <label for="username">Please enter your username: </label>
+            <label for="username">Username: </label>
             <input
               className="bg-gray-70 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-72 md:w-72 sm:w-32 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-blue-200 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-4"
               id="username"
@@ -49,12 +49,21 @@ const Login = () => {
             />
           </div>
           <button
-            className="bg-gray-50 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-50 md:w-50 sm:w-32 p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-blue-200 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-7"
+            className="bg-gray-50 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-50 md:w-50 sm:w-32 p-2.5 dark:bg-gray-500 dark:border-gray-600 dark:placeholder-blue-200 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-7"
             type="submit"
           >
             Log in
           </button>
         </form>
+        {/* if they ahve not signed up, add link to /signup page */}
+        <div>
+          <p className="text-md text-blue-600 flex justify-center mt-3">
+            New to our online services?
+          </p>
+          <NavLink to="/signup" className=" text-blue-700 flex justify-center hover:underline">
+            Sign up!
+          </NavLink> 
+        </div>
       </main>
     </div>
   );

@@ -8,6 +8,7 @@ import ipdb
 from faker import Faker
 import random
 
+# Create the Flask application object
 fake = Faker()
 
 # create a Flask application object
@@ -33,38 +34,6 @@ db.init_app(app)
 api = Api(app)
 
 
-class Login(Resource):
-
-    def get(self):
-        pass
-
-    def post(self):
-        # request.json => username, we can search the customer by their username
-        # POST request to login the user. we need to access the session.
-        data = request.json.get('username')
-        customer = Customer.query.filter(Customer.username == data).first()
-        if customer:
-            # if customer is found, store id the id in the session, and return 201 if successful.
-            # keep them logged in with session ; customer.id => unique
-            session['customer_id'] = customer.id
-            # session.get('customer_id')
-            # cookie is saved in the browser.
-            # ipdb.set_trace()
-            response_body = customer.to_dict()
-            return make_response(response_body, 201)
-        else:
-            # if customer is not found, return if not found.
-            return make_response({'error': 'Invalid username'}, 401)
-
-
-api.add_resource(Login, '/login')
-
-# handle login
-# if customer logged in , show the contents to book the shipments, if not, redirect them to log in page.
-
-# Resource : check_session => browser can save cookies thru proxy, keeps them logged in. when user logged in, remembers the username.
-
-
 class CheckSession(Resource):
 
     def get(self):
@@ -81,6 +50,36 @@ class CheckSession(Resource):
 
 
 api.add_resource(CheckSession, '/check_session')
+# Resource : check_session => browser can save cookies thru proxy, keeps them logged in. when user logged in, remembers the username.
+
+
+class Login(Resource):
+
+    def get(self):
+        pass
+
+    def post(self):
+        # POST request to login the user. we need to access the session.
+        data = request.json.get('username')
+        # breakpoint()
+        customer = Customer.query.filter(Customer.username == data).first()
+        if customer:
+            # if customer is found, store id the id in the session, and return 201 if successful.
+            # keep them logged in with session ; customer.id => unique
+            session['customer_id'] = customer.id
+            # session.get('customer_id')
+            # cookie is saved in the browser.
+            response_body = customer.to_dict()
+            return make_response(response_body, 201)
+        else:
+            # if customer is not found, return if not found.
+            return make_response({'error': 'Invalid username'}, 401)
+
+
+api.add_resource(Login, '/login')
+
+# handle login
+# if customer logged in , show the contents to book the shipments, if not, redirect them to log in page.
 
 
 class LogOut(Resource):
@@ -119,27 +118,95 @@ class Shipments(Resource):
 
 api.add_resource(Shipments, '/shipments')
 
-# Endpoint to get shipments by customer ID
+
+class Customers(Resource):
+
+    def post(self):
+        # create a new customer object, add it to session ?
+        try:
+            data = request.get_json()
+
+            if not 'username' or not 'email' or not 'type' or not 'credit_amount' in data:
+                return {'error': 'Missing required fields'}, 400
+
+            username = data['username']
+            # 5-10 charcters long not empty
+
+            if username:
+
+                if len(username) > 10:
+                    return {'error': 'Username should be between 5 and 10 characters long'}, 400
+
+                if len(username) < 5:
+                    return {'error': 'Username should be between 5 and 10 characters long'}, 400
+
+            # search database if username exists , return error. 'username is already in use.
+            existing_username = Customer.query.filter_by(
+                username=username).first()
+
+            if existing_username:
+                return {'error': 'Username is already in use.'}, 400
+
+            password_hash = fake.password()
+
+            email = data['email']
+            # must include '@'
+
+            if email:
+                if '@' not in email:
+                    return {'error': "Invalid email address."}, 400
+
+            type = data['type']
+            # either forwarder or consignee
+
+            if type not in ['consignee', 'forwarder']:
+                return {'error': 'Type must be either consignee or forwarder.'}, 400
+
+            credit_amount = data['credit_amount']
+
+            if credit_amount:
+                if not isinstance(credit_amount, (int, float)):
+                    return {'error': 'Credit amount must be a number.'}, 400
+
+            new_customer = Customer(username=username, password_hash=password_hash,
+                                    email=email, type=type, credit_amount=credit_amount)
+
+            # breakpoint()
+            db.session.add(new_customer)
+            db.session.commit()
+
+            # set cookie here
+            session['customer_id'] = new_customer.id
+
+            # breakpoint()
+            # return the created customer information
+            return make_response(new_customer.to_dict(), 201)
+
+        except Exception as e:
+            # Handle any unexpected errors
+            return {'message': f'Error creating customer: {e}'}, 500
+
+
+api.add_resource(Customers, '/customers')
 
 
 class CustomerByID(Resource):
 
-
     def patch(self, id):
-        #update existing customer info.
+        # update existing customer info.
         # check if customer exists
         customer = db.session.get(Customer, id)
 
         if not customer:
             return make_response({'error': 'Customer not found'}, 404)
-    
 
         data = request.get_json()
         # update customer info
         customer.username = data.get('username', customer.username)
         customer.email = data.get('email', customer.email)
         customer.type = data.get('type', customer.type)
-        customer.credit_amount = data.get('credit_amount', customer.credit_amount)
+        customer.credit_amount = data.get(
+            'credit_amount', customer.credit_amount)
 
         try:
             # save the changes to the database
@@ -149,9 +216,8 @@ class CustomerByID(Resource):
             # Handle any unexpected errors
             return {'message': f'Error updating customer: {e}'}, 500
 
+
 api.add_resource(CustomerByID, '/customer/<int:id>')
-
-
 
 
 class ShipmentsByCustomer(Resource):
@@ -202,8 +268,7 @@ class ShipmentsByCustomer(Resource):
             vessel_name=vessel_name
         ).first()
 
-        # breakpoint()
-        #check existing shipment if exists.
+        # check if existing shipment ?
         if existing_shipment and existing_shipment.status == 'In Transit':
             return make_response({'error': 'Shipment is currently not available to book.'}, 409)
 
@@ -255,12 +320,13 @@ class ShipmentsByCustomer(Resource):
             db.session.commit()
 
             # update customer's credit amount, - freight_rate, price
-            customer = Customer.query.get(customer_id)
+            customer = db.session.get(Customer, customer_id)
             if customer:
                 # Subtract the total cost from the customer's credit amount
                 total_cost = round(new_container.price +
                                    new_shipment.freight_rate, 2)
-                updated_credit_amount = round(customer.credit_amount, 2) - total_cost
+                updated_credit_amount = round(
+                    customer.credit_amount, 2) - total_cost
                 customer.credit_amount = updated_credit_amount
                 # breakpoint()
             db.session.commit()
@@ -309,8 +375,6 @@ class ShipmentsByCustomer(Resource):
             shipment_id=shipment_id
         ).first()
 
-        # breakpoint()
-
         if not shipment:
             return make_response({'error': 'Shipment not found or not authorized'}, 404)
 
@@ -343,10 +407,9 @@ class ShipmentsByCustomer(Resource):
         # get shipment id
         data = request.get_json()
         shipment_id = data.get('id')
-        # breakpoint()
+
         shipment = Shipment.query.filter_by(id=shipment_id).first()
 
-        # breakpoint()
         if not shipment:
             return make_response({'error': 'The shipment can not be found.'})
 

@@ -5,6 +5,7 @@ from sqlalchemy_serializer import SerializerMixin
 import re
 
 
+
 convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -59,6 +60,7 @@ class ShipmentContainerAssociation(db.Model, SerializerMixin):
             raise ValueError(
                 'Comment must be between 1 and 50 characters long and not empty.')
         return value
+
 
     def __repr__(self):
         return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id}, comment: {self.comment})>'

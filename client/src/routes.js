@@ -8,6 +8,7 @@ import Profile from "./UserProfile";
 import NewBookingForm from "./NewBookingForm";
 import Login from "./Login";
 import LogOut from "./LogOut";
+import Signup from "./Signup";
 
 
 
@@ -49,6 +50,11 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       //...all other routes => redirect to Error page.
+      {
+        path: "/signup",
+        element: <Signup />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "*",
         element: <ErrorPage />,

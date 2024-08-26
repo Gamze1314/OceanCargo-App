@@ -35,7 +35,7 @@ function NavBar({ logo, customer, logOutCustomer }) {
           </NavLink>
         </nav>
       ) : (
-        <Navigate to="/login" /> // Redirect to login if not logged in
+        <Navigate to="/login" /> // Redirect to login if not logged in, or sign up.
       )}
     </div>
   );

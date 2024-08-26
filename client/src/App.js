@@ -43,6 +43,7 @@ function App() {
     });
   }, [customer]);
 
+
   // handle API call to /shipments/customer/<int:customer_id> API call here to get a customer's shipments
   useEffect(() => {
     // Fetch customer-specific shipments if a customer is logged in and has a valid ID
@@ -59,11 +60,12 @@ function App() {
             });
           });
         } else {
-          alert("Error fetching customer's shipments");
+          alert(`Error: No upcoming shipments.`);
         }
       });
     }
   }, [customer]);
+
 
   function handleUpdate(comment, shipment_id) {
     // Check if the customer object exists and has an id
@@ -98,6 +100,7 @@ function App() {
       console.error("Customer not found or not logged in.");
     }
   }
+
 
   // handle DELETE request here /shipments/customer/id
   function handleDelete(id) {
@@ -252,6 +255,27 @@ function App() {
     }
   }
 
+
+  function handleSignup(values) {
+    //send POST request to /customers endpoint.
+    fetch("/customers", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+    .then(res => {
+      if(res.status === 201){
+        alert("Account created successfully!");
+        navigate("/login");
+      } else {
+        alert("Failed to create account. Please try again later!");
+      }
+    })
+  }
+
   return (
     <>
       <div>
@@ -280,6 +304,7 @@ function App() {
           handleUpdate,
           handleDelete,
           handleAccountUpdate,
+          handleSignup
         }}
       />
     </>
