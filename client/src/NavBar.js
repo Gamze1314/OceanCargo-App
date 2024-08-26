@@ -9,7 +9,7 @@ function NavBar({ logo, customer, logOutCustomer }) {
 
   // tailwind flex utility class to position Links to left.
 
-  // if customer is logged in show  all the links, else show log in link
+  // if customer is logged in show  all the links, else :show log in link
 
   return (
     <div className="flex md:flex md:flex-grow flex-row justify space-x-1">
@@ -35,7 +35,7 @@ function NavBar({ logo, customer, logOutCustomer }) {
           </NavLink>
         </nav>
       ) : (
-        <Navigate to="/login" /> // Redirect to login if not logged in, or sign up.
+        <Navigate to="/login" /> // Redirect to login if not logged in.
       )}
     </div>
   );

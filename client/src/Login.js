@@ -55,7 +55,7 @@ const Login = () => {
             Log in
           </button>
         </form>
-        {/* if they ahve not signed up, add link to /signup page */}
+        {/* if they have not signed up, add link to /signup page */}
         <div>
           <p className="text-md text-blue-600 flex justify-center mt-3">
             New to our online services?
