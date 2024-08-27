@@ -15,7 +15,7 @@ fake = Faker()
 # create a Flask application object
 app = Flask(__name__)
 
-# set secret key to use session, to generate/change a secret key: run in terminal; python -c 'immport os; print('os.urandom(16))'.
+# set secret key to use session, to generate/change a secret key: run in terminal; python -c 'import os; print('os.urandom(16))'.
 # <SecureCookieSession {'test': 'testing 123'}>
 app.secret_key = b'\x86\xa8\xc1)\xc42\xdd\x15s\x81\x86\xc1\x18\x99B\xea'
 

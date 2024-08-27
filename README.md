@@ -51,12 +51,12 @@ You will need to create virtual environment and activate it with '<em>pipenv ins
 
 Install the required packages:
 
-pip install Flask
-pip install Flask-SQLAlchemy
-pip install Flask-RESTful
-pip install Flask-Migrate
-pip install ipdb
-pip install Faker
+* pip install Flask
+* pip install Flask-SQLAlchemy
+* pip install Flask-RESTful
+* pip install Flask-Migrate
+* pip install ipdb
+* pip install Faker
 
 
 Set up the database:
@@ -98,12 +98,15 @@ The configuration settings are managed in the app.py such as the database URI, s
 This API uses session-based authentication. Users need to log in to access protected routes.
 
 <strong>Login Process</strong>
+
 The /login endpoint handles user authentication. It expects a POST request with a username. The server checks if the username exists in the database. If found, it creates a session for the user by storing the 'customer_id'. The session is maintained using Flask's session object, which uses a signed cookie to store session data.
 
 <strong>Session Management</strong>
+
 The /check_session resource (endpoint) verifies if a user is logged in. It checks for the 'customer_id' in the session data, then returns customer's information indicating an active session.
 
 <strong>Logout</strong>
+
 The /logout endpoint handles user logout. It clears the session by deleting the 'customer_id' session data, effectively logging out the user.
 
 Several routes (like posting a shipment) check for an active session before allowing access. If no valid session found, these routes will return 401 Unauthorized error.
@@ -111,16 +114,16 @@ This application uses a secret key to sign the session data, preventing tamperin
 
 To generate a secret key, run below code in the terminal:
 
-* python -c 'immport os; print('os.urandom(16))
+* python -c 'import os; print('os.urandom(16))
 
 ### Validation Rules
 
 Customer Creation:
 
-Username: Must be 5-10 characters long and unique.
-Email: Must include an '@' symbol.
-Customer Type: Must be either 'consignee' or 'forwarder'.
-Credit Amount: Must be a number, and greater than 20,000.
+* Username: Must be 5-10 characters long and unique.
+* Email: Must include an '@' symbol.
+* Customer Type: Must be either 'consignee' or 'forwarder'.
+* Credit Amount: Must be a number, and greater than 20,000.
 
 
 Shipment Booking:
