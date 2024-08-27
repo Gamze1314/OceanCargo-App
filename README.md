@@ -140,7 +140,9 @@ Ensures the comment is provided and between 1-50 characters long.
 General Validations:
 
 Proper error handling for missing required fields.
+
 Type checking for numeric fields.
+
 Database integrity checks (unique constraints): Each shipment can have unique container_id. 
 
 ![alt text](image-1.png)
