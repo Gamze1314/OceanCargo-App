@@ -35,7 +35,7 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 
 ├── migrations/            # Database migration files
 
-├── seed.py                # Database seeding script
+├── seed.py                # Database seeding script. It contains scripts for populating fake data with Faker module.
 
 ├── instance/              # SQLite database instance
 
@@ -172,5 +172,9 @@ This project uses Flask's built-in development server. Debug mode is enabled for
 
 
 ![alt text](image-2.png)
+
+### Contributing
+
+Contributions are welcome! Please fork the repository and use a feature branch. 
 
 
