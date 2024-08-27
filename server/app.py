@@ -7,6 +7,7 @@ from models import db, Shipment, Container, Customer, ShipmentContainerAssociati
 import ipdb
 from faker import Faker
 import random
+from datetime import timedelta
 
 # Create the Flask application object
 fake = Faker()
@@ -17,6 +18,9 @@ app = Flask(__name__)
 # set secret key to use session, to generate/change a secret key: run in terminal; python -c 'immport os; print('os.urandom(16))'.
 # <SecureCookieSession {'test': 'testing 123'}>
 app.secret_key = b'\x86\xa8\xc1)\xc42\xdd\x15s\x81\x86\xc1\x18\x99B\xea'
+
+# Set session lifetime ; expires after 60 mins of inactivity
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
 
 # configure a database connection to the local file app.db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -37,7 +41,6 @@ api = Api(app)
 class CheckSession(Resource):
 
     def get(self):
-        # ipdb.set_trace()
         # Check if a customer ID is present in the session
         customer = db.session.get(Customer, session.get('customer_id'))
         if customer:
@@ -55,9 +58,6 @@ api.add_resource(CheckSession, '/check_session')
 
 class Login(Resource):
 
-    def get(self):
-        pass
-
     def post(self):
         # POST request to login the user. we need to access the session.
         data = request.json.get('username')
@@ -67,8 +67,8 @@ class Login(Resource):
             # if customer is found, store id the id in the session, and return 201 if successful.
             # keep them logged in with session ; customer.id => unique
             session['customer_id'] = customer.id
-            # session.get('customer_id')
-            # cookie is saved in the browser.
+            session.permanent = True
+            # cookie is saved in the browser., lasts for the duration specified(60 min) 
             response_body = customer.to_dict()
             return make_response(response_body, 201)
         else:

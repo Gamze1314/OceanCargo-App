@@ -290,7 +290,7 @@ function App() {
       </div>
       {customer ? (
         <h1 className="flex justify-center items-center min-h bg-gray-100 text-semibold hover: text-red-500">
-          Hello {customer.username}. Welcome to Ocean Booking website!
+          Hello {customer.username}. Welcome to Ocean Cargo website!
         </h1>
       ) : null}
       {!customer ? <Navigate to="/login" /> : null}
