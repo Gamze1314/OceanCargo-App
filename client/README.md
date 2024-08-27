@@ -14,7 +14,9 @@ The OceanCargo app is SPA designed for managing shipments and customer informati
 ### Project Structure 
 
 OceanCargo-App-Frontend/
+
 ├── src/
+
 │   │   ├── NavBar.js          # Navigation bar component
 
 │   │   ├── Login.js           # Login component
@@ -28,6 +30,7 @@ OceanCargo-App-Frontend/
 │   │   ├── NewBookingForm.js     # Shipment booking form
 
 │   ├── assets/
+
 │   │   └── logo.jpg           # Logo image used in NavBar
 
 │   │   └── img1.jpg           # Container image used in Home Page
@@ -41,6 +44,7 @@ OceanCargo-App-Frontend/
 │   ├── index.js               # Entry point of the application
 
 ├── public/
+
 │   └── index.html             # HTML template
 
 ├── package.json               # Node.js dependencies and scripts
@@ -60,7 +64,7 @@ Download Node.js to utilize runtime environment for this project. Link: [nodejs.
 - In the project directory, you can run: npm start
 
 Runs the app in the development mode.\
-Open [http://localhost:4000](http://localhost:4000) to view it in your browser.
+Open [http://localhost:4000](http://localhost:4000) to view it in your browser. 'package.json' file contains 'start' script with PORT=4000 configuration and proxy set up for the backend communication for 'http://127.0.0.1:5555' which allows the cross-origin resource sharing.
 
 ![alt text](image.png)
 
