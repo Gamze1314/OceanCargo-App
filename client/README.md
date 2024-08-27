@@ -51,7 +51,7 @@ OceanCargo-App-client/
 
 ├── README.md                  # Project documentation
 
-└── tailwind.config.js          # Tailwind CSS configuration file
+└── tailwind.config.js          # Tailwind CSS configuration and plugins
 
 
 ### Set up and Installations
