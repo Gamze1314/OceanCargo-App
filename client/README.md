@@ -7,9 +7,9 @@ The OceanCargo app is SPA designed for managing shipments and customer informati
 ### Features
 
 - User Authentication: Sign up, log in, and log out functionality for customer.
-- Shipment Booking: Customers can book shipments, view their bookings nd remaining credit amount on dashboard personalized to each customer.
-- Profile Management: Customer can update their account information.
-- Responsive design: The application is designed to be responsive and works on various screen sizes.
+- Ocean Shipment Booking: Customers can book shipments, view their bookings nd remaining credit amount on dashboard personalized to each customer.
+- User Profile Management: Customer can update their account information.
+- Responsive Design: The application is designed to be responsive and works on various screen sizes.
 
 ### Project Structure 
 
