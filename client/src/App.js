@@ -43,8 +43,7 @@ function App() {
     });
   }, [customer]);
 
-
-  // handle API call to /shipments/customer/<int:customer_id> API call here to get a customer's shipments
+  // handle API call to /shipments/customer/<int:customer_id>  to get a customer's shipments
   useEffect(() => {
     // Fetch customer-specific shipments if a customer is logged in and has a valid ID
     if (customer && customer.id) {
@@ -64,8 +63,7 @@ function App() {
         }
       });
     }
-  }, [customer]);
-
+  }, [customer, customerShipments]);
 
   function handleUpdate(comment, shipment_id) {
     // Check if the customer object exists and has an id
@@ -100,7 +98,6 @@ function App() {
       console.error("Customer not found or not logged in.");
     }
   }
-
 
   // handle DELETE request here /shipments/customer/id
   function handleDelete(id) {
@@ -147,7 +144,7 @@ function App() {
       },
       body: JSON.stringify(loginData),
     })
-      //if response is ok, set state to customer data, if error is returned, alert customer
+      //if response is ok, return response.json() and update state, if status: 401 , return the error
       .then((response) => {
         if (response.ok) {
           response.json().then((customerData) => {
@@ -169,6 +166,8 @@ function App() {
     }).then((res) => {
       if (res.ok) {
         setCustomer(null);
+        // set Customer shipments to empty array to replace w new user's shipments
+        setCustomerShipments([]);
       } else {
         alert("Error: Unable to log customer out!");
       }
@@ -198,7 +197,6 @@ function App() {
             console.log(customer.credit_amount);
             //update state
             setCustomerShipments((prev) => [...prev, body]);
-            // console.log(customerShipments)
             // update customer's credit amount
             setCustomer((prev) => ({
               ...prev,
@@ -250,14 +248,16 @@ function App() {
           setCustomer((prev) => ({ ...prev, ...customerData }));
         })
         .catch((err) => {
-          alert(`Error: Unable to update account. Please try again later!, ${err}`);
+          alert(
+            `Error: Unable to update account. Please try again later!, ${err}`
+          );
         });
     }
   }
 
-
   function handleSignup(values) {
     //send POST request to /customers endpoint.
+
     fetch("/customers", {
       method: "POST",
       headers: {
@@ -265,15 +265,14 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
-    })
-    .then(res => {
-      if(res.status === 201){
+    }).then((res) => {
+      if (res.status === 201) {
         alert("Account created successfully!");
         navigate("/login");
       } else {
         alert("Failed to create account. Please try again later!");
       }
-    })
+    });
   }
 
   return (
@@ -304,7 +303,7 @@ function App() {
           handleUpdate,
           handleDelete,
           handleAccountUpdate,
-          handleSignup
+          handleSignup,
         }}
       />
     </>

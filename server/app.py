@@ -78,7 +78,6 @@ class Login(Resource):
 
 api.add_resource(Login, '/login')
 
-# handle login
 # if customer logged in , show the contents to book the shipments, if not, redirect them to log in page.
 
 
