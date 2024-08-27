@@ -13,7 +13,7 @@ The OceanCargo app is SPA designed for managing shipments and customer informati
 
 ### Project Structure 
 
-OceanCargo-App-Frontend/
+OceanCargo-App-client/
 
 ├── src/
 
