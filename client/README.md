@@ -75,11 +75,37 @@ Proxy:
 
 ### Front-end Technologies Used
 
+- JavaScript
+- React.js
+- React-router-dom
+- Tailwind CSS
+- Formik
+- Yup
 
-### Routes
+
+### Routes and Router Configuration
+
+The routing is managed using 'react-router-dom' , which allows dynamic and nested routing. The router is created using 'createBrowserRouter' function defining all routes that application supports.
+Based on the URL path defined components will be rendered.
+
+- Top-level router structure starts with the path '/', renders the App component as the root element.
+- The App components will render different children componenets based on the routes plugging in with 'Outlet' in the app.js file. Check out /client/routes.js path.
+- ErrorElement is specified to handle the cases where route patch is invalid or an error occurs during the programmatic navigation.
+
+
+![alt text](image-2.png)
+
 
 
 ### Components
+
+Index.js
+
+
+App.js
+
+
+
 
 
 ### API Interaction
