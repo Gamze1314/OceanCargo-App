@@ -97,7 +97,7 @@ Based on the URL path defined components will be rendered.
 
 The frontend interacts with the API to manage customer data, shipments, and customer specific shipments.
 
-Key API functions 
+Key API functions in app.js
 
 1. Check Customer Session : When the 'App' component is mounted, it sends a 'GET' HTTP request to '/check_session' to verify if a customer is already logged in. If the customer is authenticated, their data is stored in the state and they are ridirected to the home page. If not, the user is redirected to login page.
 
