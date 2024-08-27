@@ -85,7 +85,7 @@ Proxy:
 
 ### Routes and Router Configuration
 
-The routing is managed using 'react-router-dom' , which allows dynamic and nested routing. The router is created using 'createBrowserRouter' function defining all routes that application supports.
+In routes.js file, the routing is managed using 'react-router-dom' , which allows dynamic and nested routing. The router is created using 'createBrowserRouter' function defining all routes that application supports.
 Based on the URL path defined components will be rendered.
 
 - Top-level router structure starts with the path '/', renders the App component as the root element.
