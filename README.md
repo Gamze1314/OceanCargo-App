@@ -44,8 +44,15 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 
 ### Installation
 
-Clone the repository with <em>git clone "https://github.com/Gamze1314/OceanCargo-App"</em>, and cd into OceanCargo-App directory.
+Clone the repository with <em>git clone "https://github.com/Gamze1314/OceanCargo-App"</em> command, and cd into OceanCargo-App directory.
+You will need to create virtual environment and activate it with '<em>pipenv install</em> and '<em>pipenv shell</em>' commands respectively.
 
+### Configurations
+
+The configuration settings are managed in the app.py such as the database URI, secret keys, and other Flask settings.
+
+ - app.py 
+![alt text](image.png)
 
 
 
