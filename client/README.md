@@ -1,4 +1,4 @@
-# OceanCargo Frontend Technologies
+# OceanCargo React Frontend
 
 ### Overview
 
@@ -73,6 +73,10 @@ Proxy:
 
 ![alt text](image-1.png)
 
+### Front-end Technologies Used
+
+
+### Routes
 
 
 ### Components
