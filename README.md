@@ -61,9 +61,9 @@ Install the required packages:
 
 Set up the database:
 
-flask db init
-flask db migrate -m
-flask db upgrade
+* flask db init
+* flask db migrate -m
+* flask db upgrade
 
 Run the application:
 
