@@ -147,9 +147,13 @@ class Container(db.Model, SerializerMixin):
     # container price is more than 3500 min, and max 10000
     @validates('price')
     def validate_price(self, key, value):
+        if not isinstance(value, float):
+            raise TypeError('The container price must be a floating number.')
         if value < 3500.0 or value > 10000.0:
             raise ValueError('Container price must be between 3500 and 10000.')
         return value
+    
+    # from decimal import Decimal, InvalidOperation
 
     def __repr__(self):
         return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price})'
@@ -190,6 +194,14 @@ class Shipment(db.Model, SerializerMixin):
             raise ValueError('Status must be either In Transit or Completed.')
         else:
             return value
+
+    @validates('freight_rate')
+    def validate_rate(self, key, value):
+        if not isinstance(value, float):
+            raise TypeError('The freight rate must be a floating number.')
+        if value < 3500.0 or value > 10000.0:
+            raise ValueError('the freight rate must be between 3500 and 10000.')
+        return value
         
 
 

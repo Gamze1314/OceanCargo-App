@@ -464,7 +464,7 @@ class CustomerContainersResource(Resource):
                     # [(shipment.arrival_time, container.container_number)
                     #  for shipment, container in results]
 
-                    # [(shipment.arrival_time, container.container_number)
+                    # [(shipment.arrival_time, container.container_number)  
                     #  for shipment, container in results]
 
 
@@ -487,7 +487,8 @@ class CustomerContainersResource(Resource):
                             'arrival_time': shipment.arrival_time,
                             'departure_time': shipment.departure_time,
                             'arrival_port': shipment.arrival_port,
-                            'origin': shipment.origin
+                            'origin': shipment.origin,
+                            'comment': shipment.comment
                         }
                         for shipment, container in results
                     ]

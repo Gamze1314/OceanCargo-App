@@ -141,6 +141,13 @@ function App() {
             console.log("Updated shipments:", updatedShipments); // Confirm the updated state
             return updatedShipments;
           });
+          // update customer's container state
+          setCustomerShipments((prevShipments) => {
+            const updatedShipments = prevShipments.filter(
+              (shipment) => shipment.shipment_id !== id
+            )
+            return updatedShipments
+          })
           console.log(customerShipments);
           return res.json(); // Return response JSON to the next .then (if needed)
         } else {
@@ -220,6 +227,8 @@ function App() {
               ...prev,
               credit_amount: Math.round(prev.credit_amount - body.total_cost), // rounded to 2 decimal points.
             }));
+            // update customers container state
+            setCustomerContainers(prev => [...prev, body])
             navigate("/");
           } else if (
             status === 404 &&

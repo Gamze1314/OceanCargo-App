@@ -2,6 +2,7 @@ from app import app, db
 from models import Customer, Shipment, Container, ShipmentContainerAssociation
 from faker import Faker
 import random
+from datetime import datetime, timedelta
 
 # Initialize Faker
 fake = Faker()
@@ -41,27 +42,52 @@ with app.app_context():
     db.session.add_all(customers)
     db.session.commit()
 
+
     # Create 10 shipments
+    # List of origin ports (outside U.S.)
+    origin_ports = ["Istanbul", "Guangzhou", "Shanghai", "Mumbai",
+                    "Genoa", "Hamburg", "Rotterdam", "Busan", "Singapore", "Dubai"]
+
+    # List of arrival ports (in U.S.)
+    arrival_ports = ["New York", "Los Angeles", "Houston", "Miami",
+                    "Seattle", "Charleston", "Savannah", "Oakland", "Norfolk", "Baltimore"]
+    
+    statuses = ["In Transit", "Pending", "Completed"]
+
+
+    #generate fake shipment data with unique customer_id, and arrival and origin port(arrival != origin).
+    def random_date(start, end):
+        return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))
+    
     shipments = []
-    for _ in range(10):
-        # origin ports are outside of U.S
-        #arrivals only to US.
+    start_date = datetime.now() - timedelta(days=365)
+    end_date = datetime.now()
+
+    # Shuffle origin_ports to ensure uniqueness
+    shuffled_origins = random.sample(origin_ports, len(origin_ports))
+    shuffled_arrivals = random.sample(arrival_ports, len(arrival_ports))
+
+    for i in range(10):
+        departure_time = random_date(start_date, end_date)
+
         shipment = Shipment(
-            status=fake.random_element(elements=("In Transit", "Completed", "Pending")),
+            status=random.choice(statuses),
             vessel_name=fake.word().capitalize() + " Vessel",
-            departure_time=fake.date_time_between(
-                start_date="-1y", end_date="now"),
-            arrival_time=fake.date_time_between(
-                start_date="now", end_date="+30d"),
-            arrival_port=fake.random_element(elements=("New York", "Los Angeles", "Houston", "Atlanta", "Vancouver", "Oakland")),
-            origin=fake.random_element(elements=("Istanbul", "Guangzhou", "Shanghai", "Mumbai", "Genoa", "Hamburg")),
-            freight_rate=round(random.uniform(500.0, 5000.0), 2),
-            customer=random.choice(customers)
+            departure_time=departure_time,
+            arrival_time=departure_time + timedelta(days=random.randint(1, 30)),
+            arrival_port=shuffled_arrivals[i],
+            origin=shuffled_origins[i],
+            freight_rate=round(random.uniform(3700.0, 9000.0), 2),
+            customer_id=random.choice(
+                [customer.id for customer in Customer.query.all()])
         )
+
         shipments.append(shipment)
 
     db.session.add_all(shipments)
     db.session.commit()
+
+
 
     # Create 10 containers
     containers = []
@@ -75,7 +101,7 @@ with app.app_context():
             container_type=fake.random_element(elements=types),
             weight=random.randint(1000, 5000),  # Weight between 1000 and 5000
             # Price between $500 and $5000
-            price=round(random.uniform(3500.0, 5000.0), 2),
+            price=round(random.uniform(3700.0, 9000.0), 2),
             customer=random.choice(customers)
         )
         containers.append(container)

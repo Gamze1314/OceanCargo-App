@@ -17,6 +17,8 @@ function GoogleMap() {
     const [selectedShipments, setSelectedShipments] = useState([])
     const { customerContainers } = useOutletContext()
 
+// update CustomersShipment state to show updated information on Map, if a shipment gets deleted or updated.
+
 
     function handleArrivalPortClick(port) {
         console.log(port);
@@ -105,6 +107,9 @@ function MarkerContainer({ selectedShipments, isOrigin }) {
             </li>
             <li className="text-md text-blue-800">
               Ocean rate: ${shipment.ocean_rate}
+            </li>
+            <li className="text-md text-blue-800">
+              Comment: {shipment.comment}
             </li>
             {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
             {isOrigin ? (
