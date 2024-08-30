@@ -1,20 +1,22 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate, useOutletContext } from "react-router-dom";
+//  import origins and arrivals from portcoordinates
+import { origins, arrivals } from './data/portCoordinates.js'
 
 
 const NewBookingForm = () => {
   const navigate = useNavigate();
 
-  const { bookShipment, shipments } = useOutletContext();
+  const { bookShipment } = useOutletContext();
   // shipments state to access, vessel_name, origin
   // container types: 40SD, 40HC, 20SD for options
   // comment ; string, input field.
 
   //  define the validation rules for the form. required fields, length, type.
   const formSchema = yup.object().shape({
-    vessel_name: yup.string().required("Must select a vessel name."),
     origin: yup.string().required("Must select an origin port."),
+    arrival: yup.string().required("Must select an arrival port"),
     container_type: yup.string().required("Must select a container type."),
     // Comment must be between 1 and 50 characters long and not empty
     comment: yup.string().required("Comment field must be between 1 and 50 characters.").max(50).min(1),
@@ -24,21 +26,15 @@ const NewBookingForm = () => {
   const formik = useFormik({
     initialValues: {
       origin: "",
+      arrival: "",
       container_type: "",
-      vessel_name: "",
       comment: "",
     },
     validationSchema: formSchema,
-    onSubmit: (values) => {
-      console.log("Submitting form with values:", values); // Log form values
-      bookShipment(values)
-        .then((response) => {
-          console.log("Response from server:", response);
-        })
-        .catch((error) => {
-          console.error("Error submitting form:", error);
-        });
-    },
+      onSubmit: (values) => {
+        console.log("Enter in submit function", values);
+        bookShipment(values)
+      }
   });
 
   return (
@@ -49,7 +45,7 @@ const NewBookingForm = () => {
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
           {/* vessel name dropdown */}
-          <div>
+          {/* <div>
             <label
               htmlFor="vessel_name"
               className="block text-sm font-medium text-gray-700"
@@ -75,26 +71,30 @@ const NewBookingForm = () => {
                 {formik.errors.vessel_name}
               </p>
             ) : null}
-          </div>
+          </div> */}
           {/* Origin dropdown */}
           <div>
             <label
               htmlFor="origin"
               className="block text-sm font-medium text-gray-700"
             >
-              Origin:
+              Departure Port:
             </label>
             <select
               id="origin"
               name="origin"
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                console.log(e.target.name, e.target.value); // Log field name and value
+                formik.handleChange(e);
+              }}
               value={formik.values.origin}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
             >
-              <option value="" label="Select origin" />
-              {shipments.map((shipment) => (
-                <option key={shipment.id} value={shipment.origin}>
-                  {shipment.origin}
+              <option value="" label="Select origin port" />
+              {/* origin ports in portCoordinates */}
+              {origins.map((origin) => (
+                <option key={origin} value={origin}>
+                  {origin}
                 </option>
               ))}
             </select>
@@ -104,8 +104,39 @@ const NewBookingForm = () => {
               </p>
             ) : null}
           </div>
+          {/* arrival dropdown  */}
+          <div>
+            <label
+              htmlFor="arrival"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Arrival Port:
+            </label>
+            <select
+              id="arrival"
+              name="arrival"
+              onChange={(e) => {
+                console.log(e.target.name, e.target.value); // Log field name and value
+                formik.handleChange(e);
+              }}
+              value={formik.values.arrival}
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+            >
+              <option value="" label="Select arrival port" />
+              {/* origin ports in portCoordinates */}
+              {arrivals.map((port) => (
+                <option key={port} value={port}>
+                  {port}
+                </option>
+              ))}
+            </select>
+            {formik.errors.arrival && formik.touched.arrival ? (
+              <p className="text-red-500 text-xs mt-1">
+                {formik.errors.arrival}
+              </p>
+            ) : null}
+          </div>
           {/* container type dropdown */}
-
           <div>
             <label
               htmlFor="containerType"
@@ -116,8 +147,11 @@ const NewBookingForm = () => {
             <select
               id="container_type"
               name="container_type"
-              onChange={formik.handleChange}
-              value={formik.values.containerType}
+              onChange={(e) => {
+                console.log(e.target.name, e.target.value); // Log field name and value
+                formik.handleChange(e);
+              }}
+              value={formik.values.container_type}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
             >
               <option value="" label="Select container type" />

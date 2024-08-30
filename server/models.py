@@ -3,6 +3,7 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 import re
+from ports import origin_ports, arrival_ports, statuses
 
 
 
@@ -190,8 +191,8 @@ class Shipment(db.Model, SerializerMixin):
     @validates('status')
     def validate_status(self, key, value):
         # status can either be In Transit or Completed
-        if value not in ['In Transit', 'Completed', 'Pending']:
-            raise ValueError('Status must be either In Transit or Completed.')
+        if value not in statuses:
+            raise ValueError('Invalid vessel status type')
         else:
             return value
 
@@ -201,6 +202,20 @@ class Shipment(db.Model, SerializerMixin):
             raise TypeError('The freight rate must be a floating number.')
         if value < 3500.0 or value > 10000.0:
             raise ValueError('the freight rate must be between 3500 and 10000.')
+        return value
+    
+    #validate origin and arrival port, must be unique 
+    @validates('origin')
+    def validate_origin(self, key, value):
+        if value not in origin_ports:
+            raise ValueError("Invalid origin port.")
+        return value
+    
+
+    @validates('arrival_port')
+    def validate_arrival_port(self, key, value):
+        if value not in arrival_ports:
+            raise ValueError("Invalid arrival port.")
         return value
         
 

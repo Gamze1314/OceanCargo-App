@@ -34,7 +34,7 @@ function Home() {
                     Status: 
                     {shipment.status}, 
                     Arrival: {shipment.arrival_time},{" "}
-                    {shipment.arrival_port}
+                    Route: {shipment.arrival_port} - {shipment.origin}
                   </span>
                   <Buttons 
                   shipment={shipment}

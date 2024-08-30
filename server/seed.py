@@ -46,11 +46,11 @@ with app.app_context():
     # Create 10 shipments
     # List of origin ports (outside U.S.)
     origin_ports = ["Istanbul", "Guangzhou", "Shanghai", "Mumbai",
-                    "Genoa", "Hamburg", "Rotterdam", "Busan", "Singapore", "Dubai"]
+                    "Genoa", "Hamburg"]
 
     # List of arrival ports (in U.S.)
-    arrival_ports = ["New York", "Los Angeles", "Houston", "Miami",
-                    "Seattle", "Charleston", "Savannah", "Oakland", "Norfolk", "Baltimore"]
+    arrival_ports = ["New York", "Los Angeles", "Houston",
+                    "Atlanta", "Vancouver", "Oakland"]
     
     statuses = ["In Transit", "Pending", "Completed"]
 
@@ -58,6 +58,12 @@ with app.app_context():
     #generate fake shipment data with unique customer_id, and arrival and origin port(arrival != origin).
     def random_date(start, end):
         return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))
+    
+    # Format the datetime object to the required string format
+
+
+    def format_datetime(dt):
+        return dt.strftime("%m/%d/%Y, %I:%M %p")
     
     shipments = []
     start_date = datetime.now() - timedelta(days=365)
@@ -67,14 +73,18 @@ with app.app_context():
     shuffled_origins = random.sample(origin_ports, len(origin_ports))
     shuffled_arrivals = random.sample(arrival_ports, len(arrival_ports))
 
-    for i in range(10):
+    for i in range(6):
         departure_time = random_date(start_date, end_date)
+        arrival_time = departure_time + timedelta(days=random.randint(1, 30))
+
+        formatted_departure_time = format_datetime(departure_time)
+        formatted_arrival_time = format_datetime(arrival_time)
 
         shipment = Shipment(
             status=random.choice(statuses),
             vessel_name=fake.word().capitalize() + " Vessel",
-            departure_time=departure_time,
-            arrival_time=departure_time + timedelta(days=random.randint(1, 30)),
+            departure_time=formatted_departure_time,
+            arrival_time=formatted_arrival_time,
             arrival_port=shuffled_arrivals[i],
             origin=shuffled_origins[i],
             freight_rate=round(random.uniform(3700.0, 9000.0), 2),
@@ -93,7 +103,7 @@ with app.app_context():
     containers = []
     prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
     types = ["40SD", "20SD", "40HC"]
-    for _ in range(10):
+    for _ in range(6):
         container_number = fake.random_element(
             elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
         container = Container(
@@ -121,14 +131,7 @@ with app.app_context():
             comment='Fourth container for delivery', shipment_id=4, container_id=4),
         ShipmentContainerAssociation(
             comment='Fifth container to be shipped later', shipment_id=5, container_id=5),
-        ShipmentContainerAssociation(comment='Sixth container', shipment_id=6, container_id=6),
-        ShipmentContainerAssociation(
-            comment='Seventh container', shipment_id=7, container_id=7),
-        ShipmentContainerAssociation(
-            comment='Eighth container', shipment_id=8, container_id=8),
-        ShipmentContainerAssociation(
-            comment='Ninth container', shipment_id=9, container_id=9),
-        ShipmentContainerAssociation(comment='Tenth container', shipment_id=10, container_id=10)
+        ShipmentContainerAssociation(comment='Sixth container', shipment_id=6, container_id=6)
     ]
 
     db.session.add_all(associations)

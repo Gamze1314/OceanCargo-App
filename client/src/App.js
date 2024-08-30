@@ -15,22 +15,20 @@ function App() {
   const [customerContainers, setCustomerContainers] = useState([]);
   // if customer's initial state is null,not logged in. {username: username}
 
-
   useEffect(() => {
     if (customer && customer.id) {
-    fetch(`/customers/${customer.id}/containers`)
-      .then((res) => {
-        if (res.ok) {
-          return res.json(); // Return the promise to chain the next `.then()`
-        } else {
-          alert("No Shipment found");
-        }
-      })
-      .then((containerData) => setCustomerContainers(containerData))
-      .catch((error) => console.error(error)); // Catch and handle any errors
-  }}, [customer]);
-
-
+      fetch(`/customers/${customer.id}/containers`)
+        .then((res) => {
+          if (res.ok) {
+            return res.json(); // Return the promise to chain the next `.then()`
+          } else {
+            console.log("Fetch failed with status:", res.status);
+          }
+        })
+        .then((containerData) => setCustomerContainers(containerData))
+        .catch((error) => console.error(error)); // Catch and handle any errors
+    }
+  }, [customer]);
 
   // get customer data from the backend , check session to see if customer is already logged in when the component is first mounted. (every time we refresh the page, this code runs to check if they are logged in)
   useEffect(() => {
@@ -61,11 +59,11 @@ function App() {
     });
   }, [customer]);
 
-  // handle API call to /shipments/customer/<int:customer_id>  to get a customer's shipments
+  // handle API call to `/customer/shipments/${customer.id}`  to get a customer's shipments
   useEffect(() => {
     // Fetch customer-specific shipments if a customer is logged in and has a valid ID
     if (customer && customer.id) {
-      fetch(`/shipments/customer/${customer.id}`).then((response) => {
+      fetch(`/customer/shipments/${customer.id}`).then((response) => {
         if (response.ok) {
           response.json().then((shipments) => {
             // Only update state if the data is different
@@ -86,7 +84,7 @@ function App() {
   function handleUpdate(comment, shipment_id) {
     // Check if the customer object exists and has an id
     if (customer && customer.id) {
-      fetch(`/shipments/customer/${customer.id}`, {
+      fetch(`/customer/shipments/${customer.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +120,7 @@ function App() {
     console.log(id);
 
     if (customer && customer.id) {
-      fetch(`/shipments/customer/${customer.id}`, {
+      fetch(`/customer/shipments/${customer.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -141,14 +139,6 @@ function App() {
             console.log("Updated shipments:", updatedShipments); // Confirm the updated state
             return updatedShipments;
           });
-          // update customer's container state
-          setCustomerShipments((prevShipments) => {
-            const updatedShipments = prevShipments.filter(
-              (shipment) => shipment.shipment_id !== id
-            )
-            return updatedShipments
-          })
-          console.log(customerShipments);
           return res.json(); // Return response JSON to the next .then (if needed)
         } else {
           alert("Failed to delete shipment");
@@ -205,7 +195,7 @@ function App() {
     console.log(shipmentData);
 
     if (customer && customer.id) {
-      fetch(`/shipments/customer/${customer.id}`, {
+      fetch(`/customer/shipments/${customer.id}`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -214,7 +204,11 @@ function App() {
         body: JSON.stringify(shipmentData),
       })
         .then((res) =>
-          res.json().then((data) => ({ status: res.status, body: data }))
+          res.json().then((data) => {
+            const result = { status: res.status, body: data };
+            console.log(result); // Logs the status and the parsed JSON data to the console
+            return result;
+          })
         )
         .then(({ status, body }) => {
           if (status === 201) {
@@ -227,8 +221,6 @@ function App() {
               ...prev,
               credit_amount: Math.round(prev.credit_amount - body.total_cost), // rounded to 2 decimal points.
             }));
-            // update customers container state
-            setCustomerContainers(prev => [...prev, body])
             navigate("/");
           } else if (
             status === 404 &&
@@ -239,7 +231,8 @@ function App() {
             );
           } else if (
             status === 409 &&
-            body.error === "Shipment is currently not available to book."
+            body.error ===
+              "Shipment is currently not available to book.In Transit"
           ) {
             alert(
               "Error: The shipment is currently in transit and not available for booking. Please try again later."
@@ -331,7 +324,7 @@ function App() {
           handleDelete,
           handleAccountUpdate,
           handleSignup,
-          customerContainers
+          customerContainers,
         }}
       />
     </>

@@ -2,7 +2,7 @@
 import { NavLink, Navigate } from "react-router-dom";
 
 function NavBar({ logo, customer, logOutCustomer }) {
-  console.log(customer);
+  // console.log(customer);
 
   const linkClasses =
     "hover:underline text-blue-900 text-md font-light-Times New Roman";

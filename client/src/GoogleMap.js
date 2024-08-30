@@ -114,11 +114,11 @@ function MarkerContainer({ selectedShipments, isOrigin }) {
             {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
             {isOrigin ? (
               <li className="text-md text-blue-800">
-                Departure Port: {shipment.departure_port}
+                Arrival Port: {shipment.arrival_port}
               </li>
             ) : (
               <li className="text-md text-blue-800">
-                Arrival Port: {shipment.arrival_port}
+                Departure Port: {shipment.origin}
               </li>
             )}
           </div>

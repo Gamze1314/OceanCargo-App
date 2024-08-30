@@ -68,7 +68,7 @@ class Login(Resource):
             # keep them logged in with session ; customer.id => unique
             session['customer_id'] = customer.id
             session.permanent = True
-            # cookie is saved in the browser., lasts for the duration specified(60 min) 
+            # cookie is saved in the browser., lasts for the duration specified(60 min)
             response_body = customer.to_dict()
             return make_response(response_body, 201)
         else:
@@ -194,7 +194,8 @@ class CustomerByID(Resource):
     def patch(self, id):
         # update existing customer info.
         # check if customer exists
-        customer = db.session.get(Customer, id)
+        customer = db.session.get(Customer, session.get('customer_id'))
+        # customer = db.session.get(Customer, customer_id)
 
         if not customer:
             return make_response({'error': 'Customer not found'}, 404)
@@ -220,6 +221,7 @@ api.add_resource(CustomerByID, '/customer/<int:id>')
 
 
 class CustomerShipmentsResource(Resource):
+    # breakpoint()
 
     def get(self, customer_id):
         try:
@@ -252,31 +254,34 @@ class CustomerShipmentsResource(Resource):
         data = request.get_json()
 
         # Check if required fields are provided
-        if 'origin' not in data or 'vessel_name' not in data or 'container_type' not in data or 'comment' not in data:
+        if 'origin' not in data or 'container_type' not in data or 'comment' not in data or 'arrival' not in data:
             return make_response({'error': 'Missing required fields'}, 400)
 
        # data from frontend to be used in creation of shipment, container, shipment_container_association
         origin = data['origin']
-        vessel_name = data['vessel_name']
+        arrival_port = data['arrival']
         container_type = data['container_type']
         comment = data['comment']
 
         # Find the shipment in the database
         existing_shipment = Shipment.query.filter_by(
-            origin=origin,
-            vessel_name=vessel_name
+            # origin=origin,
+            arrival_port=arrival_port
         ).first()
 
         # check if existing shipment ?
         if existing_shipment and existing_shipment.status == 'In Transit':
             return make_response({'error': 'Shipment is currently not available to book.'}, 409)
 
+        # breakpoint()
         elif existing_shipment:
             # Use data from the existing shipment
             departure_time = existing_shipment.departure_time
             arrival_time = existing_shipment.arrival_time
             arrival_port = existing_shipment.arrival_port
             freight_rate = existing_shipment.freight_rate
+            vessel_name = existing_shipment.vessel_name
+            status = existing_shipment.status
 
             # Create a new shipment record
             new_shipment = Shipment(
@@ -287,8 +292,9 @@ class CustomerShipmentsResource(Resource):
                 arrival_time=arrival_time,
                 arrival_port=arrival_port,
                 freight_rate=freight_rate,
-                status='Pending'  # Adjust status
+                status=status
             )
+
             db.session.add(new_shipment)
             db.session.commit()
 
@@ -301,7 +307,7 @@ class CustomerShipmentsResource(Resource):
                 container_number=new_container_number,
                 container_type=container_type,
                 weight=23000,
-                price=5000 if container_type == '20SD' else 7500,
+                price=5000.50 if container_type == '20SD' else 7500.50,
                 customer_id=customer_id
             )
 
@@ -430,7 +436,8 @@ class CustomerShipmentsResource(Resource):
         return make_response({'message': 'The shipment and associated containers have been deleted.'}, 200)
 
 
-api.add_resource(CustomerShipmentsResource, '/shipments/customer/<int:customer_id>')
+api.add_resource(CustomerShipmentsResource,
+                 '/customer/shipments/<int:customer_id>')
 # changed endpoint to /customers/<int:customer_id>/shipments
 
 
@@ -438,17 +445,12 @@ class CustomerContainersResource(Resource):
 
     def get(self, customer_id):
         # return containers for customer in session. this resource is for displaying cont numbers on the GoogleMap component.
-        # response : cont number, return all containers for customer logged in.
-        #check customer_id in session : handle error
-        # if customer found, query customer shipments, then shipment_cont_association to find containers. : handle errors if shipments not found.
-        # return container_shipment association w cont info after serialization. : handle error in cases where cont not found.404
-        #return 200, if successful. : 500.
         try:
             customer_id = session.get('customer_id')
             if customer_id is not None:
                 customer = Customer.query.get(customer_id)
                 if customer:
-                    #container table holds customer_id fk.
+                    # container table holds customer_id fk.
                     # join table holds shipment_id, container_id.
                     # shipment holds customer_id.
                     # which container is tied in the association table , filter by customer id.
@@ -456,26 +458,26 @@ class CustomerContainersResource(Resource):
                     if not customer:
                         return make_response({'error': 'Please log in'}, 401)
 
-                    #container number is unique for each shipment. can be associaed with one shipment only.
-
-                    results = db.session.query(Shipment, Container).join(ShipmentContainerAssociation, Shipment.id == ShipmentContainerAssociation.shipment_id).join(
-                        Container, ShipmentContainerAssociation.container_id == Container.id).filter(Shipment.customer_id == customer_id).all()
- 
-                    # [(shipment.arrival_time, container.container_number)
-                    #  for shipment, container in results]
-
-                    # [(shipment.arrival_time, container.container_number)  
-                    #  for shipment, container in results]
-
-
-                    # [('2024-09-07 05:52:15.021953', 'TRHU317121'), ('2024-08-29 21:56:35.407938', 'CBHU583196'), ('2024-09-03 00:47:20.391864', 'CBHU893777'), ('2024-09-17 06:49:03.559604', 'ECHU530168'), ('2024-09-11 11:55:42.972324', 'CBHU339330'),
-                    #  ('2024-09-04 16:04:34.737162', 'TRHU743431'), ('2024-09-14 04:23:02.469636', 'ECHU410200'), ('2024-09-24 04:47:52.332018', 'ECHU787866'), ('2024-09-27 23:57:08.657412', 'MSDU137019'), ('2024-09-09 07:48:23.373110', 'MSDU175914')]
+                    # Perform the query to get shipments, containers, and comments
+                    results = db.session.query(
+                        Shipment,
+                        Container,
+                        ShipmentContainerAssociation
+                    ).join(
+                        ShipmentContainerAssociation, Shipment.id == ShipmentContainerAssociation.shipment_id
+                    ).join(
+                        Container, ShipmentContainerAssociation.container_id == Container.id
+                    ).filter(
+                        Shipment.customer_id == customer_id
+                    ).all()
 
                     if not results:
-                        #return 404
+                        # return 404
                         return make_response({'error': 'Shipment and container information is not found'}, 404)
-        
-                   #each shipment and container tuple in unpacked to access shipment and container information.
+
+                    print("Results:", results)  # Debugging
+
+                   # each shipment and container tuple in unpacked to access shipment and container information.
                     response_body = [
                         {
                             'shipment_id': shipment.id,
@@ -488,17 +490,18 @@ class CustomerContainersResource(Resource):
                             'departure_time': shipment.departure_time,
                             'arrival_port': shipment.arrival_port,
                             'origin': shipment.origin,
-                            'comment': shipment.comment
+                            # Access the comment from ShipmentContainerAssociation
+                            'comment': shipmentcontainerassociation.comment
                         }
-                        for shipment, container in results
+
+                        for shipment, container, shipmentcontainerassociation in results
                     ]
+                    # breakpoint()
 
                     return make_response(response_body, 200)
 
-                
         except:
             return make_response({'error': 'Failed to retrieve containers.'}, 500)
-            
 
 
 api.add_resource(CustomerContainersResource,

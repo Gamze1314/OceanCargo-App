@@ -1,3 +1,13 @@
+export const origins = ["Istanbul", "Guangzhou", "Shanghai", "Mumbai",
+                "Genoa", "Hamburg"]
+
+// List of arrival ports (in U.S.)
+export const arrivals = ["New York", "Los Angeles", "Houston",
+                 "Atlanta", "Vancouver", "Oakland"]
+
+
+
+
 export const arrivalPorts = {
   newYork: { lat: 40.7128, lng: -74.006 },
   losAngeles: { lat: 33.7405, lng: -118.2755 },
