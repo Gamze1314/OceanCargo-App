@@ -12,7 +12,25 @@ function App() {
   const [shipments, setShipments] = useState([]);
   const [customer, setCustomer] = useState(null);
   const [customerShipments, setCustomerShipments] = useState([]);
+  const [customerContainers, setCustomerContainers] = useState([]);
   // if customer's initial state is null,not logged in. {username: username}
+
+
+  useEffect(() => {
+    if (customer && customer.id) {
+    fetch(`/customers/${customer.id}/containers`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json(); // Return the promise to chain the next `.then()`
+        } else {
+          alert("No Shipment found");
+        }
+      })
+      .then((containerData) => setCustomerContainers(containerData))
+      .catch((error) => console.error(error)); // Catch and handle any errors
+  }}, [customer]);
+
+
 
   // get customer data from the backend , check session to see if customer is already logged in when the component is first mounted. (every time we refresh the page, this code runs to check if they are logged in)
   useEffect(() => {
@@ -166,7 +184,7 @@ function App() {
     }).then((res) => {
       if (res.ok) {
         setCustomer(null);
-        // set Customer shipments to empty array to replace w new user's shipments
+        // set Customer shipments to empty array to replace with new user's shipments
         setCustomerShipments([]);
       } else {
         alert("Error: Unable to log customer out!");
@@ -304,6 +322,7 @@ function App() {
           handleDelete,
           handleAccountUpdate,
           handleSignup,
+          customerContainers
         }}
       />
     </>
@@ -311,3 +330,5 @@ function App() {
 }
 
 export default App;
+
+

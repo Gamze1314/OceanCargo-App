@@ -28,6 +28,9 @@ function NavBar({ logo, customer, logOutCustomer }) {
           <NavLink to="/shipments" className={linkClasses}>
             Shipments
           </NavLink>
+          <NavLink to="/map" className={linkClasses}>
+          Map
+          </NavLink>
           <NavLink
           onClick={() => logOutCustomer()}
           to="logout" className={linkClasses}>

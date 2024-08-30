@@ -9,6 +9,7 @@ import NewBookingForm from "./NewBookingForm";
 import Login from "./Login";
 import LogOut from "./LogOut";
 import Signup from "./Signup";
+import GoogleMap from "./GoogleMap";
 
 
 
@@ -53,6 +54,11 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <Signup />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/map",
+        element: <GoogleMap />,
         errorElement: <ErrorPage />,
       },
       {

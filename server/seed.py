@@ -44,6 +44,8 @@ with app.app_context():
     # Create 10 shipments
     shipments = []
     for _ in range(10):
+        # origin ports are outside of U.S
+        #arrivals only to US.
         shipment = Shipment(
             status=fake.random_element(elements=("In Transit", "Completed", "Pending")),
             vessel_name=fake.word().capitalize() + " Vessel",
@@ -51,8 +53,8 @@ with app.app_context():
                 start_date="-1y", end_date="now"),
             arrival_time=fake.date_time_between(
                 start_date="now", end_date="+30d"),
-            arrival_port=fake.city(),
-            origin=fake.city(),
+            arrival_port=fake.random_element(elements=("New York", "Los Angeles", "Houston", "Atlanta", "Vancouver", "Oakland")),
+            origin=fake.random_element(elements=("Istanbul", "Guangzhou", "Shanghai", "Mumbai", "Genoa", "Hamburg")),
             freight_rate=round(random.uniform(500.0, 5000.0), 2),
             customer=random.choice(customers)
         )
@@ -81,14 +83,26 @@ with app.app_context():
     db.session.add_all(containers)
     db.session.commit()
 
-    # Create shipment-container associations ensuring container_id is unique
+    # Create shipment-container associations ensuring container_id is unique, and if there are 10 shipments, there should be 10 containers unique associated.
     associations = [
         ShipmentContainerAssociation(
             comment='First container to be shipped early', shipment_id=1, container_id=1),
         ShipmentContainerAssociation(
-            comment='Second container to be advised', shipment_id=1, container_id=2),
+            comment='Second container to be advised', shipment_id=2, container_id=2),
         ShipmentContainerAssociation(
-            comment='Third container loaded', shipment_id=2, container_id=3),
+            comment='Third container loaded', shipment_id=3, container_id=3),
+        ShipmentContainerAssociation(
+            comment='Fourth container for delivery', shipment_id=4, container_id=4),
+        ShipmentContainerAssociation(
+            comment='Fifth container to be shipped later', shipment_id=5, container_id=5),
+        ShipmentContainerAssociation(comment='Sixth container', shipment_id=6, container_id=6),
+        ShipmentContainerAssociation(
+            comment='Seventh container', shipment_id=7, container_id=7),
+        ShipmentContainerAssociation(
+            comment='Eighth container', shipment_id=8, container_id=8),
+        ShipmentContainerAssociation(
+            comment='Ninth container', shipment_id=9, container_id=9),
+        ShipmentContainerAssociation(comment='Tenth container', shipment_id=10, container_id=10)
     ]
 
     db.session.add_all(associations)

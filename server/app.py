@@ -219,7 +219,7 @@ class CustomerByID(Resource):
 api.add_resource(CustomerByID, '/customer/<int:id>')
 
 
-class ShipmentsByCustomer(Resource):
+class CustomerShipmentsResource(Resource):
 
     def get(self, customer_id):
         try:
@@ -430,25 +430,78 @@ class ShipmentsByCustomer(Resource):
         return make_response({'message': 'The shipment and associated containers have been deleted.'}, 200)
 
 
-api.add_resource(ShipmentsByCustomer, '/shipments/customer/<int:customer_id>')
+api.add_resource(CustomerShipmentsResource, '/shipments/customer/<int:customer_id>')
+# changed endpoint to /customers/<int:customer_id>/shipments
 
 
-class Containers(Resource):
+class CustomerContainersResource(Resource):
 
-    def get(self):
-        # return all containers
+    def get(self, customer_id):
+        # return containers for customer in session. this resource is for displaying cont numbers on the GoogleMap component.
+        # response : cont number, return all containers for customer logged in.
+        #check customer_id in session : handle error
+        # if customer found, query customer shipments, then shipment_cont_association to find containers. : handle errors if shipments not found.
+        # return container_shipment association w cont info after serialization. : handle error in cases where cont not found.404
+        #return 200, if successful. : 500.
         try:
-            containers = db.session.query(Container).all()
-            response_body = [container.to_dict(only=(
-                "id", "container_type", "price", "weight", "container_number")) for container in containers]
+            customer_id = session.get('customer_id')
+            if customer_id is not None:
+                customer = Customer.query.get(customer_id)
+                if customer:
+                    #container table holds customer_id fk.
+                    # join table holds shipment_id, container_id.
+                    # shipment holds customer_id.
+                    # which container is tied in the association table , filter by customer id.
 
-            return make_response(response_body, 200)
+                    if not customer:
+                        return make_response({'error': 'Please log in'}, 401)
 
-        except Exception as e:
-            return {'error': f'Error fetching containers: {e}'}, 500
+                    #container number is unique for each shipment. can be associaed with one shipment only.
+
+                    results = db.session.query(Shipment, Container).join(ShipmentContainerAssociation, Shipment.id == ShipmentContainerAssociation.shipment_id).join(
+                        Container, ShipmentContainerAssociation.container_id == Container.id).filter(Shipment.customer_id == customer_id).all()
+ 
+                    # [(shipment.arrival_time, container.container_number)
+                    #  for shipment, container in results]
+
+                    # [(shipment.arrival_time, container.container_number)
+                    #  for shipment, container in results]
 
 
-api.add_resource(Containers, '/containers')
+                    # [('2024-09-07 05:52:15.021953', 'TRHU317121'), ('2024-08-29 21:56:35.407938', 'CBHU583196'), ('2024-09-03 00:47:20.391864', 'CBHU893777'), ('2024-09-17 06:49:03.559604', 'ECHU530168'), ('2024-09-11 11:55:42.972324', 'CBHU339330'),
+                    #  ('2024-09-04 16:04:34.737162', 'TRHU743431'), ('2024-09-14 04:23:02.469636', 'ECHU410200'), ('2024-09-24 04:47:52.332018', 'ECHU787866'), ('2024-09-27 23:57:08.657412', 'MSDU137019'), ('2024-09-09 07:48:23.373110', 'MSDU175914')]
+
+                    if not results:
+                        #return 404
+                        return make_response({'error': 'Shipment and container information is not found'}, 404)
+        
+                   #each shipment and container tuple in unpacked to access shipment and container information.
+                    response_body = [
+                        {
+                            'shipment_id': shipment.id,
+                            'vessel_name': shipment.vessel_name,
+                            'container_number': container.container_number,
+                            'container_type': container.container_type,
+                            'ocean_rate': shipment.freight_rate,
+                            'container_price': container.price,
+                            'arrival_time': shipment.arrival_time,
+                            'departure_time': shipment.departure_time,
+                            'arrival_port': shipment.arrival_port,
+                            'origin': shipment.origin
+                        }
+                        for shipment, container in results
+                    ]
+
+                    return make_response(response_body, 200)
+
+                
+        except:
+            return make_response({'error': 'Failed to retrieve containers.'}, 500)
+            
+
+
+api.add_resource(CustomerContainersResource,
+                 '/customers/<int:customer_id>/containers')
 
 
 if __name__ == '__main__':

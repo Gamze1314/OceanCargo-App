@@ -106,6 +106,10 @@ set the FLASK_RUN_PORT and FLASK_APP as shown below, and simply run flask run.
 - Container
 - ShipmentContainerAssociation
 
+### Flask-SQLAlchemy Relationships Set up
+
+
+
 ### Authentication
 
 This API uses session-based authentication. Users need to log in to access protected routes.

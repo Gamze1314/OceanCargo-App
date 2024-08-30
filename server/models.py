@@ -179,6 +179,8 @@ class Shipment(db.Model, SerializerMixin):
     # Relationship to ShipmentContainerAssociation
     shipment_container_associations = db.relationship(
         'ShipmentContainerAssociation', back_populates='shipment')
+    
+
 
     # validations
     @validates('status')
