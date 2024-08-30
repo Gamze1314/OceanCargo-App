@@ -69,7 +69,7 @@ function GoogleMap() {
           <Marker
             key={index}
             position={marker.position} // to see a marker on the map, position property needs to be set.
-            label={marker.label} // label to differentiate markers:
+            label={marker.label} // label to differentiate ports
             clickable={true}
             onClick={() => handleOriginPortClick(marker.label)}
           />
@@ -90,58 +90,42 @@ function GoogleMap() {
 function MarkerContainer({ selectedShipments, isOrigin }) {
   console.log(selectedShipments);
 
+  // Check if there are any selected shipments and if isOrigin is true
   if (selectedShipments.length > 0) {
-    if (isOrigin === true) { 
-
     return (
       <div className="absolute bottom-0 left-0 p-4 bg-white shadow-lg rounded-lg max-w-lg">
         {selectedShipments.map((shipment, index) => (
-          <div key={index} className="mb-2 border-b pb-2 text-xs text-red-900">
+          <div key={index} className="mb-2 border-b pb-2 text-md text-red-900">
             {index + 1}. Shipment
-            <li className="text-xs text-blue-800">
-              Container: {shipment.container_number}, {shipment.container_type}
+            <li className="text-md text-blue-800">
+              Container: {shipment.container_number} - {shipment.container_type}
             </li>
-            <li className="text-xs text-blue-800">
+            <li className="text-md text-blue-800">
               Container price: ${shipment.container_price}
             </li>
-            <li className="text-xs text-blue-800">
-              Ocean rate:: ${shipment.ocean_rate}
+            <li className="text-md text-blue-800">
+              Ocean rate: ${shipment.ocean_rate}
             </li>
-            <li className="text-xs text-blue-800">
-              Arrival Port: {shipment.arrival_port}
-            </li>
+            {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
+            {isOrigin ? (
+              <li className="text-md text-blue-800">
+                Departure Port: {shipment.departure_port}
+              </li>
+            ) : (
+              <li className="text-md text-blue-800">
+                Arrival Port: {shipment.arrival_port}
+              </li>
+            )}
           </div>
         ))}
       </div>
     );
-    } else if (isOrigin === false) {
-    return (
-      <div className="absolute bottom-0 left-0 p-4 bg-white shadow-lg rounded-lg max-w-xs">
-        {selectedShipments.map((shipment, index) => (
-          <div key={index} className="mb-2 border-b pb-2 text-xs text-red-900">
-            {index + 1}. Shipment
-            <li className="text-xs text-blue-800">
-              Container: {shipment.container_number}, {shipment.container_type}
-              {shipment.container_number}
-            </li>
-            <li className="text-xs text-blue-800">
-              Container price: ${shipment.container_price}
-            </li>
-            <li className="text-xs text-blue-800">
-              Ocean rate:: ${shipment.ocean_rate}
-            </li>
-            <li className="text-xs text-blue-800">
-              Arrival Port: {shipment.arrival_port}
-            </li>
-          </div>
-        ))}
-      </div>
-    );
-  } else {
-    return null;
   }
+
+  // Return null if no shipments
+  return null;
 }
-}
+
 
 
 
