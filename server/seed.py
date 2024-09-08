@@ -1,5 +1,5 @@
 from app import app, db
-from models import Customer, Shipment, Container, ShipmentContainerAssociation
+from models import Customer, Shipment, Container
 from faker import Faker
 import random
 from datetime import datetime, timedelta
@@ -29,10 +29,10 @@ with app.app_context():
     #     )
 
     customer1 = Customer(
+        name="gamze",
         username="gamze1314",
         password_hash=fake.password(),
         email="gamze@gmail.com",
-        type="consignee",
         credit_amount=600000
     )
 
@@ -41,8 +41,9 @@ with app.app_context():
 
     db.session.add_all(customers)
     db.session.commit()
+    
 
-
+    print("Customer data seeded successfully")
     # Create 10 shipments
     # List of origin ports (outside U.S.)
     origin_ports = ["Istanbul", "Guangzhou", "Shanghai", "Mumbai",
@@ -87,23 +88,21 @@ with app.app_context():
             arrival_time=formatted_arrival_time,
             arrival_port=shuffled_arrivals[i],
             origin=shuffled_origins[i],
-            freight_rate=round(random.uniform(3700.0, 9000.0), 2),
-            customer_id=random.choice(
-                [customer.id for customer in Customer.query.all()])
-        )
+            freight_rate=round(random.uniform(3700.0, 9000.0), 2)
+            )
 
         shipments.append(shipment)
 
     db.session.add_all(shipments)
     db.session.commit()
 
-
+    print("Shipment data seeded successfully")
 
     # Create 10 containers
     containers = []
     prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
     types = ["40SD", "20SD", "40HC"]
-    for _ in range(6):
+    for _ in range(10):
         container_number = fake.random_element(
             elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
         container = Container(
@@ -112,29 +111,13 @@ with app.app_context():
             weight=random.randint(1000, 5000),  # Weight between 1000 and 5000
             # Price between $500 and $5000
             price=round(random.uniform(3700.0, 9000.0), 2),
-            customer=random.choice(customers)
+            customer_id=1,
+            shipment_id=1
         )
         containers.append(container)
 
     db.session.add_all(containers)
     db.session.commit()
 
-    # Create shipment-container associations ensuring container_id is unique, and if there are 10 shipments, there should be 10 containers unique associated.
-    associations = [
-        ShipmentContainerAssociation(
-            comment='First container to be shipped early', shipment_id=1, container_id=1),
-        ShipmentContainerAssociation(
-            comment='Second container to be advised', shipment_id=2, container_id=2),
-        ShipmentContainerAssociation(
-            comment='Third container loaded', shipment_id=3, container_id=3),
-        ShipmentContainerAssociation(
-            comment='Fourth container for delivery', shipment_id=4, container_id=4),
-        ShipmentContainerAssociation(
-            comment='Fifth container to be shipped later', shipment_id=5, container_id=5),
-        ShipmentContainerAssociation(comment='Sixth container', shipment_id=6, container_id=6)
-    ]
 
-    db.session.add_all(associations)
-    db.session.commit()
-
-    print("Seed data added successfully.")
+    print("Container data seeded successfully.")

@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
-from models import db, Shipment, Container, Customer, ShipmentContainerAssociation
+from models import db, Shipment, Container, Customer
 import ipdb
 from faker import Faker
 import random

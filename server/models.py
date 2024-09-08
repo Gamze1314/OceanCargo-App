@@ -2,11 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.ext.associationproxy import association_proxy
 import re
-from ports import origin_ports, arrival_ports, statuses
 
 
-
+#contains definitions of tables and associated schema constructs.
 convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -20,79 +20,37 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 
 
-# shipment.customer.containers => access the customers' containers through shipment's table.
-# customer.shipments
+# customer has many containers => one to many
+# shipment has many containers.
+# container belongs to a shipment
+# container belongs to a customer
+# shipment has many customers through containers.
+# customer has many shipments through containers.
 
-# shipments & containers => many to many
-# shipments & customers => one to many
-# customer & container => one to many
-
-
-class ShipmentContainerAssociation(db.Model, SerializerMixin):
-    __tablename__ = 'shipment_container_associations'
-
-    serialize_only = ('id', 'comment', 'shipment_id', 'container_id')
-
-    id = db.Column(db.Integer, primary_key=True)
-    # user submittable attribute
-    comment = db.Column(db.String, nullable=False)
-
-    shipment_id = db.Column(db.Integer, db.ForeignKey(
-        'shipments.id'), nullable=False)
-    container_id = db.Column(db.Integer, db.ForeignKey(
-        'containers.id'), nullable=False, unique=True)
-
-    shipment = db.relationship(
-        'Shipment', back_populates='shipment_container_associations')
-    container = db.relationship(
-        'Container', back_populates='shipment_container_associations')
-
-    #  check that the container is not already assigned to the shipment ;  shipment can have many unique containers.
-    # Database-level constraints
-    __table_args__ = (
-        db.UniqueConstraint('container_id', name='uq_container_id'),
-    )
-
-    # validations
-    @validates('comment')
-    def validate_comment(self, key, value):
-        # Comment must be between 1 and 50 characters long and not empty
-        if value is None or len(value) == 0 or len(value) > 50:
-            raise ValueError(
-                'Comment must be between 1 and 50 characters long and not empty.')
-        return value
-
-
-    def __repr__(self):
-        return f'<ShipmentContainerAssociation(shipment_id={self.shipment_id}, container_id={self.container_id}, comment: {self.comment})>'
-
+#container(join) shipment_id, customer_id
 
 
 # Customer model with relationships
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
 
-    serialize_only = ('id', 'username', 'email', 'credit_amount')
+    serialize_rules = ('-containers.customer','-password_hash')
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    # type of customer (consignee, forwarder, etc.)
-    type = db.Column(db.String, nullable=False)
     credit_amount = db.Column(db.Float, nullable=False)
 
-    # (e.g., check that the customer has sufficient credit to cover the shipment's price)
-    # Database-level constraints
-    __table_args__ = (
-        db.CheckConstraint('credit_amount >= 20000.0',
-                           name='credit_amount_positive'),
-    )
+    # Relationships
+    # customer has many containers => one to many
+    containers = db.relationship('Container', back_populates='customer', cascade='all')
+    # back_populates='customer' => opposite relationship(reciprocal)
 
-    # Relationship to Shipment
-    shipments = db.relationship('Shipment', back_populates='customer')
-    # relationship to Containers
-    containers = db.relationship('Container', back_populates='customer')
+    #customer's shipments
+    shipments = association_proxy(
+        'containers', 'shipment', creator=lambda s: Container(shipment=s))
 
     # Validations
     @validates('username')
@@ -103,12 +61,6 @@ class Customer(db.Model, SerializerMixin):
                 'Username must be between 5 and 10 characters long and not empty.')
         return value
 
-    @validates('type')
-    def validate_type(self, key, value):
-        # Type must be either 'consignee' or 'forwarder'
-        if value not in ['consignee', 'forwarder']:
-            raise ValueError('Type must be either consignee or forwarder.')
-        return value
 
     @validates('email')
     def validate_email(self, key, value):
@@ -118,7 +70,7 @@ class Customer(db.Model, SerializerMixin):
         return value
 
     def __repr__(self):
-        return f'Customer (id: {self.id}, username: {self.username}, passw_hash: {self.password_hash} email: {self.email}, type: {self.type}, credit_amount: {self.credit_amount})'
+        return f'Customer (id: {self.id}, username: {self.username}, passw_hash: {self.password_hash} email: {self.email}, credit_amount: {self.credit_amount})'
 
 
 
@@ -126,7 +78,7 @@ class Customer(db.Model, SerializerMixin):
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
 
-    serialize_only = ('id', 'container_number', 'container_type', 'weight', 'price', 'customer')
+    serialize_rules = ('-customer.containers', '-shipment.containers')
 
     id = db.Column(db.Integer, primary_key=True)
     container_number = db.Column(db.String, nullable=False, unique=True)
@@ -134,18 +86,23 @@ class Container(db.Model, SerializerMixin):
     weight = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    customer_id = db.Column(db.Integer, db.ForeignKey(
-        'customers.id'), nullable=False)
 
-    # Relationship to ShipmentContainerAssociation
-    shipment_container_associations = db.relationship(
-        'ShipmentContainerAssociation', back_populates='container')
+    #foreign keys to set up the relationships
+    #container belongs to a customer.
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
 
-    # relationship to customer
+    #shipment_id fk; Container belongs to a shipment.
+    shipment_id = db.Column(db.Integer, db.ForeignKey('shipments.id'), nullable=False)
+
+
+    #relationship to customer
     customer = db.relationship('Customer', back_populates='containers')
 
+    #relationship to shipment
+    shipment = db.relationship('Shipment', back_populates='containers')
+
+
     # validations
-    # container price is more than 3500 min, and max 10000
     @validates('price')
     def validate_price(self, key, value):
         if not isinstance(value, float):
@@ -166,7 +123,7 @@ class Shipment(db.Model, SerializerMixin):
 
     __tablename__ = 'shipments'
 
-    serialize_only = ('id', 'status', 'vessel_name', 'departure_time', 'arrival_time', 'arrival_port', 'origin', 'freight_rate', 'customer_id')
+    serialize_rules = ('-containers.shipment',)
 
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String, nullable=False)
@@ -177,22 +134,22 @@ class Shipment(db.Model, SerializerMixin):
     origin = db.Column(db.String, nullable=False)
     freight_rate = db.Column(db.Float, nullable=False)
 
-    # Relationship to Customer
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
-    customer = db.relationship('Customer', back_populates='shipments')
 
-    # Relationship to ShipmentContainerAssociation
-    shipment_container_associations = db.relationship(
-        'ShipmentContainerAssociation', back_populates='shipment')
-    
+    # Relationship
+    #if a shipment is deleted, deletes all associated containers.
+    containers = db.relationship('Container', back_populates='shipment', cascade='all')
+
+
+    #customers and shipments many to many
+    customers = association_proxy('containers', 'customer', creator = lambda c: Container(customer = c))
 
 
     # validations
     @validates('status')
     def validate_status(self, key, value):
         # status can either be In Transit or Completed
-        if value not in statuses:
-            raise ValueError('Invalid vessel status type')
+        if len(value) > 10:
+            raise ValueError('The characters for the status attribute can not be more than 10.')
         else:
             return value
 
@@ -207,18 +164,20 @@ class Shipment(db.Model, SerializerMixin):
     #validate origin and arrival port, must be unique 
     @validates('origin')
     def validate_origin(self, key, value):
-        if value not in origin_ports:
-            raise ValueError("Invalid origin port.")
+        if len(value) > 15:
+            raise ValueError(
+                "The origin port can not be more than 15 characters.")
         return value
     
 
     @validates('arrival_port')
     def validate_arrival_port(self, key, value):
-        if value not in arrival_ports:
-            raise ValueError("Invalid arrival port.")
+        if len(value) > 15:
+            raise ValueError(
+                "The arrival port can not be more than 15 characters.")
         return value
         
 
 
     def __repr__(self):
-        return f'Shipment (id: {self.id}, status: {self.status}, vessel_name: {self.vessel_name}, departure_time: {self.departure_time}, arrival_time: {self.arrival_time}, arrival_port: {self.arrival_port}, origin: {self.origin}, freight_rate: {self.freight_rate}, customer_id: {self.customer_id})'
+        return f'Shipment (id: {self.id}, status: {self.status}, vessel_name: {self.vessel_name}, departure_time: {self.departure_time}, arrival_time: {self.arrival_time}, arrival_port: {self.arrival_port}, origin: {self.origin}, freight_rate: {self.freight_rate})'

@@ -44,34 +44,6 @@ const NewBookingForm = () => {
           Please enter required fields to book a shipment with us!
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
-          {/* vessel name dropdown */}
-          {/* <div>
-            <label
-              htmlFor="vessel_name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Vessel Name:
-            </label>
-            <select
-              id="vessel_name"
-              name="vessel_name"
-              onChange={formik.handleChange}
-              value={formik.values.vessel_name}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
-            >
-              <option value="" label="Select vessel name" />
-              {shipments.map((shipment) => (
-                <option key={shipment.id} value={shipment.vessel_name}>
-                  {shipment.vessel_name}
-                </option>
-              ))}
-            </select>
-            {formik.errors.vessel_name && formik.touched.vessel_name ? (
-              <p className="text-red-500 text-xs mt-1">
-                {formik.errors.vessel_name}
-              </p>
-            ) : null}
-          </div> */}
           {/* Origin dropdown */}
           <div>
             <label
