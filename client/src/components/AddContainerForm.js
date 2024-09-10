@@ -19,12 +19,17 @@ import * as yup from "yup";
 const validationSchema = yup.object({
   container_number: yup
     .string()
-    .matches(/^[A-Z]{4}\d{6}$/, 'Container number must be 4 letters followed by 6 digits')
-    .required('Container number is required'),
+    .transform((value) => value.toUpperCase())
+    .matches(
+      /^[A-Z]{4}\d{6}$/,
+      "Container number must be 4 letters followed by 6 digits"
+    )
+    .required("Container number is required"),
   container_type: yup
     .string()
-    .oneOf(['20SD', '40SD', '40HC', '20HC', '40HC'], 'Invalid container type')
-    .required('Container type is required')
+    .transform((value) => value.toUpperCase()) // Convert to uppercase before validation
+    .oneOf(["20SD", "40SD", "40HC", "20HC", "40HC"], "Invalid container type")
+    .required("Container type is required"),
 });
 
 function AddContainerForm() {
@@ -49,11 +54,18 @@ function AddContainerForm() {
   });
 
 
+  const handleChange = (e) => {
+    // manually handle input change to convert input to uppercase
+    if (e.target.name === "container_number") {
+      formik.setFieldValue(e.target.name, e.target.value.toUpperCase());
+    }
+  }
+
+
   function handleCancelClick() {
     setShowAddContainerForm(false);
     setSelectedShipmentId(null)
   }
-
 
 
 
@@ -76,7 +88,7 @@ function AddContainerForm() {
               name="container_number"
               type="text"
               placeholder="Enter container number MSDU678904.."
-              onChange={formik.handleChange}
+              onChange={handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.container_number}
               className="border rounded-lg py-1 px-3 w-full"

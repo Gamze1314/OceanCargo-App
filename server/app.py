@@ -80,6 +80,7 @@ class Containers(Resource):
         try:
             # create new container ; data: container number, type, shipment id, and customer id default 1.
             data = request.get_json()
+            container_number = data.get('container_number')
             container_type = data.get('container_type')
             shipment_id = data.get('shipment_id')
             # breakpoint()
@@ -91,7 +92,7 @@ class Containers(Resource):
 
             # Create a new container instance
             new_container = Container(
-                container_number=data.get('container_number'),
+                container_number=container_number,
                 container_type=container_type,
                 price=price,
                 created_at=datetime.now(),
@@ -103,7 +104,9 @@ class Containers(Resource):
             db.session.add(new_container)
             db.session.commit()
 
-            return make_response({'message': 'Container created successfully'}, 201)
+            response_body = new_container.to_dict()
+
+            return make_response(response_body, 201)
 
         except Exception as e:
             # Handle any unexpected errors
@@ -115,19 +118,44 @@ api.add_resource(Containers, '/containers')
 class ContainerByID(Resource):
 
     def patch(self, id):
+        # update container depending on user inpput.
         try:
             # Parse the request data for updating the container
-            data = request.get_json()
+            data = request.json
+            # breakpoint()
+            #validate data 
+            container_number = data.get('container_number')
 
+            if not container_number: # string(10), unique, not null
+                return make_response({'message': 'Container number is required'}, 400)
+            if not isinstance(container_number, str):
+                return make_response({'message': 'Container number must be a string'}, 400)
+            if not len(container_number) == 10:
+                return make_response({'message': 'Container number must have exactly 10 characters'}, 400)
+            
+            container_type = data.get('container_type')
+
+            if not container_type: # string(20), not null
+                return make_response({'message': 'Container type is required'}, 400)
+            if not isinstance(container_type, str):
+                return make_response({'message': 'Container type must be a string'}, 400)
+            
+            
             # Find the container by id
-            container = Container.query.get(id)
+            container = Container.query.filter_by(id=id).first()
 
             if container:
-                # Update the container fields
-                container.container_number = data.get(
-                    'container_number', container.container_number)
-                container.container_type = data.get(
-                    'container_type', container.container_type)
+            # Update the container fields, if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same. updated_at , datetime.now()
+                if '20' in container_type:
+                    price = 4000.00
+                else:
+                    price = 7000.00
+            #check if container number is valid, string, and not empty
+
+                container.container_number = container_number
+                container.container_type = container_type
+                container.price = price
+                container.updated_at = datetime.now()
 
                 # Commit the changes
                 db.session.commit()
@@ -139,6 +167,8 @@ class ContainerByID(Resource):
         except Exception as e:
             # Handle any unexpected errors
             return {'message': f'Error updating container: {e}'}, 500
+        
+
 
     def delete(self, id):
         try:
