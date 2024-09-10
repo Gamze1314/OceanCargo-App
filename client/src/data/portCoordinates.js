@@ -1,12 +1,21 @@
-export const origins = ["Istanbul", "Guangzhou", "Shanghai", "Mumbai",
-                "Genoa", "Hamburg"]
+export const origins = [
+  "Istanbul",
+  "Guangzhou",
+  "Shanghai",
+  "Mumbai",
+  "Genoa",
+  "Hamburg",
+];
 
 // List of arrival ports (in U.S.)
-export const arrivals = ["New York", "Los Angeles", "Houston",
-                 "Atlanta", "Vancouver", "Oakland"]
-
-
-
+export const arrivals = [
+  "New York",
+  "Los Angeles",
+  "Houston",
+  "Atlanta",
+  "Vancouver",
+  "Oakland",
+];
 
 export const arrivalPorts = {
   newYork: { lat: 40.7128, lng: -74.006 },
@@ -17,7 +26,6 @@ export const arrivalPorts = {
   oakland: { lat: 37.8044, lng: -122.2711 },
 };
 
-
 export const originPorts = {
   istanbul: { lat: 41.0082, lng: 28.9784 },
   guangzhou: { lat: 23.1291, lng: 113.2644 },
@@ -27,24 +35,20 @@ export const originPorts = {
   hamburg: { lat: 53.5511, lng: 9.9937 },
 };
 
-
-
 export const arrivalMarkers = [
-      { position: arrivalPorts.newYork, label: "New York" },
-      { position: arrivalPorts.losAngeles, label: "Los Angeles" },
-      { position: arrivalPorts.houston, label: "Houston" },
-      { position: arrivalPorts.atlanta, label: "Atlanta" },
-      { position: arrivalPorts.vancouver, label: "Vancouver" },
-      { position: arrivalPorts.oakland, label: "Oakland" },
-    ];
+  { position: arrivalPorts.newYork, label: "New York" },
+  { position: arrivalPorts.losAngeles, label: "Los Angeles" },
+  { position: arrivalPorts.houston, label: "Houston" },
+  { position: arrivalPorts.atlanta, label: "Atlanta" },
+  { position: arrivalPorts.vancouver, label: "Vancouver" },
+  { position: arrivalPorts.oakland, label: "Oakland" },
+];
 
 export const originMarkers = [
-      { position: originPorts.istanbul, label: "Istanbul" },
-      { position: originPorts.guangzhou, label: "Guangzhou" },
-      { position: originPorts.shanghai, label: "Shanghai" },
-      { position: originPorts.mumbai, label: "Mumbai" },
-      { position: originPorts.genoa, label: "Genoa" },
-      { position: originPorts.hamburg, label: "Hamburg" },
-    ];
-
-//shipment arrival port and origin lng/lat here.
+  { position: originPorts.istanbul, label: "Istanbul" },
+  { position: originPorts.guangzhou, label: "Guangzhou" },
+  { position: originPorts.shanghai, label: "Shanghai" },
+  { position: originPorts.mumbai, label: "Mumbai" },
+  { position: originPorts.genoa, label: "Genoa" },
+  { position: originPorts.hamburg, label: "Hamburg" },
+];

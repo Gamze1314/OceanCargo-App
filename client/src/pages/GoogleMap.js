@@ -1,6 +1,6 @@
 //import API Provider, Map Markers vis.gl
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
-import { arrivalMarkers, originMarkers } from "./data/portCoordinates";
+import { arrivalMarkers, originMarkers } from "../data/portCoordinates";
 import { useOutletContext } from 'react-router-dom'
 import { useState } from "react"
 

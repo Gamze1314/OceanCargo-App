@@ -2,8 +2,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate, useOutletContext } from "react-router-dom";
 //  import origins and arrivals from portcoordinates
-import { origins, arrivals } from './data/portCoordinates.js'
-
+import { origins, arrivals } from "../data/portCoordinates.js";
 
 const NewBookingForm = () => {
   const navigate = useNavigate();
@@ -19,7 +18,11 @@ const NewBookingForm = () => {
     arrival: yup.string().required("Must select an arrival port"),
     container_type: yup.string().required("Must select a container type."),
     // Comment must be between 1 and 50 characters long and not empty
-    comment: yup.string().required("Comment field must be between 1 and 50 characters.").max(50).min(1),
+    comment: yup
+      .string()
+      .required("Comment field must be between 1 and 50 characters.")
+      .max(50)
+      .min(1),
   });
 
   // formik is a hook used to hold form data and handle validations/form submission.
@@ -31,10 +34,10 @@ const NewBookingForm = () => {
       comment: "",
     },
     validationSchema: formSchema,
-      onSubmit: (values) => {
-        console.log("Enter in submit function", values);
-        bookShipment(values)
-      }
+    onSubmit: (values) => {
+      console.log("Enter in submit function", values);
+      bookShipment(values);
+    },
   });
 
   return (

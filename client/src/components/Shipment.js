@@ -1,5 +1,7 @@
 
 function Shipment({ shipment }) {
+
+  
   return (
     <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-blue-600 transition-colors">
       <table className="border-separate border border-slate-500 ...">
