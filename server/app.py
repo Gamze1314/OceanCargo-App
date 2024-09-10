@@ -109,6 +109,11 @@ class Containers(Resource):
             # Handle any unexpected errors
             return {'message': f'Error creating container: {e}'}, 500
 
+        
+api.add_resource(Containers, '/containers')
+
+class ContainerByID(Resource):
+
     def patch(self, id):
         try:
             # Parse the request data for updating the container
@@ -123,7 +128,6 @@ class Containers(Resource):
                     'container_number', container.container_number)
                 container.container_type = data.get(
                     'container_type', container.container_type)
-                # Other fields as necessary
 
                 # Commit the changes
                 db.session.commit()
@@ -139,22 +143,25 @@ class Containers(Resource):
     def delete(self, id):
         try:
             # Find the container by id
-            container = Container.query.get(id)
-
-            if container:
-                # Delete the container from the session
-                db.session.delete(container)
-                db.session.commit()
-
-                return make_response({'message': 'Container deleted successfully'}, 200)
-            else:
+            container = Container.query.filter(Container.id == id).first()
+            # breakpoint()
+            if not container:
                 return make_response({'message': 'Container not found'}, 404)
+                # Delete the container from the session
+            db.session.delete(container)
+            db.session.commit()
+
+            response_dict = {"message": "record successfully deleted"}
+
+            return make_response(response_dict, 204)
 
         except Exception as e:
-            # Handle any unexpected errors
+            # Handle server errors
+            # rollback ?
             return {'message': f'Error deleting container: {e}'}, 500
         
-api.add_resource(Containers, '/containers')
+
+api.add_resource(ContainerByID, '/containers/<int:id>')
         
 
 

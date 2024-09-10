@@ -7,6 +7,7 @@ function DeleteButton({ container, shipmentId }) {
   const { deleteContainer } = useContext(Context); // use delete function from context.js
 
   function handleDelete() {
+    console.log("Delete button is clicked")
     deleteContainer(container.id, shipmentId); // delete handler to be passed container id
   }
 

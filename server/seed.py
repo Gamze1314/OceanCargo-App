@@ -108,7 +108,7 @@ with app.app_context():
         container = Container(
             container_number=container_number,
             container_type=fake.random_element(elements=types),
-            # Price between $500 and $5000
+            # Price between $3500and $10000
             price=round(random.uniform(3700.0, 9000.0), 2),
             customer_id=1,
             shipment_id=1,

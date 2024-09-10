@@ -1,8 +1,8 @@
-"""empty message
+"""Initial migrate with relationships
 
-Revision ID: 88171e55d2ad
+Revision ID: 2cf80b99a72e
 Revises: 
-Create Date: 2024-09-08 13:03:33.860222
+Create Date: 2024-09-09 21:32:41.850963
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '88171e55d2ad'
+revision = '2cf80b99a72e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,29 +27,29 @@ def upgrade():
     sa.Column('credit_amount', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('created_at', sa.Date(), nullable=False),
     sa.Column('updated_at', sa.Date(), nullable=True),
-    sa.CheckConstraint('1', name=op.f('ck_customers_check_name_not_username')),
+    sa.CheckConstraint('name != username', name=op.f('ck_customers_check_name_not_username')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_customers')),
     sa.UniqueConstraint('email', name=op.f('uq_customers_email')),
     sa.UniqueConstraint('username', name=op.f('uq_customers_username'))
     )
     op.create_table('shipments',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.String(), nullable=False),
-    sa.Column('vessel_name', sa.String(), nullable=False),
-    sa.Column('departure_time', sa.String(), nullable=False),
-    sa.Column('arrival_time', sa.String(), nullable=False),
-    sa.Column('arrival_port', sa.String(), nullable=False),
-    sa.Column('origin', sa.String(), nullable=False),
+    sa.Column('status', sa.String(length=250), nullable=False),
+    sa.Column('vessel_name', sa.String(length=30), nullable=False),
+    sa.Column('departure_time', sa.Date(), nullable=False),
+    sa.Column('arrival_time', sa.Date(), nullable=False),
+    sa.Column('arrival_port', sa.String(length=30), nullable=False),
+    sa.Column('origin', sa.String(length=30), nullable=False),
     sa.Column('freight_rate', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('created_at', sa.Date(), nullable=False),
     sa.Column('updated_at', sa.Date(), nullable=True),
+    sa.CheckConstraint('arrival_time != departure_time', name=op.f('ck_shipments_check_arrival_and_departure_date')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_shipments'))
     )
     op.create_table('containers',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('container_number', sa.String(), nullable=False),
+    sa.Column('container_number', sa.String(length=10), nullable=False),
     sa.Column('container_type', sa.String(), nullable=False),
-    sa.Column('weight', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('created_at', sa.Date(), nullable=False),
     sa.Column('updated_at', sa.Date(), nullable=True),

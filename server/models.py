@@ -138,7 +138,7 @@ class Container(db.Model, SerializerMixin):
 
 
     def __repr__(self):
-        return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, weight={self.weight}, price={self.price})'
+        return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, price={self.price})'
 
 
 # Shipment model with relationships

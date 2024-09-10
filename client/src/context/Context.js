@@ -59,11 +59,34 @@ const MyProvider = ({ children }) => {
   };
 
 
-  const deleteContainer = () => {
-    // deletes container with DELETE method 
-    // updates state to show updated UI.
-
-  }
+const deleteContainer = (containerId, shipmentId) => {
+  fetch(`/containers/${containerId}`, {
+    method: "DELETE",
+  })
+    .then((res) => {
+      if (res.status === 204) {
+        alert("The container is deleted successfully.");
+        // Skip res.json() if there's no content returned
+        return res.status === 204 ? null : res.json();
+      }
+    })
+    .then(() => {
+      // Update shipments state
+      setShipments((prevShipments) =>
+        prevShipments.map((shipment) =>
+          shipment.id === shipmentId
+            ? {
+                ...shipment,
+                containers: shipment.containers.filter(
+                  (container) => container.id !== containerId
+                ),
+              }
+            : shipment
+        )
+      );
+    })
+    .catch((error) => console.error("Error:", error)); // Handle any errors
+};
 
 
   return (
