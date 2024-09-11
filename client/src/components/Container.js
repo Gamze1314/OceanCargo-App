@@ -5,7 +5,6 @@ import DeleteButton from "./DeleteButton.js";
 import EditContainerForm from "./EditContainerForm";
 
 const Container = React.memo(({ container, shipmentId }) => {
-  console.log(container.container_number);
   const { selectedContainerId, setSelectedContainerId, setSelectedShipmentId } = useContext(Context);
 
   // if selectedContainerId does not change, skips re-rendering with React.memo => memoizes the Container component
@@ -25,7 +24,7 @@ const Container = React.memo(({ container, shipmentId }) => {
     setSelectedShipmentId(null); // Reset selectedShipmentId when editing is cancelled
   }, [setSelectedContainerId, setSelectedShipmentId]);
 
-  console.log(selectedContainerId);
+  // console.log(selectedContainerId);
 
   // // Only re-render if selectedContainerId or container.id changes
   // const isSelected = selectedContainerId === container.id;

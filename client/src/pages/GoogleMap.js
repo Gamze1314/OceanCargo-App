@@ -1,8 +1,8 @@
 //import API Provider, Map Markers vis.gl
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { arrivalMarkers, originMarkers } from "../data/portCoordinates";
-import { useOutletContext } from 'react-router-dom'
-import { useState } from "react"
+import { useState , useContext } from "react"
+import { Context } from '../context/Context';
 
 // this components renders Google Map with customer's shipment information marked.(arrival time, freight rate, departure time.) when customer clicks on the marker.
 // user is able to scroll around the map, w zooming and panning.
@@ -13,40 +13,32 @@ import { useState } from "react"
 
 
 function GoogleMap() {
-    const [isOrigin, setIsOrigin] = useState(false)
-    const [selectedShipments, setSelectedShipments] = useState([])
-    const { customerContainers } = useOutletContext()
+  console.log("GoogleMap component rendered");
+  const [isOrigin, setIsOrigin] = useState(false);
+  const [selectedShipment, setSelectedShipment] = useState([]);
+  const { shipments } = useContext(Context);
 
-// update CustomersShipment state to show updated information on Map, if a shipment gets deleted or updated.
+  // update state to show updated information on Map, if a shipment gets deleted or updated.
 
+  // Handle arrival port click
+  function handleArrivalPortClick(port) {
+    const portShipments = shipments.filter(
+      (shipment) => shipment.arrival_port === port
+    );
+    setIsOrigin(false);
+    setSelectedShipment(portShipments);
+  }
 
-    function handleArrivalPortClick(port) {
-        console.log(port);
-        // Find shipments arriving into this port
-        // Filter shipments where arrival_port matches the port clicked
-        console.log("arrival port clicked");
-        const portShipments = customerContainers.filter(
-        (shipment) => shipment.arrival_port === port
-        );
-        console.log(portShipments);
-        setIsOrigin(false)
-        setSelectedShipments(portShipments)
+  // Handle origin port click
+  function handleOriginPortClick(port) {
+    const originShipments = shipments.filter(
+      (shipment) => shipment.origin === port
+    );
+    setIsOrigin(true);
+    setSelectedShipment(originShipments);
+  }
 
-    }
-
-
-    function handleOriginPortClick(port) {
-        //find shipments originating from this port.
-        //display markerContainer with departure time if origin port is clicked
-        console.log("origin port clicked")
-        const originShipments = customerContainers.filter((shipment) => shipment.origin === port)
-        console.log(originShipments)
-        setIsOrigin(true)
-        setSelectedShipments(originShipments)
-
-    }
- 
-
+  // console.log(selectedShipment)
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
@@ -78,60 +70,57 @@ function GoogleMap() {
         ))}
         ;
       </Map>
-      {selectedShipments && (
-        <MarkerContainer
-          selectedShipments={selectedShipments}
-          isOrigin={isOrigin}
-        />
+      {selectedShipment && (
+        <MarkerContainer shipment={selectedShipment} isOrigin={isOrigin} />
       )}
     </APIProvider>
   );
 }
 
 
-function MarkerContainer({ selectedShipments, isOrigin }) {
-  console.log(selectedShipments);
 
-  // Check if there are any selected shipments and if isOrigin is true
-  if (selectedShipments.length > 0) {
-    return (
-      <div className="absolute bottom-0 left-0 p-4 bg-white shadow-lg rounded-lg max-w-lg">
-        {selectedShipments.map((shipment, index) => (
-          <div key={index} className="mb-2 border-b pb-2 text-md text-red-900">
-            {index + 1}. Shipment
-            <li className="text-md text-blue-800">
-              Container: {shipment.container_number} - {shipment.container_type}
-            </li>
-            <li className="text-md text-blue-800">
-              Container price: ${shipment.container_price}
-            </li>
-            <li className="text-md text-blue-800">
-              Ocean rate: ${shipment.ocean_rate}
-            </li>
-            <li className="text-md text-blue-800">
-              Comment: {shipment.comment}
-            </li>
-            {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
-            {isOrigin ? (
-              <li className="text-md text-blue-800">
-                Arrival Port: {shipment.arrival_port}
+function MarkerContainer({ shipment, isOrigin }) {
+
+return (
+  <div className="absolute bottom-0 left-0 p-4 bg-white shadow-lg rounded-lg max-w-lg">
+    {shipment.map((s, index) => (
+      <div key={index} className="mb-2 border-b pb-2 text-md text-red-900">
+        {index + 1}. Shipment
+        <ul>
+          <li className="text-md text-blue-800">
+            Ocean rate: ${s.freight_rate}
+          </li>
+          {/* Check if containers exist */}
+          {s.containers.length > 0 ? (
+            s.containers.map((c, containerIndex) => (
+              <li key={containerIndex} className="text-md text-blue-800">
+                <div>
+                  Container: {c.container_number} - {c.container_type}
+                </div>
+                <div>Container price: ${c.price}</div>
               </li>
-            ) : (
-              <li className="text-md text-blue-800">
-                Departure Port: {shipment.origin}
-              </li>
-            )}
+            ))
+          ) : (
+            <li className="text-md text-red-800">
+              No assigned container to display.
+            </li>
+          )}
+        </ul>
+        {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
+        {isOrigin ? (
+          <div className="text-md text-blue-800">
+            Arrival Port: {s.arrival_port}
           </div>
-        ))}
+        ) : (
+          <div className="text-md text-blue-800">
+            Departure Port: {s.origin}
+          </div>
+        )}
       </div>
-    );
-  }
-
-  // Return null if no shipments
-  return null;
+    ))}
+  </div>
+);
 }
-
-
 
 
 export default GoogleMap

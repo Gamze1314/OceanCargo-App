@@ -4,9 +4,7 @@ from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer
-import ipdb
 from faker import Faker
-import random
 from datetime import datetime
 
 # Create the Flask application object
@@ -141,16 +139,19 @@ class ContainerByID(Resource):
                 return make_response({'message': 'Container type must be a string'}, 400)
             
             
+            
             # Find the container by id
             container = Container.query.filter_by(id=id).first()
 
             if container:
             # Update the container fields, if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same. updated_at , datetime.now()
+
+            #check if container number is valid, string, and not empty  
                 if '20' in container_type:
                     price = 4000.00
                 else:
                     price = 7000.00
-            #check if container number is valid, string, and not empty
+
 
                 container.container_number = container_number
                 container.container_type = container_type
@@ -160,7 +161,9 @@ class ContainerByID(Resource):
                 # Commit the changes
                 db.session.commit()
 
-                return make_response({'message': 'Container updated successfully'}, 200)
+                response_body = container.to_dict()
+
+                return make_response(response_body, 200)
             else:
                 return make_response({'message': 'Container not found'}, 404)
 

@@ -1,15 +1,11 @@
 import "./index.css";
 import NavBar from "./components/NavBar.js";
 import logo from "./assests/logo.jpg";
-import Home from "./pages/Home.js"
 // use useContext hook to shipments data
-import { useContext } from "react";
-import { Context } from "./context/Context.js"; // Import Context
+import { Outlet } from "react-router-dom";
 
 
 function App() {
-  // const navigate = useNavigate(); // useNavigate hook returns a function that lets you navigate programmatically.
-  const context = useContext(Context);
 
   return (
         <>
@@ -24,7 +20,7 @@ function App() {
           <h1 className="flex justify-center items-center min-h bg-blue-300 text-semibold hover:text-red-500">
             Manage your shipments effortlessly..
           </h1>
-          <Home context={context}/>
+          <Outlet />
         </>
       )
 }

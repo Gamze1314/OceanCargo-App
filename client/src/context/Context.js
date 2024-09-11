@@ -103,8 +103,8 @@ const deleteContainer = (containerId, shipmentId) => {
 
 
 const updateContainer = (containerData) => {
-  // send PATCH request to the backend /containers/id
-  console.log(containerData)
+  // Send PATCH request to the backend /containers/id
+  console.log(containerData);
   // {container_number: 'CBHU320323', container_type: '40HC', shipment_id: 1}
 
   fetch(`/containers/${containerData.id}`, {
@@ -114,10 +114,40 @@ const updateContainer = (containerData) => {
     },
     body: JSON.stringify(containerData),
   })
-   .then(res => {
-    console.log(res.status)
-  })
+    .then(res => {
+      if (res.ok) {
+        return res.json(); // Parse the JSON response
+      } else {
+        alert(`Unexpected response status: ${res.status}`);
+      }
+    })
+    .then(data => {
+      console.log('Updated container data:', data);
 
+      // Update state with response data
+      setShipments(prevShipments =>
+        prevShipments.map(shipment =>
+          shipment.id === containerData.shipment_id
+            ? {
+                ...shipment,
+                containers: shipment.containers.map(c =>
+                  c.id === containerData.id
+                    ? { ...c, ...data } // Use response data for updated container
+                    : c
+                )
+              }
+            : shipment
+        )
+      );
+
+      setSelectedContainerId(null);
+      setSelectedShipmentId(null);
+      alert("The container has been successfully updated.");
+    })
+    .catch(error => {
+      console.error('Error updating container:', error);
+      alert('Failed to update the container.');
+    });
 }
 
 
