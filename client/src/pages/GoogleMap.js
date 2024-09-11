@@ -10,8 +10,6 @@ import { Context } from '../context/Context';
 // ArrivalPorts: New York, Los Angeles, Houston, Atlanta, Vancouver, Oakland
 //Origin Ports: Istanbul, Guangzhou, Shanghai, Mumbai, Genoa, Hamburg
 
-
-
 function GoogleMap() {
   console.log("GoogleMap component rendered");
   const [isOrigin, setIsOrigin] = useState(false);
@@ -38,7 +36,7 @@ function GoogleMap() {
     setSelectedShipment(originShipments);
   }
 
-  // console.log(selectedShipment)
+ 
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
@@ -48,6 +46,8 @@ function GoogleMap() {
         defaultCenter={{ lat: 22.54992, lng: 0 }} // initial center
         defaultZoom={3} // inital zoom when map first loads.
         gestureHandling={"greedy"} // map will capture all gestures, zoom in, scrolling, and panning for touch-screen devices.
+        onClick={() => alert("Click on the markers to see the details of each shipment.")
+        } // Add map click event
       >
         {/* update marker labels depending on arrival or origin port */}
         {arrivalMarkers.map((marker, index) => (
@@ -85,7 +85,7 @@ return (
   <div className="absolute bottom-0 left-0 p-4 bg-white shadow-lg rounded-lg max-w-lg">
     {shipment.map((s, index) => (
       <div key={index} className="mb-2 border-b pb-2 text-md text-red-900">
-        {index + 1}. Shipment
+        Shipment Details
         <ul>
           <li className="text-md text-blue-800">
             Ocean rate: ${s.freight_rate}

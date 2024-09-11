@@ -9,9 +9,9 @@ function Shipment({ shipment }) {
           <tr>
             <th className="border border-slate-600 ...">Vessel Name</th>
             <th className="border border-slate-600 ...">Arrival Time</th>
-            <th className="border border-slate-600 ...">Origin</th>
+            <th className="border border-slate-600 ...">Origin </th>
             <th className="border border-slate-600 ...">Departure Time</th>
-            <th className="border border-slate-600 ...">Status</th>
+            <th className="border border-slate-600 ...">Arrival Port</th>
           </tr>
         </thead>
         <tbody>
@@ -20,11 +20,11 @@ function Shipment({ shipment }) {
             <td className="border border-slate-700 ...">{shipment.arrival_time}</td>
             <td className="border border-slate-700 ...">{shipment.origin}</td>
             <td className="border border-slate-700 ...">{shipment.departure_time}</td>
-            <td className="border border-slate-700 ...">{shipment.status}</td>
+            <td className="border border-slate-700 ...">{shipment.arrival_port}</td>
           </tr>
         </tbody>
       </table>
-      <p>This shipment is currently under "{shipment.status}" status. For more details, please submit a booking request.</p>
+      {/* <p>This shipment is currently under "{shipment.status}" status. For more details, please submit a booking request.</p> */}
     </div>
   );
 }

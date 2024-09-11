@@ -103,6 +103,7 @@ with app.app_context():
     prefixes = ["CBHU", "ECHU", "TRHU", "MSDU"]
     types = ["40SD", "20SD", "40HC"]
     for _ in range(10):
+        shipment_ids = [s.id for s in shipments]
         container_number = fake.random_element(
             elements=prefixes) + str(fake.random_number(digits=6, fix_len=True))
         container = Container(
@@ -111,7 +112,7 @@ with app.app_context():
             # Price between $3500and $10000
             price=round(random.uniform(3700.0, 9000.0), 2),
             customer_id=1,
-            shipment_id=1,
+            shipment_id=random.choice(shipment_ids),
             created_at=datetime.now(),
             updated_at=datetime.now()
         )

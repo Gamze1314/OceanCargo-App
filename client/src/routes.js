@@ -4,9 +4,8 @@ import App from "./App";
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import Shipments from "./pages/Shipments";
-import Profile from "./UserProfile";
 import GoogleMap from "./pages/GoogleMap";
-import NewBookingForm from "./pages/NewBookingForm";
+import Search from "./pages/Search";
 
 
 //App will render children components.
@@ -27,13 +26,8 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "/profile",
-        element: <Profile />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/add_shipment",
-        element: <NewBookingForm />,
+        path: "/search_container",
+        element: <Search />,
         errorElement: <ErrorPage />,
       },
       //...all other routes => redirect to Error page.

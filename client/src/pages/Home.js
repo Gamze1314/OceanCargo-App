@@ -65,16 +65,10 @@ function Home() {
           </div>
           <div className="flex justify-between space-x-4">
             <Link
-              to="/add_shipment"
-              className="bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900"
-            >
-              Add new shipment
-            </Link>
-            <Link
               to="/shipments"
               className="bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900"
             >
-              View Shipments
+              View Vessel Schedules
             </Link>
           </div>
         </div>

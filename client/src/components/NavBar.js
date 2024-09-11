@@ -15,14 +15,11 @@ function NavBar({ logo }) {
           <NavLink to="/" className={linkClasses}>
             Home
           </NavLink>
-          <NavLink to="/add_shipment" className={linkClasses}>
-            Add Shipment
-          </NavLink>
-          <NavLink to="/profile" className={linkClasses}>
-            My Profile
+          <NavLink to="/search_container" className={linkClasses}>
+            Container Search
           </NavLink>
           <NavLink to="/shipments" className={linkClasses}>
-            My Shipments
+            Vessel Schedule
           </NavLink>
           <NavLink to="/map" className={linkClasses}>
           Map

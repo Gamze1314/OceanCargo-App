@@ -150,6 +150,23 @@ const updateContainer = (containerData) => {
     });
 }
 
+// searchContainer function to get Container by cont number. matching containers returns the container.
+  function searchContainer(data) {
+    // console.log(data);
+    const upperCaseContainerNumber = data.container_number.toUpperCase();
+
+    // Find the container that matches the container number
+    const container = shipments.containers.find(
+      (c) => c.container_number.toUpperCase() === upperCaseContainerNumber
+    );
+
+    if (!container) {
+      alert("No container found");
+      return null;
+    }
+
+  }
+
 
   return (
     <Context.Provider
@@ -164,6 +181,7 @@ const updateContainer = (containerData) => {
         updateContainer,
         selectedContainerId,
         setSelectedContainerId, // update selectedContainerId when container is clicked for editing
+        searchContainer
       }}
     >
       {children}
