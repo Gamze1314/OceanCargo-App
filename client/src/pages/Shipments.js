@@ -1,5 +1,4 @@
 import Shipment from "../components/Shipment.js";
-// useContext to access shipment data
 import React, { useContext } from "react";
 import { Context } from "../context/Context.js";
 
@@ -7,7 +6,7 @@ import { Context } from "../context/Context.js";
 function Shipments() {
   const { shipments } = useContext(Context);
 
-  // map through shipments array and render each shipment <Shipment/>
+  // map through shipments array and render each shipment component <Shipment/>
 
   return (
     <div className="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg mb-6">

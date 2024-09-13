@@ -1,19 +1,16 @@
 // formik to handle new container adding for a specific shipment.
 // form values: container number, type, selectedShipmentId
 
-
 // validates user inputs for cont number : 4 letters and 6 digits
-// cont type: 20sd , 40sd , 20hc...  dropdown 
-// price: integer 
+// cont type: 20sd , 40sd , 20hc...  dropdown
+// price: integer
 // must enter all fields, and string(10) for number, and string for cont number.
 
 // formik state to hold cont data and send it to backend.
-import React, { useContext } from 'react';
-import { Context } from '../context/Context.js'; // Import context
+import React, { useContext } from "react";
+import { Context } from "../context/Context.js"; // Import context
 import { useFormik } from "formik";
 import * as yup from "yup";
-
-
 
 // Define validation schema
 const validationSchema = yup.object({
@@ -33,41 +30,41 @@ const validationSchema = yup.object({
 });
 
 function AddContainerForm() {
-  const { selectedShipmentId, setSelectedShipmentId, addContainer, setShowAddContainerForm } =
-    useContext(Context);
+  const {
+    selectedShipmentId,
+    setSelectedShipmentId,
+    addContainer,
+    setShowAddContainerForm,
+  } = useContext(Context);
 
   const formik = useFormik({
     initialValues: {
       container_number: "",
-      container_type: "20SD" // default value
+      container_type: "20SD", // default value
     },
+
     validationSchema,
     onSubmit: (values) => {
       // Add shipmentId to form values
       const containerData = { ...values, shipment_id: selectedShipmentId };
-      console.log(containerData);
       addContainer(containerData);
-      // Optionally clear form and hide the form after submission
-      formik.resetForm();
       setShowAddContainerForm(false);
+      //clear the form
+      formik.resetForm();
     },
   });
-
 
   const handleChange = (e) => {
     // manually handle input change to convert input to uppercase
     if (e.target.name === "container_number") {
       formik.setFieldValue(e.target.name, e.target.value.toUpperCase());
     }
-  }
-
+  };
 
   function handleCancelClick() {
     setShowAddContainerForm(false);
-    setSelectedShipmentId(null)
+    setSelectedShipmentId(null);
   }
-
-
 
   return (
     <div className="flex justify-center items-center min-h">
@@ -89,7 +86,6 @@ function AddContainerForm() {
               type="text"
               placeholder="Enter container number MSDU678904.."
               onChange={handleChange}
-              onBlur={formik.handleBlur}
               value={formik.values.container_number}
               className="border rounded-lg py-1 px-3 w-full"
             />
@@ -112,7 +108,6 @@ function AddContainerForm() {
               id="container_type"
               name="container_type"
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               value={formik.values.container_type}
               className="border rounded-lg py-1 px-3 w-full"
             >

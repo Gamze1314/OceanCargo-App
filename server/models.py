@@ -1,10 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, func
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from datetime import date
 import re
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 # contains definitions of tables and associated schema constructs.
@@ -89,7 +90,8 @@ class Customer(db.Model, SerializerMixin):
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
 
-    serialize_rules = ('-customer.containers', '-shipment.containers')
+    serialize_rules = ('-customer.containers',
+                       '-shipment.containers', 'total_cost')
 
     id = db.Column(db.Integer, primary_key=True)
     container_number = db.Column(db.String(10), nullable=False, unique=True)
@@ -134,6 +136,11 @@ class Container(db.Model, SerializerMixin):
         if not value[4:].isdigit():
             raise ValueError(f'{key} must end with 6 digits.')
         return value
+    
+    # calculate the total cost for each container, shipment's freight rate plus container price.
+    @hybrid_property
+    def total_cost(self):
+        return self.price + (self.shipment.freight_rate if self.shipment else 0)  # if shipment exists, add freight rate else 0.00.
 
 
 

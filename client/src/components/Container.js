@@ -1,5 +1,5 @@
 import React, { useContext, useCallback } from "react";
-import { Context } from "../context/Context.js"; // Import context
+import { Context } from "../context/Context.js";
 import UpdateButton from "./UpdateButton.js";
 import DeleteButton from "./DeleteButton.js";
 import EditContainerForm from "./EditContainerForm";
@@ -24,12 +24,6 @@ const Container = React.memo(({ container, shipmentId }) => {
     setSelectedShipmentId(null); // Reset selectedShipmentId when editing is cancelled
   }, [setSelectedContainerId, setSelectedShipmentId]);
 
-  // console.log(selectedContainerId);
-
-  // // Only re-render if selectedContainerId or container.id changes
-  // const isSelected = selectedContainerId === container.id;
-
-  // console.log(`Container ${container.container_number} render`);
 
   return (
     <div>

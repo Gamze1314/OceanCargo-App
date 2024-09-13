@@ -1,7 +1,4 @@
-
 function Shipment({ shipment }) {
-
-  
   return (
     <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-blue-600 transition-colors">
       <table className="border-separate border border-slate-500 ...">
@@ -16,11 +13,19 @@ function Shipment({ shipment }) {
         </thead>
         <tbody>
           <tr>
-            <td className="border border-slate-700 ...">{shipment.vessel_name}</td>
-            <td className="border border-slate-700 ...">{shipment.arrival_time}</td>
+            <td className="border border-slate-700 ...">
+              {shipment.vessel_name}
+            </td>
+            <td className="border border-slate-700 ...">
+              {shipment.arrival_time}
+            </td>
             <td className="border border-slate-700 ...">{shipment.origin}</td>
-            <td className="border border-slate-700 ...">{shipment.departure_time}</td>
-            <td className="border border-slate-700 ...">{shipment.arrival_port}</td>
+            <td className="border border-slate-700 ...">
+              {shipment.departure_time}
+            </td>
+            <td className="border border-slate-700 ...">
+              {shipment.arrival_port}
+            </td>
           </tr>
         </tbody>
       </table>

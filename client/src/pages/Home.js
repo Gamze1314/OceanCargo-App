@@ -1,30 +1,24 @@
 import { Link } from "react-router-dom";
 import NewsSection from "../components/NewsSection.js";
-// import Buttons from "./Buttons";
 import React, { useContext } from "react";
-import { Context } from "../context/Context.js"; // Import the context
-import Containers from "../components/Containers.js"; // Import the Containers component
+import { Context } from "../context/Context.js";
+import Containers from "../components/Containers.js";
 import AddContainerButton from "../components/AddContainerButton.js";
 import AddContainerForm from "../components/AddContainerForm.js";
 
+
+
+// condiitionally renders the form and button if 'addContainer' button is clicked.
 function Home() {
   // use useContext hook to access shipments data from Context.
-  const {
-    selectedShipmentId,
-    shipments,
-    showAddContainerForm,
-  } = useContext(Context);
+  const { selectedShipmentId, shipments, showAddContainerForm } = useContext(Context);
 
-// condiitionally renders the form and button if addContainer button is clicked.
 
   // flexbox with 2 columns for news section and dashboard.
   return (
     <div className="flex space-x-6 pt-4 pb-4">
-      {/* Dashboard */}
       <div className="bg-white shadow-lg rounded-lg p-11 w-2/3">
-        <h2 className="text-xl font-semibold text-blue-900 mb-4">
-          Your Dashboard
-        </h2>
+        <h2 className="text-xl font-semibold text-blue-900 mb-4"> Your Dashboard</h2>
         <div className="space-y-4">
           {/* Upcoming Shipments */}
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -51,7 +45,6 @@ function Home() {
                       shipmentId={shipmentObj.id}
                     />
                   )}
-
                   {/* Render the Containers component */}
                   <Containers
                     containers={shipmentObj.containers}
@@ -73,7 +66,6 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* News Section */}
       <NewsSection />
     </div>
   );
@@ -82,4 +74,4 @@ function Home() {
 export default Home;
 
 // Clicking on Add Container for a specific shipment sets selectedShipmentId to the ID of that shipment and opens the form for that shipment only.
-// If the shipment is not the selected one, the form will not be shown.
+// If the shipment is not the selected, the form will not be shown. selectedShipmentId === shipmentObj.id

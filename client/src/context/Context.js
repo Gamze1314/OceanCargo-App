@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext } from "react";
-// #manage global state, and API calls here
+// #manages the global state, and API calls here
 
 // provider: send the data out; Context API
 // pass function that changes state from here.
@@ -10,6 +10,7 @@ const MyProvider = ({ children }) => {
   const [showAddContainerForm, setShowAddContainerForm] = useState(false);
   const [selectedShipmentId, setSelectedShipmentId] = useState(null);
   const [selectedContainerId, setSelectedContainerId] = useState(null);
+  const [containerByNumber, setContainerByNumber] = useState(null);
 
   useEffect(() => {
     // Fetch shipments data from API
@@ -26,8 +27,6 @@ const MyProvider = ({ children }) => {
       .catch((error) => console.error("Error:", error));
   }, []);
 
-  // console.log(selectedShipmentId);
-  // console.log(showAddContainerForm);
 
   // add container POST request to /containers, status 201 update state, else: return error
   const addContainer = (container) => {
@@ -41,7 +40,7 @@ const MyProvider = ({ children }) => {
       .then((response) => {
         if (response.status === 201) {
           // If the status code is 201 (Created), proceed with the response
-          return response.json(); // Parse the JSON data
+          return response.json();
         } else {
           // If not 201, throw an error to handle in the catch block
           alert(`Unexpected response status: ${response.status}`);
@@ -151,21 +150,33 @@ const updateContainer = (containerData) => {
 }
 
 // searchContainer function to get Container by cont number. matching containers returns the container.
-  function searchContainer(data) {
-    // console.log(data);
-    const upperCaseContainerNumber = data.container_number.toUpperCase();
+function searchContainer(data) {
+  console.log(data); // Container number in object
 
-    // Find the container that matches the container number
-    const container = shipments.containers.find(
-      (c) => c.container_number.toUpperCase() === upperCaseContainerNumber
-    );
+  const upperCaseContainerNumber = data.container_number.toUpperCase();
+  console.log(upperCaseContainerNumber); // Uppercased container number
 
-    if (!container) {
-      alert("No container found");
-      return null;
-    }
+  // Search database by container number
+  fetch(`/container/${upperCaseContainerNumber}`)
+    .then((response) => {
+      // Check if the response status is OK (status code 200)
+      if (!response.ok) {
+        alert(`No container found for ${upperCaseContainerNumber}.`);
+        setContainerByNumber(null); // Ensure containerByNumber is null
+        return null; // Stop further processing
+      }
+      return response.json(); // Parse the response as JSON if the status is OK
+    })
+    .then((containerData) => {
+      console.log(containerData); // Log container data returned from backend
+      setContainerByNumber(containerData)
+    })
+    .catch((error) => {
+      console.error(error.message); // Log any errors
+      alert(error.message); // Display an alert if an error occurs
+    });
+}
 
-  }
 
 
   return (
@@ -181,7 +192,9 @@ const updateContainer = (containerData) => {
         updateContainer,
         selectedContainerId,
         setSelectedContainerId, // update selectedContainerId when container is clicked for editing
-        searchContainer
+        searchContainer,
+        containerByNumber, // container by number state for search functionality.
+        setContainerByNumber
       }}
     >
       {children}

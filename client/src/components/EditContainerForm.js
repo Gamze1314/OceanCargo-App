@@ -3,22 +3,22 @@ import { Context } from "../context/Context.js"; // Import context
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-
 const validationSchema = yup.object({
   container_number: yup
-    .string().transform((value) => value.toUpperCase())
+    .string()
+    .transform((value) => value.toUpperCase())
     .matches(
       /^[A-Z]{4}\d{6}$/,
       "Container number must be 4 letters followed by 6 digits"
     )
-    .max(10).required("Container number is required"),
-  container_type: yup.string()
+    .max(10)
+    .required("Container number is required"),
+  container_type: yup
+    .string()
     .transform((value) => value.toUpperCase()) // Convert to uppercase before validation
     .oneOf(["20SD", "40SD", "40HC", "20HC", "40HC"], "Invalid container type")
     .required("Container type is required"),
 });
-
-
 
 const EditContainerForm = ({ onCancel, container }) => {
   const { selectedShipmentId, updateContainer } = useContext(Context);
@@ -63,7 +63,6 @@ const EditContainerForm = ({ onCancel, container }) => {
               name="container_number"
               value={formik.values.container_number}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               className="p-1 border border-gray-300 rounded"
             />
             {formik.touched.container_number &&
@@ -84,7 +83,6 @@ const EditContainerForm = ({ onCancel, container }) => {
               name="container_type"
               value={formik.values.container_type}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               className="border rounded-lg py-1 px-3 w-full"
             >
               <option value="">{container.container_type}</option>

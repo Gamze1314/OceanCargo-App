@@ -12,3 +12,6 @@ root.render(
       <RouterProvider router={router} />
     </MyProvider>
 );
+
+
+// wraps the RouterProvider with MyProvider(Context)

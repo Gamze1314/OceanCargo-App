@@ -1,7 +1,9 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Context } from "../context/Context.js"; // Import context
+//container details if searched.
+import ContainerDetails from "../components/ContainerDetails.js";
 
 // search by container number, display its details
 // display a form to get container number and search button (Formik)
@@ -19,8 +21,8 @@ const validationSchema = yup.object({
 });
 
 function Search() {
-  const { searchContainer } = useContext(Context);
-
+  const { searchContainer, containerByNumber, setContainerByNumber } =
+    useContext(Context);
 
   const formik = useFormik({
     initialValues: {
@@ -31,13 +33,22 @@ function Search() {
       console.log(values);
       searchContainer(values);
       formik.resetForm(); // Reset the form after submission
+      setContainerByNumber(null); // Reset containerByNumber after search
     },
   });
+
+  useEffect(() => {
+    console.log("Component mounted or updated");
+    return () => {
+      console.log("Component unmounted");
+      setContainerByNumber(null);
+    };
+  }, [setContainerByNumber]);
 
   // centers form both vertically and horizantally.
 
   return (
-    <div className="p-4 h-min-screen flex items-center justify-center mt-10">
+    <div className="p-4 h-min-screen flex flex-col items-center justify-center mt-10">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
         <h1 className="text-2xl font-semibold text-blue-900 mb-4">
           Search by Container Number
@@ -70,6 +81,14 @@ function Search() {
             )}
         </form>
       </div>
+
+      {/* Render ContainerDetails if containerByNumber is available */}
+      {/* Conditionally render ContainerDetails only if containerByNumber is not null */}
+      {containerByNumber ? (
+        <ContainerDetails />
+      ) : (
+        <p>No container details to show.</p>
+      )}
     </div>
   );
 }

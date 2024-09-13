@@ -4,7 +4,6 @@ import img1 from "../assests/img1.jpg";
 import img2 from "../assests/img2.jpg";
 
 function NewsSection() {
-  
   const linkStyle =
     "bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-blue-900 block mb-4";
 

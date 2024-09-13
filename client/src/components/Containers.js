@@ -1,8 +1,6 @@
-
 import Container from "./Container"; // Import the single Container component
 
 const Containers = ({ containers, shipmentId }) => {
-
   return (
     <div>
       <h4 className="text-md font-medium text-blue-900 mt-2">Containers:</h4>
