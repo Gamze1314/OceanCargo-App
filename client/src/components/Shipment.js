@@ -1,35 +1,29 @@
 function Shipment({ shipment }) {
+  const thClass = "border border-slate-600 p-2 text-left";
+  const tdClass = "border border-slate-700 p-2";
+
   return (
-    <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-blue-600 transition-colors">
-      <table className="border-separate border border-slate-500 ...">
+    <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-red-600 w-full sm:w-1/2 lg:w-1/2">
+      <table className="w-full border-separate border border-slate-500">
         <thead>
           <tr>
-            <th className="border border-slate-600 ...">Vessel Name</th>
-            <th className="border border-slate-600 ...">Arrival Time</th>
-            <th className="border border-slate-600 ...">Origin </th>
-            <th className="border border-slate-600 ...">Departure Time</th>
-            <th className="border border-slate-600 ...">Arrival Port</th>
+            <th className={thClass}>Vessel Name</th>
+            <th className={thClass}>Arrival Time</th>
+            <th className={thClass}>Origin</th>
+            <th className={thClass}>Departure Time</th>
+            <th className={thClass}>Arrival Port</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="border border-slate-700 ...">
-              {shipment.vessel_name}
-            </td>
-            <td className="border border-slate-700 ...">
-              {shipment.arrival_time}
-            </td>
-            <td className="border border-slate-700 ...">{shipment.origin}</td>
-            <td className="border border-slate-700 ...">
-              {shipment.departure_time}
-            </td>
-            <td className="border border-slate-700 ...">
-              {shipment.arrival_port}
-            </td>
+            <td className={tdClass}>{shipment.vessel_name}</td>
+            <td className={tdClass}>{shipment.arrival_time}</td>
+            <td className={tdClass}>{shipment.origin}</td>
+            <td className={tdClass}>{shipment.departure_time}</td>
+            <td className={tdClass}>{shipment.arrival_port}</td>
           </tr>
         </tbody>
       </table>
-      {/* <p>This shipment is currently under "{shipment.status}" status. For more details, please submit a booking request.</p> */}
     </div>
   );
 }
