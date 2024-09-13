@@ -6,52 +6,11 @@ The OceanCargo app is SPA designed for managing shipments and customer informati
 
 ### Features
 
-- User Authentication: Sign up, log in, and log out functionality for customer.
-- Ocean Shipment Booking: Customers can book shipments, view their bookings nd remaining credit amount on dashboard personalized to each customer.
-- User Profile Management: Customer can update their account information.
+- Global State Management & React Context API: Utilizes React Context to manage and share state across components. This includes managing shipment data, container information globally
+- React Router : Uses react-router-dom for client-side routing, enabling navigation between different pages (e.g., Home, Shipments, Search Container, Map) without full page reloads.
 - Responsive Design: The application is designed to be responsive and works on various screen sizes.
-
-### Project Structure 
-
-OceanCargo-App-client/
-
-├── src/
-
-│   │   ├── NavBar.js          # Navigation bar component
-
-│   │   ├── Login.js           # Login component
-
-│   │   ├── SignUp.js          # Sign up component
-
-│   │   ├── Shipments.js       # Component to display all shipments
-
-│   │   ├── UserProfile.js      # Profile management component
-
-│   │   ├── NewBookingForm.js     # Shipment booking form
-
-│   ├── assets/
-
-│   │   └── logo.jpg           # Logo image used in NavBar
-
-│   │   └── img1.jpg           # Container image used in Home Page
-
-│   │   └── img2.jpg           # Second Container image used in Home Page
-
-│   ├── index.css              # Global CSS styles
-
-│   ├── App.js                 # Main App component
-
-│   ├── index.js               # Entry point of the application
-
-├── public/
-
-│   └── index.html             # HTML template
-
-├── package.json               # Node.js dependencies and scripts
-
-├── README.md                  # Project documentation
-
-└── tailwind.config.js          # Tailwind CSS configuration and plugins
+- Tailwind CSS: Leverages Tailwind CSS to create a flexible and responsive UI. This includes using utility classes to adjust layout, spacing, and styling based on screen size
+- Error Handling: Implements error boundaries and route error handling to provide users with meaningful feedback and manage error scenarios gracefully.
 
 
 ### Set up and Installations
@@ -81,6 +40,7 @@ Proxy:
 - Tailwind CSS
 - Formik
 - Yup
+- Google Maps API
 
 
 ### Routes and Router Configuration
@@ -95,35 +55,46 @@ Based on the URL path defined components will be rendered.
 
 ### API Interaction Overview
 
-The frontend interacts with the API to manage customer data, shipments, and customer specific shipments.
+OceanCargo utilizes React Context and the Fetch API for backend communication:
 
-Key API functions in app.js
+Fetch Shipments Data
 
-1. Check Customer Session : When the 'App' component is mounted, it sends a 'GET' HTTP request to '/check_session' to verify if a customer is already logged in. If the customer is authenticated, their data is stored in the state and they are ridirected to the home page. If not, the user is redirected to login page.
-
-![alt text](image-3.png)
-
-
-2. Fetch all Shipments : On component mount, the app fetches all shipments and stores in the 'shipments' state. The endpoint for this 'GET' request is '/shipments'.
-
-3. Fetch Customer-Specific Shipments : If a customer is logged in, 'GET' request will be sent to `/shipments/customer/<customer_id>`  Resource to retrieve the shipments for the specific customer(already logged in). 
-
-![alt text](image-4.png)
+Endpoint: /shipments
+Method: GET
+Purpose: Retrieve and set the list of shipments.
+Error Handling: Alerts if data is missing or if fetch fails.
 
 
-4. Update a Shipment : In the handleUpdate function, 'PATCH' request is sent to `/shipments/customer/<customer_id>` API endpoint to update the shipment allowing user to send 'comment' belongs to 'ShipmentContainerAssociation' table.
+Add Container
 
-5. Delete a Shipment : The handleDelete function sends 'DELETE' request to `/shipments/customer/<customer_id>` API endpoint to delete the shipment from the database, and reflects the change in the 'customerShipments' state.
+Endpoint: /containers
+Method: POST
+Purpose: Add a new container to a shipment.
+Error Handling: Alerts on failure and updates state upon success.
 
-6. Customer Login : The logInCustomer function sends a 'POST' request to '/login' , and updates the 'customer' state , then redirecting user to the home page.
 
-7. Customer Logout : The function logOutCustomer logs the customer out by sending 'DELETE' request to /logout API endpoint, then updates both customer and customerShipments states to initial values.
+Delete Container
 
-8. Book a Shipment : The function bookShipment handles 'POST' request to `/shipments/customer/<customer_id>` API endpoint to create a new shipment in the database. if successful, the state is updated with new shipment information and the customer's credit amount is being after the deduction of ocean freight cost. 
+Endpoint: /containers/{containerId}
+Method: DELETE
+Purpose: Remove a container from a shipment.
+Error Handling: Alerts on failure and updates state upon success.
 
-9. Update Customer Account : The function handleAccountUpdate manages 'PATCH' request to the backend with only updated 'email', 'username', and 'type'(account type can only be selected as "forwarder" or "consignee") fields in the request body.
 
-10. Customer Signup : The handleSignup function handles signup process with a 'POST' request to /customers endpoint.
+Update Container
+
+Endpoint: /containers/{containerId}
+Method: PATCH
+Purpose: Modify container details.
+Error Handling: Alerts on failure and updates state upon success.
+
+
+Search Container
+
+Endpoint: /container/{containerNumber}
+Method: GET
+Purpose: Retrieve container details by number.
+Error Handling: Alerts if not found or on failure.
 
 ### Contributions
 

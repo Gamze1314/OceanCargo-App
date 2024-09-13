@@ -2,19 +2,19 @@
 
 ### Overview
 
-This is Flask-based RESTful API of the OceanCargo App, a web application designed to manage ocean cargo bookings. The app allows user to view their shipments and remaining credit amount information on the Home page, book a shipment based on the schedule provided on 'Shipments' page and sign up. API endpoints handle session checks, log in/log out , sign up, querying shipments for a specific customer along with the update and delete actions with full CRUD support.
+This is Flask-based RESTful API of the Ocean Cargo App, a web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update a container type, and number, as well as deleting a container.
 
 The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate extensions to manage the database transactions. The API is designed based on RESTful conventions and JSON serialization.
 
 
 ### Features
 
-- Customer authentication (login, logout, session management)
-- Customer management (create, update)
-- Shipment booking and management (create, read, update, delete)
+- Container management (create, read, update, delete)
 - Container and Shipment association
 - RESTful API with serialized JSON response
 - Database migrations with Flask-Migrate
+- Google Map API Integration
+- Container Search by container number
 
 
 ### Extensions and Backend Technologies Used
@@ -40,7 +40,6 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 ├── instance/              # SQLite database instance
 
 ├── README.md              # Project documentation
-
 
 
 ### Installation
@@ -89,14 +88,51 @@ set the FLASK_RUN_PORT and FLASK_APP as shown below, and simply run flask run.
 
 ### API Endpoints 
 
-- /check_session (GET): Check if a user is logged in
-- /login (POST): Log in a user
-- /logout (DELETE): Log out a user 
-- /shipments (GET): Get all shipments
-- /customers (POST): Create a new customer
-- /customer/id (PATCH): Update a customer information
-- /shipments/customr/customer_id (GET, POST, PATCH, DELETE): Manage shipments for a specific customer.
-- /containers (GET): Get all containers
+- '/shipments' (GET): Gets all shipments.
+- '/containers' (GET, POST): Manages new container creation and GET requests.
+- '/container/<int:id>' (GET, PATCH, DELETE): Feches a container by id, delete and update.
+- '/container/<string:container_number>' (GET): Fetches a container by container number.
+
+
+### Frontend API Overview
+
+The app utilizes React Context and the Fetch API for backend communication:
+
+Fetch Shipments Data and Display on Home Page
+
+Endpoint: /shipments
+Method: GET
+Purpose: Retrieve and set the list of shipments along with associated containers.
+
+
+Add Container for the Selected Shipment
+
+Endpoint: /containers
+Method: POST
+Purpose: Add a new container to a shipment.
+
+
+Delete Container 
+
+Endpoint: /containers/{containerId}
+Method: DELETE
+Purpose: Remove a container from a shipment.
+
+
+Update Container
+
+Endpoint: /containers/{containerId}
+Method: PATCH
+Purpose: Modify container details.
+
+
+Search Container
+
+Endpoint: /container/{containerNumber}
+Method: GET
+Purpose: Retrieve container details by container number.
+
+Error Handling for all API calls: Alerts the user on failure and updates state upon success.
 
 
 ### Models
@@ -104,71 +140,35 @@ set the FLASK_RUN_PORT and FLASK_APP as shown below, and simply run flask run.
 - Customer
 - Shipment
 - Container
-- ShipmentContainerAssociation
 
 ### Flask-SQLAlchemy Relationships Set up
 
 
-
-### Authentication
-
-This API uses session-based authentication. Users need to log in to access protected routes.
-
-<strong>Login Process</strong>
-
-The /login endpoint handles user authentication. It expects a POST request with a username. The server checks if the username exists in the database. If found, it creates a session for the user by storing the 'customer_id'. The session is maintained using Flask's session object, which uses a signed cookie to store session data.
-
-<strong>Session Management</strong>
-
-The /check_session resource (endpoint) verifies if a user is logged in. It checks for the 'customer_id' in the session data, then returns customer's information indicating an active session.
-
-<strong>Logout</strong>
-
-The /logout endpoint handles user logout. It clears the session by deleting the 'customer_id' session data, effectively logging out the user.
-
-Several routes (like posting a shipment) check for an active session before allowing access. If no valid session found, these routes will return 401 Unauthorized error.
-This application uses a secret key to sign the session data, preventing tampering.
-
-To generate a secret key, run below code in the terminal:
-
-* python -c 'import os; print('os.urandom(16))
-
-### Validation Rules
+### Validation and Constraints
 
 Customer Creation:
 
 * Username: Must be 5-10 characters long and unique.
 * Email: Must include an '@' symbol.
-* Customer Type: Must be either 'consignee' or 'forwarder'.
-* Credit Amount: Must be a number, and greater than 20,000.
+* Credit Amount: Must be a type of Numberic subclass, and greater than 20,000.
+* Customr name : It can not be same as customer's username attribute.
 
 
-Shipment Booking:
+Container Creation: 
 
-Checks for required fields (origin, vessel_name, container_type, comment).
-Verifies if the shipment is available for booking (The status can not be 'In Transit' for shipment booking.).
-
-
-Comment Update:
-
-Ensures the comment is provided and between 1-50 characters long.
+* Container number: Must be unique, and a type of String containing 4 letters and 6 digits.
+* Price : The container price is between 3500 and 10,000 in value, and has a hybrid property method to calculate total cost.
 
 
-General Validations:
+Shipment Creation:
 
-Proper error handling for missing required fields.
-
-Type checking for numeric fields.
-
-Database integrity checks (unique constraints): Each shipment can have unique container_id. 
-
-![alt text](image-1.png)
+* Constraint for arrival time: The arrival time can not be same as departure time.
+* Freight rate: Must be a numberic with 2 floating point numbers.
+* Status: Must be a string containing not more than 250 characters.
 
 
-
-### Error Handling 
-
-The API includes basic error handling for common scenarios such as invalid input, unauthorized access, and resource not found.
+Origin and Arrival Ports: 
+* Arrival and Destination Ports are re-selected/determined for 6 different arival and origin ports to display on Google Mapps. The coordinations are defined in data folder in src directorty for the purpose of Marker creation in the frontend.
 
 ### Development 
 
