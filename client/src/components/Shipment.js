@@ -1,6 +1,6 @@
 function Shipment({ shipment }) {
-  const thClass = "border border-slate-600 p-2 text-left";
-  const tdClass = "border border-slate-700 p-2";
+  const thClass = "border border-slate-800 p-2 text-left";
+  const tdClass = "border border-slate-500 p-2 font-semibold";
 
   return (
     <div className="bg-white shadow-md p-3 mb-4 rounded-lg hover:text-red-600 w-full sm:w-1/2 lg:w-1/2">

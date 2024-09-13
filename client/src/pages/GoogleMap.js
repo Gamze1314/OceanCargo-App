@@ -36,8 +36,6 @@ function GoogleMap() {
     setSelectedShipment(originShipments);
   }
 
- 
-
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
       <Map
@@ -46,7 +44,8 @@ function GoogleMap() {
         defaultCenter={{ lat: 22.54992, lng: 0 }} // initial center
         defaultZoom={3} // inital zoom when map first loads.
         gestureHandling={"greedy"} // map will capture all gestures, zoom in, scrolling, and panning for touch-screen devices.
-        onClick={() => alert("Click on the markers to see the details of each shipment.")
+        onClick={() =>
+          alert("Click on the markers to see the details of each shipment.")
         } // Add map click event
       >
         {/* update marker labels depending on arrival or origin port */}

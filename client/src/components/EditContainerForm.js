@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Context } from "../context/Context.js"; // Import context
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -44,6 +44,17 @@ const EditContainerForm = ({ onCancel, container }) => {
       formik.resetForm();
     },
   });
+
+  //cleanup function to remove editform if the component is unmounted.
+
+  useEffect(() => {
+    return () => {
+      //state ?
+      formik.resetForm()
+      onCancel();
+    };
+  })
+
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col space-y-2">

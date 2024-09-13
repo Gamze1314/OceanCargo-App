@@ -30,18 +30,16 @@ const router = createBrowserRouter([
         element: <Search />,
         errorElement: <ErrorPage />,
       },
-      //...all other routes => redirect to Error page.
       {
         path: "/map",
         element: <GoogleMap />,
         errorElement: <ErrorPage />,
       },
-      {
-        path: "*",
-        element: <ErrorPage />,
-        errorElement: <ErrorPage />,
-      }
     ],
+  },
+  {
+    path: "*", // for unmatched paths
+    element: <ErrorPage />,
   },
 ]);
 

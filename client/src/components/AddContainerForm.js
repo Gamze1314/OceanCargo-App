@@ -7,7 +7,7 @@
 // must enter all fields, and string(10) for number, and string for cont number.
 
 // formik state to hold cont data and send it to backend.
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Context } from "../context/Context.js"; // Import context
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -65,6 +65,17 @@ function AddContainerForm() {
     setShowAddContainerForm(false);
     setSelectedShipmentId(null);
   }
+
+  // clean up function to remove addContainerForm if the component is unmounted.
+  useEffect(() => {
+    return () => {
+      setShowAddContainerForm(false);
+      setSelectedShipmentId(null);
+    };
+  })
+
+
+  
 
   return (
     <div className="flex justify-center items-center min-h">
