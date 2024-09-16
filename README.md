@@ -20,7 +20,7 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 ### Extensions and Backend Technologies Used
 
 - Python 3.8.13
-- Flask 
+- Flask 3.0.3
 - Flsk-SQLAlchemy
 - Flask-RESTful
 - Flask-Migrate
@@ -50,7 +50,7 @@ You will need to create virtual environment and activate it with '<em>pipenv ins
 
 Install the required packages:
 
-* pip install Flask 3.0.3
+* pip install Flask
 * pip install Flask-SQLAlchemy
 * pip install Flask-RESTful
 * pip install Flask-Migrate
