@@ -1,30 +1,8 @@
 // display searched container details here
-// containerByNumber from context
-// render under Search component form.
-// li for each detail.
 
-import React, { useContext } from "react";
-import { Context } from "../context/Context.js"; // Import context
-
-const ContainerDetails = () => {
-  const { containerByNumber } = useContext(Context);
-
-  if (!containerByNumber) {
-    return <p>Loading...</p>;
-  }
-
-  // Destructure properties with fallback values, alternative values.
-  const {
-    container_number = "N/A",
-    container_type = "N/A",
-    total_cost = "N/A",
-    arrival_port = containerByNumber.shipment.arrival_port
-      ? containerByNumber.shipment.arrival_port
-      : "N/A",
-    origin = containerByNumber.shipment.origin
-      ? containerByNumber.shipment.origin
-      : "N/A",
-  } = containerByNumber;
+const ContainerDetails = ({ container, shipment }) => {
+  // console.log(shipment) => containerobject
+  // console.log(container) => shipment object
 
   return (
     <div className="flex items-center justify-center min mt-10">
@@ -34,19 +12,19 @@ const ContainerDetails = () => {
         </h3>
         <ul className="list-disc ml-5 text-center">
           <li>
-            <strong>Container Number:</strong> {container_number}
+            <strong>Container Number:</strong> {container.container_number}
           </li>
           <li>
-            <strong>Current Type:</strong> {container_type}
+            <strong>Current Type:</strong> {container.container_type}
           </li>
           <li>
-            <strong>Total Shipment Cost:</strong> ${total_cost}
+            <strong>Total Shipment Cost:</strong> ${container.total_cost}
           </li>
           <li>
-            <strong>Arrival Port:</strong> {arrival_port}
+            <strong>Arrival Port:</strong> {shipment.arrival_port}
           </li>
           <li>
-            <strong>Origin Port:</strong> {origin}
+            <strong>Origin Port:</strong> {shipment.origin}
           </li>
         </ul>
       </div>

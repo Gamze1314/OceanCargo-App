@@ -12,14 +12,19 @@ const Container = React.memo(({ container, shipmentId }) => {
   // useCallback memoizes the handleUpdateClick and handleCancel functions, so they are only re-created when their dependencies change.
 
   const handleUpdateClick = useCallback(() => {
+    console.log("Memoized function 1")
     // Only update if the ID is different
     if (selectedContainerId !== container.id) {
       setSelectedContainerId(container.id);
       setSelectedShipmentId(shipmentId); // Also update shipmentId when container is selected for editing.
     }
-  }, [selectedContainerId, container.id, setSelectedContainerId,setSelectedShipmentId , shipmentId]);
+    console.log("selectedContainerId", selectedContainerId, "shipmentId" ,shipmentId, "container-id", container.id, "shipment-id", shipmentId)
+  }, [selectedContainerId, container.id, setSelectedContainerId, setSelectedShipmentId , shipmentId]);
+
+  console.log(selectedContainerId)
 
   const handleCancel = useCallback(() => {
+    console.log("Memoized function 2");
     setSelectedContainerId(null); // Reset selectedContainerId when editing is canceled
     setSelectedShipmentId(null); // Reset selectedShipmentId when editing is cancelled
   }, [setSelectedContainerId, setSelectedShipmentId]);
@@ -51,4 +56,4 @@ export default Container;
 
 // if Update button is clicked, how the form only for specific container.(container.id, shipment.id) ?
 // isEditing is a piece of UI state that's specific to each Container component.
-// selectedContainerId  needed globally since other parts of the app need to know which container is being edited.
+// selectedContainerId  needed globally since other parts of the app need to know which container is being edited. ?

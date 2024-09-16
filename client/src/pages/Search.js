@@ -33,7 +33,6 @@ function Search() {
       console.log(values);
       searchContainer(values);
       formik.resetForm(); // Reset the form after submission
-      setContainerByNumber(null); // Reset containerByNumber after search
     },
   });
 
@@ -84,8 +83,11 @@ function Search() {
 
       {/* Render ContainerDetails if containerByNumber is available */}
       {/* Conditionally render ContainerDetails only if containerByNumber is not null */}
-      {containerByNumber ? (
-        <ContainerDetails />
+      {containerByNumber && containerByNumber.container ? (
+        <ContainerDetails
+          container={containerByNumber.container}
+          shipment={containerByNumber.shipment}
+        />
       ) : (
         <p>No container details to show.</p>
       )}
