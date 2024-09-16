@@ -150,35 +150,36 @@ const MyProvider = ({ children }) => {
 
   // searchContainer function to get Container by cont number. matching containers returns the container.
 
-function searchContainer(data) {
-  console.log(data); // Container number in object
+  function searchContainer(data) {
+    console.log(data); // Container number in object
 
-  const upperCaseContainerNumber = data.container_number.toUpperCase();
+    const upperCaseContainerNumber = data.container_number.toUpperCase();
 
-  // Iterate through shipments to find the container and its associated shipment
-  let matchingContainerWithShipment = null;
+    // Iterate through shipments to find the container and its associated shipment
+    let matchingContainerWithShipment;
 
-  shipments.forEach((shipment) => {
-    const matchingContainer = shipment.containers.find(
-      (container) =>
-        container.container_number.toUpperCase() === upperCaseContainerNumber
-    );
+    shipments.forEach((shipment) => {
+      const matchingContainer = shipment.containers.find(
+        (container) =>
+          container.container_number.toUpperCase() === upperCaseContainerNumber
+      );
 
-    if (matchingContainer) {
-      matchingContainerWithShipment = {
-        shipment: shipment, // Store the shipment
-        container: matchingContainer, // Store the matching container
-      };
+      if (matchingContainer) {
+        matchingContainerWithShipment = {
+          shipment: shipment, // Store the shipment
+          container: matchingContainer, // Store the matching container
+        };
+      }
+    });
+
+    // update state if container is found.
+    if (matchingContainerWithShipment) {
+      setContainerByNumber(matchingContainerWithShipment);
+    } else {
+      alert("No matching container found.")
+      setContainerByNumber(null);
     }
-  });
-
-  // update state if container is found.
-  if (matchingContainerWithShipment) {
-    setContainerByNumber(matchingContainerWithShipment);
-  } else {
-    setContainerByNumber(null);
   }
-}
 
   console.log(containerByNumber); // updates state
 
@@ -197,6 +198,7 @@ function searchContainer(data) {
         setSelectedContainerId, // update selectedContainerId when container is clicked for editing
         searchContainer,
         containerByNumber, // container by number state for search functionality.
+        setContainerByNumber,
       }}
     >
       {children}

@@ -30,12 +30,7 @@ const validationSchema = yup.object({
 });
 
 function AddContainerForm() {
-  const {
-    selectedShipmentId,
-    setSelectedShipmentId,
-    addContainer,
-    setShowAddContainerForm,
-  } = useContext(Context);
+  const { selectedShipmentId, setSelectedShipmentId, addContainer, setShowAddContainerForm } = useContext(Context);
 
   const formik = useFormik({
     initialValues: {

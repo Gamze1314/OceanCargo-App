@@ -217,32 +217,6 @@ class ContainerByID(Resource):
         
 
 api.add_resource(ContainerByID, '/containers/<int:id>')
-
-# API endpoint to search container by container number 
-class ContainerByNumber(Resource):
-
-    def get(self, container_number):
-        try:
-            # Ensure case-insensitive
-            container_number = container_number.upper()
-            # Fetch the container by container number from the database
-            container = Container.query.filter_by(container_number=container_number).first()
-
-
-            # Check if container is found
-            if container:
-                # Serialize the container and associated shipment.
-                response_body = container.to_dict()
-                return make_response(response_body, 200)
-            else:
-                return make_response({'message': 'No container found'}, 404)
-
-        except Exception as e:
-            # Handle any unexpected errors
-            return {'message': f'Error fetching container: {e}'}, 500
-        
-
-api.add_resource(ContainerByNumber, '/container/<string:container_number>')
         
 
 
