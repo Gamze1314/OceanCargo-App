@@ -131,7 +131,7 @@ Error Handling for all API calls: Alerts the user on failure and updates state u
 
 ### Flask-SQLAlchemy Relationships Set up
 
-The relationships between Container-Customer and Shipment-Container models are set up as one-to-many SQL Alchemy relationship.
+The relationships between Container-Customer and Shipment-Container models are set up as one-to-many SQL Alchemy db.relationship() costructor.
 The relationship between Shipment-Customer is many-to-many relationship.
 The customer has many shipments through the container model. The association proxy provides a customer's shipments through the container table.
 
