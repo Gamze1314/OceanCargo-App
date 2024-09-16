@@ -30,7 +30,7 @@ const validationSchema = yup.object({
 });
 
 function AddContainerForm() {
-  const { selectedShipmentId, setSelectedShipmentId, addContainer, setShowAddContainerForm } = useContext(Context);
+  const { selectedShipmentId, setSelectedShipmentId, addContainer, showAddContainerForm , setShowAddContainerForm } = useContext(Context);
 
   const formik = useFormik({
     initialValues: {
@@ -43,11 +43,12 @@ function AddContainerForm() {
       // Add shipmentId to form values
       const containerData = { ...values, shipment_id: selectedShipmentId };
       addContainer(containerData);
-      setShowAddContainerForm(false);
+      setShowAddContainerForm(!showAddContainerForm);
       //clear the form
       formik.resetForm();
     },
   });
+
 
   const handleChange = (e) => {
     // manually handle input change to convert input to uppercase
@@ -57,8 +58,9 @@ function AddContainerForm() {
   };
 
   function handleCancelClick() {
-    setShowAddContainerForm(false);
     setSelectedShipmentId(null);
+    setShowAddContainerForm(!showAddContainerForm);
+
   }
 
   // clean up function to remove addContainerForm if the component is unmounted.
@@ -67,8 +69,7 @@ function AddContainerForm() {
       setShowAddContainerForm(false);
       setSelectedShipmentId(null);
     };
-  })
-
+  }, [])
 
   
 
@@ -76,7 +77,7 @@ function AddContainerForm() {
     <div className="flex justify-center items-center min-h">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <h1 className="text-2md font-semibold text-blue-900 mb-4">
-          Please enter required fields to add container for this shipment.
+          Please enter required fields to add container for this shipment or click "Cancel" to exit.
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
           <div>
@@ -129,7 +130,7 @@ function AddContainerForm() {
               </div>
             ) : null}
           </div>
-          <div className="flex justify-end space-x-2">
+          <div className="flex space-x-2">
             <button
               type="submit"
               className="bg-blue-700 text-white py-1 px-3 rounded-lg hover:bg-blue-900"

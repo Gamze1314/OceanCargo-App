@@ -28,7 +28,6 @@ const MyProvider = ({ children }) => {
       .catch((error) => console.error("Error:", error));
   }, []);
 
-  console.log(shipments);
 
   // add container POST request to /containers, status 201 update state, else: return error
   const addContainer = (container) => {
@@ -50,7 +49,7 @@ const MyProvider = ({ children }) => {
       })
       .then((containerData) => {
         // Handle successful addition (update shipments)
-        setShowAddContainerForm(false); // Hide the form after adding
+        setShowAddContainerForm(!showAddContainerForm); // Hide the form after adding
 
         // Update shipments state
         setShipments((prevShipments) =>
@@ -70,6 +69,8 @@ const MyProvider = ({ children }) => {
         alert("Failed to add container. Please try again.");
       });
   };
+
+  console.log(shipments)
 
   const deleteContainer = (containerId, shipmentId) => {
     fetch(`/containers/${containerId}`, {
@@ -180,8 +181,6 @@ const MyProvider = ({ children }) => {
       setContainerByNumber(null);
     }
   }
-
-  console.log(containerByNumber); // updates state
 
   return (
     <Context.Provider

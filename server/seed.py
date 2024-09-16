@@ -55,7 +55,7 @@ with app.app_context():
     arrival_ports = ["New York", "Los Angeles", "Houston",
                     "Atlanta", "Vancouver", "Oakland"]
     
-    statuses = ["In Transit", "Pending", "Completed"]
+    statuses = ["In Transit", "To be Advised", "Arrived"]
 
 
     #generate fake shipment data with unique customer_id, and arrival and origin port(arrival != origin).

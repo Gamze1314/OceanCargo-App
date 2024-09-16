@@ -31,7 +31,6 @@ api = Api(app)
 
 
 
-
 class Shipments(Resource):
 
     def get(self):
@@ -212,7 +211,6 @@ class ContainerByID(Resource):
 
         except Exception as e:
             # Handle server errors
-            # rollback ?
             return {'message': f'Error deleting container: {e}'}, 500
         
 

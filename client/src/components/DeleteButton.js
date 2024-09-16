@@ -14,7 +14,7 @@ function DeleteButton({ container, shipmentId }) {
     <div className="flex space-x-2 mt-2">
       <button
         onClick={handleDelete}
-        className="bg-red-700 text-white py-1 px-3 rounded-lg hover:bg-red-900"
+        className="bg-red-700 text-white py-1 px-3 rounded-lg hover:bg-yellow-600"
       >
         Delete
       </button>

@@ -21,7 +21,8 @@ const validationSchema = yup.object({
 });
 
 const EditContainerForm = ({ onCancel, container }) => {
-  const { selectedShipmentId, updateContainer } = useContext(Context);
+  const { selectedShipmentId, updateContainer, showAddContainerForm } =
+    useContext(Context);
 
   // useFormik hook returns all Formik state and helpers(manages form state)
 
@@ -45,22 +46,28 @@ const EditContainerForm = ({ onCancel, container }) => {
     },
   });
 
-  //cleanup function to remove editform if the component is unmounted.
+  //cleanup function to remove editform if the edit form component is unmounted, add container form selected.
 
   useEffect(() => {
     return () => {
-      //state ?
-      formik.resetForm()
-      onCancel();
+      // Check if the add container form was being displayed
+      if (showAddContainerForm) {
+        // Call the onCancel function to handle the cleanup logic
+        onCancel();
+      }
+      // Reset the form state using Formik's resetForm method
+      formik.resetForm();
     };
-  })
+  }, [showAddContainerForm]); // Dependency ensures cleanup when showAddContainerForm changes
 
+  
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col space-y-2">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <h1 className="text-2md font-semibold text-blue-900 mb-4">
-          Edit Container
+          You have selected the container below for editing. Click 'Cancel' to
+          exit.
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
           {/* Container Number Input */}
@@ -116,7 +123,7 @@ const EditContainerForm = ({ onCancel, container }) => {
               type="submit"
               className="bg-blue-500 text-white p-1 rounded"
             >
-              Save
+              Save Changes
             </button>
             <button
               type="button"

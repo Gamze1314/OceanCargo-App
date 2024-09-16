@@ -1,11 +1,17 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext, useCallback, useEffect } from "react";
 import { Context } from "../context/Context.js";
 import UpdateButton from "./UpdateButton.js";
 import DeleteButton from "./DeleteButton.js";
 import EditContainerForm from "./EditContainerForm";
 
-const Container = React.memo(({ container, shipmentId }) => {
-  const { selectedContainerId, setSelectedContainerId, setSelectedShipmentId } = useContext(Context);
+const Container = React.memo(({ container, shipmentId, index }) => {
+    const {
+      selectedContainerId,
+      setSelectedContainerId,
+      setSelectedShipmentId,
+      showAddContainerForm,
+      setShowAddContainerForm,
+    } = useContext(Context);
 
   // if selectedContainerId does not change, skips re-rendering with React.memo => memoizes the Container component
   // useCallback => caches handleUpdateClick, and handleCancel function , so they do not trigger re-renders.
@@ -17,11 +23,12 @@ const Container = React.memo(({ container, shipmentId }) => {
     if (selectedContainerId !== container.id) {
       setSelectedContainerId(container.id);
       setSelectedShipmentId(shipmentId); // Also update shipmentId when container is selected for editing.
+      setShowAddContainerForm(false); // the add form will be hidden
     }
     console.log("selectedContainerId", selectedContainerId, "shipmentId" ,shipmentId, "container-id", container.id, "shipment-id", shipmentId)
   }, [selectedContainerId, container.id, setSelectedContainerId, setSelectedShipmentId , shipmentId]);
 
-  console.log(selectedContainerId)
+
 
   const handleCancel = useCallback(() => {
     console.log("Memoized function 2");
@@ -30,14 +37,28 @@ const Container = React.memo(({ container, shipmentId }) => {
   }, [setSelectedContainerId, setSelectedShipmentId]);
 
 
+
+  // show edit container form if add container form is not shown, alert user to perform one action at a time for the same shipment.
+  // if selectedContainerId is true edit form is shown.
+  // if showAddContainerForm is true , add container form for the same shipment is true 
+  // only show one form , alert for one action.
+
+  useEffect(() => {
+    if (selectedContainerId === container.id && !showAddContainerForm) {
+      // Only show the alert if the add form is not showing
+      alert("Please confirm you want to edit this container.");
+    }
+  }, [selectedContainerId, showAddContainerForm, container.id]);
+
+
   return (
     <div>
-      {selectedContainerId === container.id ? (
+      {selectedContainerId === container.id && showAddContainerForm === false ? (
         <EditContainerForm container={container} onCancel={handleCancel} />
       ) : (
         <div className="bg-gray-50 p-1 rounded-lg border border-gray-200 mb-2 flex items-center space-x-2 mt-2">
           <h4 className="text-sm text-gray-800">
-            Container Number: {container.container_number}
+            {index + 1}. Container Number: {container.container_number}
           </h4>
           <p>Type: {container.container_type}</p>
           <p>Price: {container.price}</p>
