@@ -2,7 +2,7 @@
 
 ### Overview
 
-This is Flask-based RESTful API of the Ocean Cargo App, a web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update a container type, and number, as well as deleting a container.
+This is Flask-based RESTful API of the Ocean Cargo App, a full-stack web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update and delte a container for a specific shipment route. Users can easily manage containers and track their total shipment cost, and container price accordingly. The container types and price are set to fixed values for the ease of use. 
 
 The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate extensions to manage the database transactions. The API is designed based on RESTful conventions and JSON serialization.
 
@@ -21,7 +21,7 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 
 - Python 3.8.13
 - Flask 3.0.3
-- Flsk-SQLAlchemy
+- Flask-SQLAlchemy
 - Flask-RESTful
 - Flask-Migrate
 - SQLite
@@ -137,12 +137,15 @@ Error Handling for all API calls: Alerts the user on failure and updates state u
 
 ### Models
 
-- Customer
-- Shipment
-- Container
+- Customer : Customer can have multiple shipments.
+- Shipment : A shipment can have multiple containers.
+- Container :  The container is a junction point between shipment and container models.
 
 ### Flask-SQLAlchemy Relationships Set up
 
+The relationships between Container-Customer and Shipment-Container models are set up as one-to-many SQL Alchemy relationship.
+The relationship between Shipment-Customer is many-to-many relationship.
+The customer has many shipments through the container model. The association proxy provides a customer's shipments through the container table.
 
 ### Validation and Constraints
 
@@ -151,7 +154,7 @@ Customer Creation:
 * Username: Must be 5-10 characters long and unique.
 * Email: Must include an '@' symbol.
 * Credit Amount: Must be a type of Numberic subclass, and greater than 20,000.
-* Customr name : It can not be same as customer's username attribute.
+* Customer name : It can not be same as customer's username attribute.
 
 
 Container Creation: 
@@ -168,7 +171,7 @@ Shipment Creation:
 
 
 Origin and Arrival Ports: 
-* Arrival and Destination Ports are re-selected/determined for 6 different arival and origin ports to display on Google Mapps. The coordinations are defined in data folder in src directorty for the purpose of Marker creation in the frontend.
+* Arrival and Destination Ports are pre-determined for 6 different arival and origin ports for display only on Google Maps. The coordinations are defined in client>src>data directory.
 
 ### Development 
 
@@ -176,6 +179,16 @@ This project uses Flask's built-in development server. Debug mode is enabled for
 
 
 ![alt text](image-2.png)
+
+
+### Future amendments to be added
+
+* Log in/Log out Functionality: Implement user authentication using session data, allowing customers to log in and log out securely. This includes integrating authentication systems like JWT or OAuth to manage sessions and ensure secure access to customer-specific data.
+
+* Book a Shipment Route: Allow logged-in customers to book shipment routes and add new containers to their existing or new shipments. This feature will manage user bookings, ensuring only authenticated users can make reservations and update shipment details.
+
+* Arrival and Departure Port Backend Support: Extend the backend to handle a wider variety of routes by adding support for multiple arrival and departure ports. This will increase the flexibility of route management and offer more options for customers when booking shipments.
+
 
 ### Contributing
 
