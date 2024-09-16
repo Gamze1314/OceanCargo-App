@@ -2,7 +2,7 @@
 
 ### Overview
 
-This is Flask-based RESTful API of the Ocean Cargo App, a full-stack web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update and delte a container for a specific shipment route. Users can easily manage containers and track their total shipment cost, and container price accordingly. The container types and price are set to fixed values for the ease of use. 
+This is Flask-based RESTful API of the Ocean Cargo App, a full-stack web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update and delete a container for the selected shipment route. Users can easily manage containers and track their total shipment cost, and container price accordingly. The container types and price are set to fixed values for the ease of use. 
 
 The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate extensions to manage the database transactions. The API is designed based on RESTful conventions and JSON serialization.
 
