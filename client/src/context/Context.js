@@ -28,7 +28,6 @@ const MyProvider = ({ children }) => {
       .catch((error) => console.error("Error:", error));
   }, []);
 
-
   // add container POST request to /containers, status 201 update state, else: return error
   const addContainer = (container) => {
     fetch("/containers", {
@@ -70,7 +69,7 @@ const MyProvider = ({ children }) => {
       });
   };
 
-  console.log(shipments)
+  console.log(shipments);
 
   const deleteContainer = (containerId, shipmentId) => {
     fetch(`/containers/${containerId}`, {
@@ -81,6 +80,8 @@ const MyProvider = ({ children }) => {
           alert("The container is deleted successfully.");
           // Skip res.json() if there's no content returned
           return res.status === 204 ? null : res.json();
+        } else {
+          alert(`Failed to delete container. Status: ${res.status}`);
         }
       })
       .then(() => {
@@ -152,13 +153,13 @@ const MyProvider = ({ children }) => {
   // searchContainer function to get Container by cont number. matching containers returns the container.
 
   function searchContainer(data) {
-    console.log(data); // Container number in object
-
+    console.log(data)
+    //format user input
     const upperCaseContainerNumber = data.container_number.toUpperCase();
 
     // Iterate through shipments to find the container and its associated shipment
     let matchingContainerWithShipment;
-
+    // for each shipment  find the matching container and return its associated shipment.
     shipments.forEach((shipment) => {
       const matchingContainer = shipment.containers.find(
         (container) =>
@@ -177,7 +178,7 @@ const MyProvider = ({ children }) => {
     if (matchingContainerWithShipment) {
       setContainerByNumber(matchingContainerWithShipment);
     } else {
-      alert("No matching container found.")
+      alert("No matching container found.");
       setContainerByNumber(null);
     }
   }

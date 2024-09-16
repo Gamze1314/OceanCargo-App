@@ -101,7 +101,7 @@ return (
             ))
           ) : (
             <li className="text-md text-red-800">
-              No assigned container to display.
+              No registered container to display.
             </li>
           )}
         </ul>
