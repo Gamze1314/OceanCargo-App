@@ -163,7 +163,10 @@ Origin and Arrival Ports:
 
 ### Development 
 
-This project uses Flask's built-in development server. Debug mode is enabled for development purposes. The <strong>run</strong> command starts the development server.
+This project uses Flask's built-in development server. Debug mode is enabled for development purposes. The <strong>below</strong> code starts the development server.
+
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
 
 
 ### Future amendments to be added
