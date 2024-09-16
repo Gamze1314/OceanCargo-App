@@ -133,7 +133,7 @@ Error Handling for all API calls: Alerts the user on failure and updates state u
 
 The relationships between Container-Customer and Shipment-Container models are set up as one-to-many SQL Alchemy db.relationship() costructor.
 The relationship between Shipment-Customer is many-to-many relationship.
-The customer has many shipments through the container model. The association proxy provides a customer's shipments through the container table.
+The customer has many shipments through the container model. The association proxy provides the customer's shipments through the container table.
 
 ### Validation and Constraints
 
