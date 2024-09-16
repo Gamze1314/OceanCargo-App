@@ -166,9 +166,6 @@ Origin and Arrival Ports:
 This project uses Flask's built-in development server. Debug mode is enabled for development purposes. The <strong>run</strong> command starts the development server.
 
 
-![alt text](image-2.png)
-
-
 ### Future amendments to be added
 
 * Log in/Log out Functionality: Implement user authentication using session data, allowing customers to log in and log out securely. This includes integrating authentication systems like JWT or OAuth to manage sessions and ensure secure access to customer-specific data.
