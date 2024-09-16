@@ -71,19 +71,7 @@ python app.py
 
 ### Configurations
 
-The configuration settings are managed in the app.py such as the database URI, secret keys, and other Flask settings.
-
-Setting Command Options
-
-To set the port for the run command, instead of using below set up:
-
-![alt text](image-2.png)
-
-set the FLASK_RUN_PORT and FLASK_APP as shown below, and simply run flask run.
-
-![alt text](image-3.png)
-
-![alt text](image-4.png)
+The configuration settings, and app initializations are managed in the app.py such as 'SQLALCHEMY_TRACK_MODIFICATIONS' , 'SQLALCHEMY_DATABASE_URI'.
 
 
 ### API Endpoints 
