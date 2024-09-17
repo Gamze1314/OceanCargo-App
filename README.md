@@ -143,6 +143,8 @@ Error Handling for all API calls: Alerts the user on failure and updates state u
 - Shipment : A shipment can have multiple containers.
 - Container :  The container is a junction point between shipment and container models.
 
+![alt text](image-2.png)
+
 ### Flask-SQLAlchemy Relationships Set up
 
 The relationships between Container-Customer and Shipment-Container models are set up as one-to-many SQL Alchemy db.relationship() costructor.
