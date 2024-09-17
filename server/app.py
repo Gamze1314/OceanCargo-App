@@ -1,4 +1,4 @@
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
@@ -46,9 +46,9 @@ class Shipments(Resource):
             else:
                 return make_response({'message': 'No shipments found'}, 404)
 
-        except Exception as e:
+        except ValueError as e:
             # Handle any unexpected errors
-            return {'message': f'Error fetching shipments: {e}'}, 500
+            abort(500, e.args[0])
 
 
 api.add_resource(Shipments, '/shipments')
@@ -67,11 +67,11 @@ class Containers(Resource):
                                  for container in containers]
                 return make_response(response_body, 200)
             else:
-                return make_response({'message': 'No containers found'}, 404)
+                abort(404, e.args[0])
 
-        except Exception as e:
+        except ValueError as e:
             # Handle any unexpected errors
-            return {'message': f'Error fetching containers: {e}'}, 500
+            abort(500, e.args[0])
 
     def post(self):
         try:
@@ -83,7 +83,7 @@ class Containers(Resource):
 
             # Validate input data
             if not all([container_number, container_type, shipment_id]):
-                return make_response({'message': 'Missing required fields'}, 400)
+                abort(400, description='Invalid user input')
             # breakpoint()
             # Determine price based on container type
             if '20' in container_type:
@@ -109,12 +109,12 @@ class Containers(Resource):
 
             return make_response(response_body, 201)
 
-        except Exception as e:
-            # Handle any unexpected errors
-            return {'message': f'Error creating container: {e}'}, 500
+        except ValueError as e:
+            abort(422, e.args[0]) #raises 422, and error message. Unprocessable entity.
 
-        
+
 api.add_resource(Containers, '/containers')
+
 
 class ContainerByID(Resource):
 
@@ -130,18 +130,17 @@ class ContainerByID(Resource):
                 response_body = container.to_dict()
                 return make_response(response_body, 200)
             else:
-                return make_response({'message': 'No container found'}, 404)
+                abort(404, description="Container not found") # raise HTTP Exception.
 
-        except Exception as e:
+        except ValueError as e:
             # Handle any unexpected errors
-            return {'message': f'Error fetching container: {e}'}, 500
+            abort(500, e.args[0])
 
     def patch(self, id):
-        # update container depending on user inpput.
         try:
             # Parse the request data for updating the container
             data = request.json
-            # breakpoint()
+
             #validate data 
             container_number = data.get('container_number')
 
@@ -158,7 +157,6 @@ class ContainerByID(Resource):
                 return make_response({'message': 'Container type is required'}, 400)
             if not isinstance(container_type, str):
                 return make_response({'message': 'Container type must be a string'}, 400)
-            
             
             
             # Find the container by id
@@ -188,9 +186,9 @@ class ContainerByID(Resource):
             else:
                 return make_response({'message': 'Container not found'}, 404)
 
-        except Exception as e:
+        except ValueError as e:
             # Handle any unexpected errors
-            return {'message': f'Error updating container: {e}'}, 500
+            abort(500, e.args[0])
         
 
 
@@ -198,24 +196,23 @@ class ContainerByID(Resource):
         try:
             # Find the container by id
             container = Container.query.filter(Container.id == id).first()
-            # breakpoint()
+
             if not container:
-                return make_response({'message': 'Container not found'}, 404)
+                abort(404, description="Container not found")
                 # Delete the container from the session
             db.session.delete(container)
             db.session.commit()
 
-            response_dict = {"message": "record successfully deleted"}
+            response_dict = {"message": "The container is successfully deleted."}
 
-            return make_response(response_dict, 204)
+            return make_response(response_dict, 200)
 
-        except Exception as e:
+        except ValueError as e:
             # Handle server errors
-            return {'message': f'Error deleting container: {e}'}, 500
+            abort(500, e.args[0])
         
 
 api.add_resource(ContainerByID, '/containers/<int:id>')
-        
 
 
 if __name__ == '__main__':

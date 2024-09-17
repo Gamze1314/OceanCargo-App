@@ -15,18 +15,20 @@ const MyProvider = ({ children }) => {
   useEffect(() => {
     // Fetch shipments data from API
     fetch("/shipments")
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
+      .then((res) => {
+        if (res.ok) {
+          return res.json().then(setShipments);
         } else {
-          alert("No shipment data found.");
+          res.json().then((error) => console.log(error));
         }
       })
-      .then(setShipments) // data is result of response.json(), .then() automatically receives the resolved value of promise.
-      .catch((error) => console.error("Error:", error));
+      .catch((err) => {
+        console.error("Error fetching shipments:", err); // Catch any network or parsing errors, or other exceptions
+        alert("There was an error fetching the shipments.");
+      });
   }, []); // effect runs only once.
 
-  // add container POST request to /containers, status 201 update state, else: return error
+  // add container POST request to /containers, status 201 update state, else: return error(< Add Container Form)
   const addContainer = (container) => {
     fetch("/containers", {
       method: "POST",
@@ -35,35 +37,33 @@ const MyProvider = ({ children }) => {
       },
       body: JSON.stringify({ ...container, shipment_id: selectedShipmentId }),
     })
-      .then((response) => {
-        if (response.status === 201) {
+      .then((res) => {
+        if (res.ok) {
           // If the status code is 201 (Created), proceed with the response
-          return response.json();
+          return res.json().then((container) => {
+            // Handle successful addition (update shipments)
+            setShowAddContainerForm(!showAddContainerForm); // Hide the form after adding
+            // Update shipments state
+            setShipments((prev) =>
+              prev.map((shipment) =>
+                shipment.id === selectedShipmentId
+                  ? {
+                      ...shipment,
+                      containers: [...shipment.containers, container],
+                    }
+                  : shipment
+              )
+            );
+            alert("New container is added.");
+          });
         } else {
-          // If not 201, throw an error to handle in the catch block
-          alert(`Unexpected response status: ${response.status}`);
+          // If not ok, log the error to handle in the catch block
+          res.json().then((errors) => console.log(errors.message));
         }
       })
-      .then((containerData) => {
-        // Handle successful addition (update shipments)
-        setShowAddContainerForm(!showAddContainerForm); // Hide the form after adding
-
-        // Update shipments state
-        setShipments((prevShipments) =>
-          prevShipments.map((shipment) =>
-            shipment.id === selectedShipmentId
-              ? {
-                  ...shipment,
-                  containers: [...shipment.containers, containerData], // Add the new container from the server response
-                }
-              : shipment
-          )
-        );
-      })
       .catch((error) => {
-        // Handle errors and alert the user
         console.error("Error:", error);
-        alert("Failed to add container. Please try again.");
+        alert("Failed to add container. Please try again later.");
       });
   };
 
@@ -74,84 +74,79 @@ const MyProvider = ({ children }) => {
       method: "DELETE",
     })
       .then((res) => {
-        if (res.status === 204) {
+        console.log(res)
+        if (res.ok) {
           alert("The container is deleted successfully.");
           // Skip res.json() if there's no content returned
-          return res.status === 204 ? null : res.json();
+          res.json().then(() => {
+            // Update shipments state
+            setShipments((prev) =>
+              prev.map((shipment) =>
+                shipment.id === shipmentId
+                  ? {
+                      ...shipment,
+                      containers: shipment.containers.filter(
+                        (container) => container.id !== containerId
+                      ),
+                    }
+                  : shipment
+              )
+            );
+          });
         } else {
-          alert(`Failed to delete container. Status: ${res.status}`);
+          res.json().then((errors) => console.log(errors.message));
+          alert("Failed to delete container");
         }
-      })
-      .then(() => {
-        // Update shipments state
-        setShipments((prevShipments) =>
-          prevShipments.map((shipment) =>
-            shipment.id === shipmentId
-              ? {
-                  ...shipment,
-                  containers: shipment.containers.filter(
-                    (container) => container.id !== containerId
-                  ),
-                }
-              : shipment
-          )
-        );
       })
       .catch((error) => console.error("Error:", error)); // Handle any errors
   };
 
-  const updateContainer = (containerData) => {
+  const updateContainer = (container) => {
     // Send PATCH request to the backend /containers/id
-    console.log(containerData);
     // {container_number: 'CBHU320323', container_type: '40HC', shipment_id: 1}
 
-    fetch(`/containers/${containerData.id}`, {
+    fetch(`/containers/${container.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(containerData),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json(); // Parse the JSON response
-        } else {
-          alert(`Unexpected response status: ${res.status}`);
-        }
-      })
-      .then((data) => {
-        console.log("Updated container data:", data);
+      body: JSON.stringify(container),
+    }).then((res) => {
+      if (res.ok) {
+        // 200-299 range => True
+        return res.json().then((data) => {
+          console.log("Updated container data:", data);
 
-        // Update state with response data
-        setShipments((prevShipments) =>
-          prevShipments.map((shipment) =>
-            shipment.id === containerData.shipment_id
-              ? {
-                  ...shipment,
-                  containers: shipment.containers.map((c) =>
-                    c.id === containerData.id
-                      ? { ...c, ...data } // Use response data for updated container
-                      : c
-                  ),
-                }
-              : shipment
-          )
-        );
-
-        setSelectedContainerId(null);
-        setSelectedShipmentId(null);
-        alert("The container has been successfully updated.");
-      })
-      .catch((error) => {
-        console.error("Error updating container:", error);
-        alert("Failed to update the container.");
-      });
+          // Update state with response data
+          setShipments((prev) =>
+            prev.map((shipment) =>
+              shipment.id === container.shipment_id
+                ? {
+                    ...shipment,
+                    containers: shipment.containers.map((c) =>
+                      c.id === container.id
+                        ? { ...c, ...data } // Use response data for updated container
+                        : c
+                    ),
+                  }
+                : shipment
+            )
+          );
+          setSelectedContainerId(null);
+          setSelectedShipmentId(null);
+          alert("The container has been successfully updated.");
+        });
+      } else {
+        res.json().then((errors) => console.log("Error", errors));
+        alert(`Unexpected response status: ${res.status}`);
+      }
+    });
   };
 
   // searchContainer function to get Container by cont number. matching containers returns the container.
 
   function searchContainer(data) {
-    console.log(data)
+    console.log(data);
     //format user input
     const upperCaseContainerNumber = data.container_number.toUpperCase();
 
