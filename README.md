@@ -26,20 +26,16 @@ The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate exte
 - Flask-Migrate
 - SQLite
 
+### Frontend Technologies Used
 
-### Project Structure 
+- JavaScript
+- React.js
+- React-router-dom
+- Tailwind CSS
+- Formik
+- Yup
+- Google Maps API
 
-├── app.py                 # Main application and API resource file
-
-├── models.py              # Database models
-
-├── migrations/            # Database migration files
-
-├── seed.py                # Database seeding script. It contains scripts for populating fake data with Faker module.
-
-├── instance/              # SQLite database instance
-
-├── README.md              # Project documentation
 
 
 ### Installation
@@ -64,9 +60,20 @@ Set up the database:
 * flask db migrate -m
 * flask db upgrade
 
-Run the application:
+Run the Flask server:
 
 python app.py
+
+Run React server:
+
+npm run start
+
+* If you wish to have gunicorn and honcho installed ro run both servers with one command, set up Procfile.dev to configure the web and api.
+
+web: PORT=4000 npm start --prefix client
+api: gunicorn -b 127.0.0.1:5555 --chdir ./server app:app
+
+In terminal, you only need to run ‘honcho start -f Procfile.dev’, after setting up Procfile.dev file as above.
 
 
 ### Configurations
@@ -78,8 +85,7 @@ The configuration settings, and app initializations are managed in the app.py su
 
 - '/shipments' (GET): Gets all shipments.
 - '/containers' (GET, POST): Manages new container creation and GET requests.
-- '/container/<int:id>' (GET, PATCH, DELETE): Feches a container by id, delete and update.
-- '/container/<string:container_number>' (GET): Fetches a container by container number.
+- '/containers/<int:id>' (GET, PATCH, DELETE): Feches a container by id, delete and update.
 
 
 ### Frontend API Overview
@@ -90,35 +96,35 @@ Fetch Shipments Data and Display on Home Page
 
 Endpoint: /shipments
 Method: GET
-Purpose: Retrieve and set the list of shipments along with associated containers.
+Action: Retrieve and set the list of shipments along with associated containers.
 
 
 Add Container for the Selected Shipment
 
 Endpoint: /containers
 Method: POST
-Purpose: Add a new container to a shipment.
+Action: Add a new container to a shipment.
 
 
 Delete Container 
 
 Endpoint: /containers/{containerId}
 Method: DELETE
-Purpose: Remove a container from a shipment.
+Action: Remove a container from a shipment.
 
 
 Update Container
 
 Endpoint: /containers/{containerId}
 Method: PATCH
-Purpose: Modify container details.
+Action: Modify container details.
 
 
 Search Container
 
 Endpoint: /container/{containerNumber}
 Method: GET
-Purpose: Retrieve container details by container number.
+Action: Retrieve container details by container number.
 
 Error Handling for all API calls: Alerts the user on failure and updates state upon success.
 
