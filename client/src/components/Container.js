@@ -39,9 +39,6 @@ const Container = React.memo(({ container, shipmentId, index }) => {
 
 
   // show edit container form if add container form is not shown, alert user to perform one action at a time for the same shipment.
-  // if selectedContainerId is true edit form is shown.
-  // if showAddContainerForm is true , add container form for the same shipment is true 
-  // only show one form , alert for one action.
 
   useEffect(() => {
     if (selectedContainerId === container.id && !showAddContainerForm) {
@@ -74,7 +71,5 @@ const Container = React.memo(({ container, shipmentId, index }) => {
 Container.displayName = 'Container';
 
 export default Container;
-
-// if Update button is clicked, how the form only for specific container.(container.id, shipment.id) ?
 // isEditing is a piece of UI state that's specific to each Container component.
-// selectedContainerId  needed globally since other parts of the app need to know which container is being edited. ?
+// selectedContainerId  needed globally since other parts of the app need to know which container is being edited.
