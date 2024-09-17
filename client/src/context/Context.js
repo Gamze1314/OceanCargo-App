@@ -67,7 +67,6 @@ const MyProvider = ({ children }) => {
       });
   };
 
-  console.log(shipments);
 
   const deleteContainer = (containerId, shipmentId) => {
     fetch(`/containers/${containerId}`, {

@@ -5,8 +5,11 @@ import * as yup from "yup";
 
 const validationSchema = yup.object({
   container_number: yup
-    .string()
-    .transform((value) => value.toUpperCase())
+    .string().strip()
+    .transform((value) => {
+      //if value is not null, then convert it to upper case
+      return value !== null ? value.toUpperCase() : value;
+    })
     .matches(
       /^[A-Z]{4}\d{6}$/,
       "Container number must be 4 letters followed by 6 digits"
@@ -14,8 +17,11 @@ const validationSchema = yup.object({
     .max(10)
     .required("Container number is required"),
   container_type: yup
-    .string()
-    .transform((value) => value.toUpperCase()) // Convert to uppercase before validation
+    .string().strip()
+    .transform((value) => {
+      //if value is not null, then convert it to upper case
+      return value !== null ? value.toUpperCase() : value;
+    })
     .oneOf(["20SD", "40SD", "40HC", "20HC", "40HC"], "Invalid container type")
     .required("Container type is required"),
 });
@@ -59,8 +65,6 @@ const EditContainerForm = ({ onCancel, container }) => {
       formik.resetForm();
     };
   }, [showAddContainerForm]); // Dependency ensures cleanup when showAddContainerForm changes
-
-  
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col space-y-2">

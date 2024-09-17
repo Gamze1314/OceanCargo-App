@@ -15,16 +15,22 @@ import * as yup from "yup";
 // Define validation schema
 const validationSchema = yup.object({
   container_number: yup
-    .string()
-    .transform((value) => value.toUpperCase())
+    .string().strip()
+    .transform((value) => {
+      //if value is not null, then convert it to upper case
+      return value !== null ? value.toUpperCase() : value;
+    })
     .matches(
       /^[A-Z]{4}\d{6}$/,
       "Container number must be 4 letters followed by 6 digits"
     )
     .required("Container number is required"),
   container_type: yup
-    .string()
-    .transform((value) => value.toUpperCase()) // Convert to uppercase before validation
+    .string().strip()
+    .transform((value) => {
+      //if value is not null, then convert it to upper case
+      return value !== null ? value.toUpperCase() : value;
+    })
     .oneOf(["20SD", "40SD", "40HC", "20HC", "40HC"], "Invalid container type")
     .required("Container type is required"),
 });
