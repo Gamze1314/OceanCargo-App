@@ -1,10 +1,18 @@
-# OceanCargo App
+# Ocean Cargo App
 
 ### Overview
 
-This is Flask-based RESTful API of the Ocean Cargo App, a full-stack web application designed to manage ocean cargo shipments. The app allows user to view the vessel schedules and associated containers on the Home page. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update and delete a container for the selected shipment route. Users can easily manage containers and track their total shipment cost, and container price accordingly. The container types and price are set to fixed values for the ease of use. 
+Welcome to Ocean Cargo App! This is a Flask-based full-stack web application designed to streamline the workflow of US Inbound Ocean Operations Team. This app has a standout feature: Unique shipment data that enables visibility for users to quickly access container information such as total cost, container unit price, arrival time. This allows for faster decisin making and greater operational efficiency for ocean shipments arriving into the United States. The API endpoints are designed by RESTful conventions to manage HTTP requests to add container for a specific shipment route, update and delete a container for the selected shipment route. Users can easily manage containers and track their total shipment cost, and container price accordingly. The container types and price are set to fixed values for the ease of use. React for the front-end user interface and Python with Flask for theback-end server, ensuring robust, scalable, and interactive application.
 
-The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate extensions to manage the database transactions. The API is designed based on RESTful conventions and JSON serialization.
+The app is configured to Flask-SQL Alchemy, Flask-Retful, and Flask-Migrate extensions to manage the database transactions.
+
+### Expected Outcomes
+
+Upon completion, the ocean cargo management tool will:
+
+* Reduce the time and effort required for operations team or logistic specialist to find shipment/container information
+* Enchance the accuracy of ocean booking pricing information available to customers, brokers, managers leading to better service for U.S importers.
+* Increase the volume of U.S bound shipments and the productivity of U.S Importers.
 
 
 ### Features
