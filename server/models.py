@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
+# validates => decorator to validate columns.
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -59,7 +60,7 @@ class Customer(db.Model, SerializerMixin):
     # customer's shipments
     shipments = association_proxy('containers', 'shipment', creator=lambda s: Container(shipment=s))
 
-    # Validations: application-level
+    # Validations: application-level => whenever new instance is created, and committed to db, validations executed.
     @validates('username')
     def validate_username(self, key, value):
         # Username must be between 5 and 10 characters long and not empty

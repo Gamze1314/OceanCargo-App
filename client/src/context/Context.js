@@ -22,11 +22,9 @@ const MyProvider = ({ children }) => {
           alert("No shipment data found.");
         }
       })
-      .then((shipmentData) => {
-        setShipments(shipmentData);
-      })
+      .then(setShipments) // data is result of response.json(), .then() automatically receives the resolved value of promise.
       .catch((error) => console.error("Error:", error));
-  }, []);
+  }, []); // effect runs only once.
 
   // add container POST request to /containers, status 201 update state, else: return error
   const addContainer = (container) => {
