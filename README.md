@@ -96,6 +96,10 @@ The configuration settings, and app initializations are managed in the app.py su
 - '/containers/<int:id>' (GET, PATCH, DELETE): Feches a container by id, delete and update.
 
 
+### Frontend Component Hieararchy
+
+![alt text](image-3.png)
+
 ### Frontend API Overview
 
 The app utilizes React Context and the Fetch API for backend communication:

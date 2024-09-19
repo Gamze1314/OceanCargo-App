@@ -4,13 +4,12 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 import re
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-# contains definitions of tables and associated schema constructs.
+# contains definitions of tables and associated schema constructs for db readability.
 convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
