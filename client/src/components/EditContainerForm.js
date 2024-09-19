@@ -5,7 +5,7 @@ import * as yup from "yup";
 
 const validationSchema = yup.object({
   container_number: yup
-    .string().strip()
+    .string()
     .transform((value) => {
       //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;
@@ -17,7 +17,7 @@ const validationSchema = yup.object({
     .max(10)
     .required("Container number is required"),
   container_type: yup
-    .string().strip()
+    .string()
     .transform((value) => {
       //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;
@@ -27,7 +27,7 @@ const validationSchema = yup.object({
 });
 
 const EditContainerForm = ({ onCancel, container }) => {
-  const { selectedShipmentId, updateContainer, showAddContainerForm } =
+  const { selectedShipmentId, updateContainer, showAddContainerForm , setShowAddContainerForm, setSelectedContainerId, selectedContainerId} =
     useContext(Context);
 
   // useFormik hook returns all Formik state and helpers(manages form state)
@@ -65,6 +65,8 @@ const EditContainerForm = ({ onCancel, container }) => {
       formik.resetForm();
     };
   }, [showAddContainerForm]); // Dependency ensures cleanup when showAddContainerForm changes
+
+
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col space-y-2">

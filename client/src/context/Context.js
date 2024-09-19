@@ -24,7 +24,6 @@ const MyProvider = ({ children }) => {
       })
       .catch((err) => {
         console.error("Error fetching shipments:", err); // Catch any network or parsing errors, or other exceptions
-        alert("There was an error fetching the shipments.");
       });
   }, []); // effect runs only once.
 

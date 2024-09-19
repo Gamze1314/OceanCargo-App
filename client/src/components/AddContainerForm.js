@@ -15,7 +15,7 @@ import * as yup from "yup";
 // Define validation schema
 const validationSchema = yup.object({
   container_number: yup
-    .string().strip()
+    .string()
     .transform((value) => {
       //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;
@@ -26,7 +26,7 @@ const validationSchema = yup.object({
     )
     .required("Container number is required"),
   container_type: yup
-    .string().strip()
+    .string()
     .transform((value) => {
       //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;

@@ -10,6 +10,8 @@ function DeleteButton({ container, shipmentId }) {
     deleteContainer(container.id, shipmentId); // delete handler to be passed container id
   }
 
+
+
   return (
     <div className="flex space-x-2 mt-2">
       <button

@@ -30,12 +30,10 @@ with app.app_context():
 
     customer1 = Customer(
         name="gamze",
-        username="gamze1314",
+        username="gamze1517",
         password_hash=fake.password(),
         email="gamze@gmail.com",
-        credit_amount=600000,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
+        credit_amount=600000
     )
 
     customers.append(customer1)
@@ -43,7 +41,6 @@ with app.app_context():
 
     db.session.add_all(customers)
     db.session.commit()
-    
 
     print("Customer data seeded successfully")
     # Create 10 shipments
@@ -53,23 +50,22 @@ with app.app_context():
 
     # List of arrival ports (in U.S.)
     arrival_ports = ["New York", "Los Angeles", "Houston",
-                    "Atlanta", "Vancouver", "Oakland"]
-    
+                     "Atlanta", "Vancouver", "Oakland"]
+
     statuses = ["In Transit", "To be Advised", "Arrived"]
 
+    # generate fake shipment data with unique customer_id, and arrival and origin port(arrival != origin).
+   # Function to generate a random date within the past year.
 
-    #generate fake shipment data with unique customer_id, and arrival and origin port(arrival != origin).
-   # Function to generate a random date between two dates
     def random_date(start, end):
         return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))
 
-
-    # List of shipment objects
+    # List to store shipment objects.
     shipments = []
     start_date = datetime.now() - timedelta(days=365)
     end_date = datetime.now()
 
-    # Shuffle origin_ports and arrival_ports to ensure uniqueness
+    # Shuffle origin_ports and arrival_ports to ensure uniqueness. each origin port routed to an unique arrival port.
     shuffled_origins = random.sample(origin_ports, len(origin_ports))
     shuffled_arrivals = random.sample(arrival_ports, len(arrival_ports))
 
@@ -87,11 +83,13 @@ with app.app_context():
             arrival_port=shuffled_arrivals[i],
             origin=shuffled_origins[i],
             freight_rate=round(random.uniform(3700.0, 9000.0), 2),
-            created_at=datetime.now(),
-            updated_at=datetime.now()
         )
 
         shipments.append(shipment)
+
+    # departure_time=datetime.strptime("2024-10-01", "%Y-%m-%d"),  # Convert string to datetime
+    # arrival_time = datetime.strptime(
+    #     "2024-10-05", "%Y-%m-%d"),     # Convert string to datetime, when you create a shipment object.
 
     db.session.add_all(shipments)
     db.session.commit()
@@ -112,14 +110,13 @@ with app.app_context():
             # Price between $3500and $10000
             price=round(random.uniform(3700.0, 9000.0), 2),
             customer_id=1,
-            shipment_id=random.choice(shipment_ids),
-            created_at=datetime.now(),
-            updated_at=datetime.now()
+            shipment_id=random.choice(shipment_ids)
         )
         containers.append(container)
 
     db.session.add_all(containers)
     db.session.commit()
 
-
     print("Container data seeded successfully.")
+
+    # The database is configured to use UTC, +4 hrs in EST.

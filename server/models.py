@@ -4,7 +4,8 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-from datetime import date
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
 import re
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -43,8 +44,8 @@ class Customer(db.Model, SerializerMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(60), unique=True, nullable=False)
     credit_amount = db.Column(db.Numeric(10, 2))
-    created_at = db.Column(db.Date, nullable=False)
-    updated_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     #check constraint => compares name and username columns.
     # Explicit check constraint with SQL-style string comparison
@@ -98,8 +99,10 @@ class Container(db.Model, SerializerMixin):
     container_number = db.Column(db.String(10), nullable=False, unique=True)
     container_type = db.Column(db.String, nullable=False)
     price = db.Column(db.Numeric(10, 2))
-    created_at = db.Column(db.Date, nullable=False)
-    updated_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           server_default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     # foreign keys to set up the relationships
     # container belongs to a customer.
@@ -159,13 +162,15 @@ class Shipment(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(250), nullable=False)
     vessel_name = db.Column(db.String(30), nullable=False)
-    departure_time = db.Column(db.Date, nullable=False)
-    arrival_time = db.Column(db.Date, nullable=False)
+    departure_time = db.Column(db.DateTime, nullable=False)
+    arrival_time = db.Column(db.DateTime, nullable=False)
     arrival_port = db.Column(db.String(30), nullable=False)
     origin = db.Column(db.String(30), nullable=False)
     freight_rate = db.Column(db.Numeric(10, 2))
-    created_at = db.Column(db.Date, nullable=False)
-    updated_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           server_default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     #arrival date can not be equal to departure date
     __table_args__ = (
