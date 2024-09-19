@@ -96,50 +96,6 @@ The configuration settings, and app initializations are managed in the app.py su
 - '/containers/<int:id>' (GET, PATCH, DELETE): Feches a container by id, delete and update.
 
 
-### Frontend Component Hieararchy
-
-![alt text](image-3.png)
-
-### Frontend API Overview
-
-The app utilizes React Context and the Fetch API for backend communication:
-
-Fetch Shipments Data and Display on Home Page
-
-Endpoint: /shipments
-Method: GET
-Action: Retrieve and set the list of shipments along with associated containers.
-
-
-Add Container for the Selected Shipment
-
-Endpoint: /containers
-Method: POST
-Action: Add a new container to a shipment.
-
-
-Delete Container 
-
-Endpoint: /containers/{containerId}
-Method: DELETE
-Action: Remove a container from a shipment.
-
-
-Update Container
-
-Endpoint: /containers/{containerId}
-Method: PATCH
-Action: Modify container details.
-
-
-Search Container
-
-Endpoint: /container/{containerNumber}
-Method: GET
-Action: Retrieve container details by container number.
-
-Error Handling for all API calls: Alerts the user on failure and updates state upon success.
-
 
 ### Models
 
@@ -186,7 +142,52 @@ Origin and Arrival Ports:
 This project uses Flask's built-in development server. Debug mode is enabled for development purposes. The <strong>below</strong> code starts the development server.
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port=5555, debug=True) 
+
+
+### Frontend Component Hieararchy
+
+![alt text](image-3.png)
+
+### Frontend API Overview
+
+The app utilizes React Context and the Fetch API for backend communication:
+
+Fetch Shipments Data and Display on Home Page
+
+Endpoint: /shipments
+Method: GET
+Action: Retrieve and set the list of shipments along with associated containers.
+
+
+Add Container for the Selected Shipment
+
+Endpoint: /containers
+Method: POST
+Action: Add a new container to a shipment.
+
+
+Delete Container 
+
+Endpoint: /containers/{containerId}
+Method: DELETE
+Action: Remove a container from a shipment.
+
+
+Update Container
+
+Endpoint: /containers/{containerId}
+Method: PATCH
+Action: Modify container details.
+
+
+Search Container
+
+Endpoint: /container/{containerNumber}
+Method: GET
+Action: Retrieve container details by container number.
+
+Error Handling for all API calls: Alerts the user on failure and updates state upon success.
 
 
 ### Future amendments to be added
