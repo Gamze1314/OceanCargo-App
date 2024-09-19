@@ -60,6 +60,21 @@ class Customer(db.Model, SerializerMixin):
     # customer's shipments
     shipments = association_proxy('containers', 'shipment', creator=lambda s: Container(shipment=s))
 
+    @validates('name')
+    def validate_name(self, key, value):
+        #uppercase name
+        if not value:
+            raise ValueError(f'{key} can not be empty.')
+        
+        if not isinstance(value, str):
+            raise TypeError(f'{key} must be a string.')
+        
+        value_length = len(value)
+        if value_length < 2 or value_length > 60:
+            raise ValueError(
+                f'{key} must be between 2 and 60 characters long.')
+        return value
+
     # Validations: application-level => whenever new instance is created, and committed to db, validations executed.
     @validates('username')
     def validate_username(self, key, value):
@@ -118,13 +133,6 @@ class Container(db.Model, SerializerMixin):
 
     # validations
 
-    @validates('price')
-    def validate_price(self, key, value):
-        if value < 3500.0 or value > 10000.0:
-            raise ValueError(f'{key} must be between 3500 and 10000.')
-        return value
-
-    #validate container number
     #container number includes 4 letters(first 4) and 6 digits.
     @validates('container_number')
     def validate_container_number(self, key, value):
@@ -139,7 +147,24 @@ class Container(db.Model, SerializerMixin):
         if not value[4:].isdigit():
             raise ValueError(f'{key} must end with 6 digits.')
         return value
-    
+
+    @validates('container_type')
+    def validate_container_type(self, key, value):
+        if not value:
+            raise ValueError(f'{key} can not be empty.')
+        if not isinstance(value, str):
+            raise TypeError(f'{key} must be a string.')
+        if len(value) < 4 or len(value) > 4:
+            raise ValueError(f'{key} must be 4 characters long.')
+        return value
+
+    @validates('price')
+    def validate_price(self, key, value):
+        if value < 3500.0 or value > 10000.0:
+            raise ValueError(f'{key} must be between 3500 and 10000.')
+        return value
+
+
     # calculate the total cost for each container, shipment's freight rate plus container price.
     @hybrid_property
     def total_cost(self):
@@ -148,7 +173,7 @@ class Container(db.Model, SerializerMixin):
 
 
     def __repr__(self):
-        return f'Container(id={self.id}, container_number={self.container_number}, type={self.container_type}, price={self.price})'
+        return f'Container(id={self.id}, container_number={self.container_number}, container_type={self.container_type}, price={self.price}, created_at={self.created_at}, updated_at={self.updated_at})'
 
 
 # Shipment model with relationships
@@ -194,6 +219,16 @@ class Shipment(db.Model, SerializerMixin):
             raise TypeError(f'{key} must be a string.')
         if len(value) > 250:
             raise ValueError(f'{key} can not be more than 250 characters.')
+        return value
+
+    @validates('vessel_name')
+    def validate_vessel_name(self, key, value):
+        if not value:
+            raise ValueError(f'{key} can not be empty.')
+        if not isinstance(value, str):
+            raise TypeError(f'{key} must be a string.')
+        if len(value) > 30:
+            raise ValueError(f'{key} can not be more than 30 characters.')
         return value
 
     @validates('freight_rate')

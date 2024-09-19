@@ -1,8 +1,8 @@
-"""Initial migrate with relationships
+"""Models with validations
 
-Revision ID: 2cf80b99a72e
+Revision ID: 6642bb59bcd8
 Revises: 
-Create Date: 2024-09-09 21:32:41.850963
+Create Date: 2024-09-19 19:45:20.940838
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2cf80b99a72e'
+revision = '6642bb59bcd8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,8 +25,8 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=128), nullable=False),
     sa.Column('email', sa.String(length=60), nullable=False),
     sa.Column('credit_amount', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('created_at', sa.Date(), nullable=False),
-    sa.Column('updated_at', sa.Date(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.CheckConstraint('name != username', name=op.f('ck_customers_check_name_not_username')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_customers')),
     sa.UniqueConstraint('email', name=op.f('uq_customers_email')),
@@ -36,13 +36,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('status', sa.String(length=250), nullable=False),
     sa.Column('vessel_name', sa.String(length=30), nullable=False),
-    sa.Column('departure_time', sa.Date(), nullable=False),
-    sa.Column('arrival_time', sa.Date(), nullable=False),
+    sa.Column('departure_time', sa.DateTime(), nullable=False),
+    sa.Column('arrival_time', sa.DateTime(), nullable=False),
     sa.Column('arrival_port', sa.String(length=30), nullable=False),
     sa.Column('origin', sa.String(length=30), nullable=False),
     sa.Column('freight_rate', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('created_at', sa.Date(), nullable=False),
-    sa.Column('updated_at', sa.Date(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.CheckConstraint('arrival_time != departure_time', name=op.f('ck_shipments_check_arrival_and_departure_date')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_shipments'))
     )
@@ -51,8 +51,8 @@ def upgrade():
     sa.Column('container_number', sa.String(length=10), nullable=False),
     sa.Column('container_type', sa.String(), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('created_at', sa.Date(), nullable=False),
-    sa.Column('updated_at', sa.Date(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.Column('shipment_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], name=op.f('fk_containers_customer_id_customers')),
