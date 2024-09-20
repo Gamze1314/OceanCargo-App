@@ -43,10 +43,12 @@ class Customer(db.Model, SerializerMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(60), unique=True, nullable=False)
     credit_amount = db.Column(db.Numeric(10, 2))
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    created_at = db.Column(db.DateTime, nullable=False,
+                           server_default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    #check constraint => compares name and username columns.
+    # check constraint => compares name and username columns.
     # Explicit check constraint with SQL-style string comparison
     __table_args__ = (
         db.CheckConstraint('name != username', name='check_name_not_username'),
@@ -54,21 +56,23 @@ class Customer(db.Model, SerializerMixin):
 
     # Relationships
     # customer has many containers => one to many
-    containers = db.relationship('Container', back_populates='customer', cascade='all')
+    containers = db.relationship(
+        'Container', back_populates='customer', cascade='all')
     # back_populates='customer' => opposite relationship(reciprocal)
 
-    # customer's shipments
-    shipments = association_proxy('containers', 'shipment', creator=lambda s: Container(shipment=s))
+    # customer's shipments through containers(relationship property)
+    shipments = association_proxy(
+        'containers', 'shipment', creator=lambda s: Container(shipment=s))
 
     @validates('name')
     def validate_name(self, key, value):
-        #uppercase name
+        # uppercase name
         if not value:
             raise ValueError(f'{key} can not be empty.')
-        
+
         if not isinstance(value, str):
             raise TypeError(f'{key} must be a string.')
-        
+
         value_length = len(value)
         if value_length < 2 or value_length > 60:
             raise ValueError(
@@ -80,17 +84,16 @@ class Customer(db.Model, SerializerMixin):
     def validate_username(self, key, value):
         # Username must be between 5 and 10 characters long and not empty
         if not value:
-           raise ValueError(f'{key} can not be empty.')
-        
+            raise ValueError(f'{key} can not be empty.')
+
         if not isinstance(value, str):
             raise TypeError(f'{key} must be a string.')
-        
+
         value_length = len(value)
         if value_length < 5 or value_length > 10:
             raise ValueError(
                 f'{key} must be between 5 and 10 characters long.')
         return value
-
 
     @validates('email')
     def validate_email(self, key, value):
@@ -120,10 +123,12 @@ class Container(db.Model, SerializerMixin):
 
     # foreign keys to set up the relationships
     # container belongs to a customer.
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey(
+        'customers.id'), nullable=False)
 
     # shipment_id fk; Container belongs to a shipment.
-    shipment_id = db.Column(db.Integer, db.ForeignKey('shipments.id'), nullable=False)
+    shipment_id = db.Column(db.Integer, db.ForeignKey(
+        'shipments.id'), nullable=False)
 
     # relationship to customer
     customer = db.relationship('Customer', back_populates='containers')
@@ -133,7 +138,7 @@ class Container(db.Model, SerializerMixin):
 
     # validations
 
-    #container number includes 4 letters(first 4) and 6 digits.
+    # container number includes 4 letters(first 4) and 6 digits.
     @validates('container_number')
     def validate_container_number(self, key, value):
         if not value:
@@ -164,13 +169,12 @@ class Container(db.Model, SerializerMixin):
             raise ValueError(f'{key} must be between 3500 and 10000.')
         return value
 
-
     # calculate the total cost for each container, shipment's freight rate plus container price.
+
     @hybrid_property
     def total_cost(self):
-        return self.price + (self.shipment.freight_rate if self.shipment else 0)  # if shipment exists, add freight rate else 0.00.
-
-
+        # if shipment exists, add freight rate else 0.00.
+        return self.price + (self.shipment.freight_rate if self.shipment else 0)
 
     def __repr__(self):
         return f'Container(id={self.id}, container_number={self.container_number}, container_type={self.container_type}, price={self.price}, created_at={self.created_at}, updated_at={self.updated_at})'
@@ -181,7 +185,7 @@ class Shipment(db.Model, SerializerMixin):
 
     __tablename__ = 'shipments'
 
-    serialize_rules = ('-containers.shipment',)
+    serialize_rules = ('-containers.shipment',)  # avoid circular references.
 
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(250), nullable=False)
@@ -196,17 +200,20 @@ class Shipment(db.Model, SerializerMixin):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    #arrival date can not be equal to departure date
+    # arrival date can not be equal to departure date
     __table_args__ = (
-        db.CheckConstraint('arrival_time != departure_time', name='check_arrival_and_departure_date'),
+        db.CheckConstraint('arrival_time != departure_time',
+                           name='check_arrival_and_departure_date'),
     )
 
     # Relationship
     # if a shipment is deleted, deletes all associated containers.
-    containers = db.relationship('Container', back_populates='shipment', cascade='all')
+    containers = db.relationship(
+        'Container', back_populates='shipment', cascade='all')
 
-    # customers and shipments many to many
-    customers = association_proxy('containers', 'customer', creator=lambda c: Container(customer=c))
+    # shipment's customers through containers.(containers=> connector: relationship property, 'customer'=> model ,connecting to containers.)
+    customers = association_proxy(
+        'containers', 'customer', creator=lambda c: Container(customer=c))
 
     # validations
 

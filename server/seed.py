@@ -39,6 +39,10 @@ with app.app_context():
     customers.append(customer1)
     # customers.append(customer)
 
+    #customers order by name before committing to the database
+    
+
+
     db.session.add_all(customers)
     db.session.commit()
 

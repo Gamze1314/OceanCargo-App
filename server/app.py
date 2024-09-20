@@ -83,7 +83,8 @@ class Containers(Resource):
 
             # Validate input data
             if not all([container_number, container_type, shipment_id]):
-                abort(400, description='Invalid user input')
+                abort(
+                    400, description='Missing or invalid input: container_number, container_type, and shipment_id are required.')
             # breakpoint()
             # Determine price based on container type
             if '20' in container_type:
@@ -96,8 +97,6 @@ class Containers(Resource):
                 container_number=container_number,
                 container_type=container_type,
                 price=price,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
                 customer_id=1, # default customer
                 shipment_id=shipment_id  # selected shipment id
             )
@@ -138,8 +137,8 @@ class ContainerByID(Resource):
 
     def patch(self, id):
         try:
-            # Parse the request data for updating the container
-            data = request.json
+            # Parse the request data to update the container
+            data = request.json #cont number and type to be updated.
 
             #validate data 
             container_number = data.get('container_number')
@@ -175,7 +174,6 @@ class ContainerByID(Resource):
                 container.container_number = container_number
                 container.container_type = container_type
                 container.price = price
-                container.updated_at = datetime.now()
 
                 # Commit the changes
                 db.session.commit()
@@ -195,7 +193,7 @@ class ContainerByID(Resource):
     def delete(self, id):
         try:
             # Find the container by id
-            container = Container.query.filter(Container.id == id).first()
+            container = Container.query.filter_by(id=id).first()
 
             if not container:
                 abort(404, description="Container not found")
@@ -208,6 +206,7 @@ class ContainerByID(Resource):
             return make_response(response_dict, 200)
 
         except ValueError as e:
+            db.session.rollback()
             # Handle server errors
             abort(500, e.args[0])
         
