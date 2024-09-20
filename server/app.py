@@ -44,7 +44,7 @@ class Shipments(Resource):
                 response_body = [shipment.to_dict() for shipment in shipments]
                 return make_response(response_body, 200)
             else:
-                return make_response({'message': 'No shipments found'}, 404)
+                return make_response({'error': 'No shipments found'}, 404)
 
         except ValueError as e:
             # Handle any unexpected errors
@@ -148,19 +148,19 @@ class ContainerByID(Resource):
         container_number = data.get('container_number')
 
         if not container_number: # string(10), unique, not null
-            return make_response({'message': 'Container number is required'}, 400)
+            return make_response({'error': 'Container number is required'}, 400)
         if not isinstance(container_number, str):
-            return make_response({'message': 'Container number must be a string'}, 400)
+            return make_response({'error': 'Container number must be a string'}, 400)
         if not len(container_number) == 10:
-            return make_response({'message': 'Container number must have exactly 10 characters'}, 400)
+            return make_response({'error': 'Container number must have exactly 10 characters'}, 400)
         
         #validate container type.
         container_type = data.get('container_type')
 
         if not container_type: # string(20), not null
-            return make_response({'message': 'Container type is required'}, 400)
+            return make_response({'error': 'Container type is required'}, 400)
         if not isinstance(container_type, str):
-            return make_response({'message': 'Container type must be a string'}, 400)
+            return make_response({'error': 'Container type must be a string'}, 400)
             
         try:
             # Find the container by id
@@ -184,7 +184,7 @@ class ContainerByID(Resource):
 
                 return make_response(response_body, 200)
             else:
-                return make_response({'message': 'Container not found'}, 404)
+                return make_response({'error': 'Container not found'}, 404)
 
         except ValueError as e:
             # Handle any unexpected errors
@@ -204,7 +204,7 @@ class ContainerByID(Resource):
             db.session.delete(container)
             db.session.commit()
 
-            response_dict = {"message": "The container is successfully deleted."}
+            response_dict = {"error": "The container is successfully deleted."}
 
             return make_response(response_dict, 200)
 
