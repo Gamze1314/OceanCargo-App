@@ -48,6 +48,7 @@ class Shipments(Resource):
 
         except ValueError as e:
             # Handle any unexpected errors
+            db.session.rollback()
             abort(500, e.args[0])
 
 
@@ -71,27 +72,29 @@ class Containers(Resource):
 
         except ValueError as e:
             # Handle any unexpected errors
+            db.session.rollback()
             abort(500, e.args[0])
 
     def post(self):
-        try:
+        
             # create new container ; data: container number, type, shipment id, and customer id default 1.
-            data = request.get_json()
-            container_number = data.get('container_number')
-            container_type = data.get('container_type')
-            shipment_id = data.get('shipment_id')
+        data = request.get_json()
+        container_number = data.get('container_number')
+        container_type = data.get('container_type')
+        shipment_id = data.get('shipment_id')
 
-            # Validate input data
-            if not all([container_number, container_type, shipment_id]):
-                abort(
-                    400, description='Missing or invalid input: container_number, container_type, and shipment_id are required.')
-            # breakpoint()
-            # Determine price based on container type
-            if '20' in container_type:
-                price = 4000.00
-            else:
-                price = 7000.00
-
+        # Validate input data
+        if not all([container_number, container_type, shipment_id]):
+            abort(
+                400, description='Missing or invalid input: container_number, container_type, and shipment_id are required.')
+        # breakpoint()
+        # Determine price based on container type
+        if '20' in container_type:
+            price = 4000.00
+        else:
+            price = 7000.00
+        
+        try:
             # Create a new container instance
             new_container = Container(
                 container_number=container_number,
@@ -109,6 +112,7 @@ class Containers(Resource):
             return make_response(response_body, 201)
 
         except ValueError as e:
+            db.session.rollback()
             abort(422, e.args[0]) #raises 422, and error message. Unprocessable entity.
 
 
@@ -133,43 +137,41 @@ class ContainerByID(Resource):
 
         except ValueError as e:
             # Handle any unexpected errors
+            db.session.rollback()
             abort(500, e.args[0])
 
     def patch(self, id):
-        try:
             # Parse the request data to update the container
-            data = request.json #cont number and type to be updated.
+        data = request.json #cont number and type to be updated.
 
-            #validate data 
-            container_number = data.get('container_number')
+        #validate container_number
+        container_number = data.get('container_number')
 
-            if not container_number: # string(10), unique, not null
-                return make_response({'message': 'Container number is required'}, 400)
-            if not isinstance(container_number, str):
-                return make_response({'message': 'Container number must be a string'}, 400)
-            if not len(container_number) == 10:
-                return make_response({'message': 'Container number must have exactly 10 characters'}, 400)
-            
-            container_type = data.get('container_type')
+        if not container_number: # string(10), unique, not null
+            return make_response({'message': 'Container number is required'}, 400)
+        if not isinstance(container_number, str):
+            return make_response({'message': 'Container number must be a string'}, 400)
+        if not len(container_number) == 10:
+            return make_response({'message': 'Container number must have exactly 10 characters'}, 400)
+        
+        #validate container type.
+        container_type = data.get('container_type')
 
-            if not container_type: # string(20), not null
-                return make_response({'message': 'Container type is required'}, 400)
-            if not isinstance(container_type, str):
-                return make_response({'message': 'Container type must be a string'}, 400)
+        if not container_type: # string(20), not null
+            return make_response({'message': 'Container type is required'}, 400)
+        if not isinstance(container_type, str):
+            return make_response({'message': 'Container type must be a string'}, 400)
             
-            
+        try:
             # Find the container by id
             container = Container.query.filter_by(id=id).first()
 
             if container:
-            # Update the container fields, if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same. updated_at , datetime.now()
-
-            #check if container number is valid, string, and not empty  
+            # if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same.
                 if '20' in container_type:
                     price = 4000.00
                 else:
                     price = 7000.00
-
 
                 container.container_number = container_number
                 container.container_type = container_type
@@ -186,6 +188,7 @@ class ContainerByID(Resource):
 
         except ValueError as e:
             # Handle any unexpected errors
+            db.session.rollback()
             abort(500, e.args[0])
         
 
