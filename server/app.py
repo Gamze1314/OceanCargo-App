@@ -4,14 +4,14 @@ from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer
-from faker import Faker
 from datetime import datetime
+# from flask_cors import CORS
 
-# Create the Flask application object
-fake = Faker()
 
 # create a Flask application object
 app = Flask(__name__)
+
+# CORS(app)  # Enables CORS for all routes
 
 
 # configure a database connection to the local file app.db
