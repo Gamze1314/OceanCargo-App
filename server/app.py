@@ -1,15 +1,14 @@
+from datetime import datetime
 import os # helps to grab env variables.
 # import dotenv
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
 #import render_template
 from flask import Flask, make_response, request, abort, render_template
-from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer
-from datetime import datetime
 # from flask_cors import CORS
 
 
@@ -72,7 +71,7 @@ class Containers(Resource):
                                  for container in containers]
                 return make_response(response_body, 200)
             else:
-                abort(404, e.args[0])
+                return make_response({'error': 'No containers found'}, 404)
 
         except ValueError as e:
             # Handle any unexpected errors
@@ -81,7 +80,7 @@ class Containers(Resource):
 
     def post(self):
         
-        # create new container ; data: container number, type, shipment id, and customer id default 1.
+        # create new container
         data = request.get_json()
         container_number = data.get('container_number')
         container_type = data.get('container_type')
@@ -90,14 +89,14 @@ class Containers(Resource):
         # Validate input data
         if not all([container_number, container_type, shipment_id]):
             abort(
-                400, description='Missing or invalid input: container_number, container_type, and shipment_id are required.')
+                400, description='Missing or invalid input.')
         # breakpoint()
         # Determine price based on container type
         if '20' in container_type:
             price = 4000.00
         else:
             price = 7000.00
-        
+
         try:
             # Create a new container instance
             new_container = Container(
@@ -165,7 +164,7 @@ class ContainerByID(Resource):
             return make_response({'error': 'Container type is required'}, 400)
         if not isinstance(container_type, str):
             return make_response({'error': 'Container type must be a string'}, 400)
-            
+
         try:
             # Find the container by id
             container = Container.query.filter_by(id=id).first()
@@ -216,35 +215,13 @@ class ContainerByID(Resource):
             db.session.rollback()
             # Handle server errors
             abort(500, e.args[0])
-        
+
 
 api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
-#GET ALL CONTAINERS ABOVE CERTAIN PRICE, 5000
-# value < 3500.0 or value > 10000.0:
-# class ContainerByPrice(Resource):
-#     def get(self, price):
-#         try:
-        
-#             containers = Container.query.filter(Container.price > price).all()
-
-#             if containers:
-
-#                 response_body = [container.to_dict() for container in containers]
-
-#                 return make_response(response_body, 200)
-#             else:
-#                 return make_response({'error': f'No matching container found for the {price}.'}, 404)
-
-#         except:
-#             make_response({'error': 'Unexpected server error'}, 500)
-
-# api.add_resource(ContainerByPrice, '/container/<int:price>')
-
-
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port=5555)
 
 
 # gunicorn: Required for running the application in a production WSGI server.
