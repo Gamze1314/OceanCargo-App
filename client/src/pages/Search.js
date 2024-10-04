@@ -42,7 +42,7 @@ function Search() {
       console.log("Component unmounted");
       setContainerByNumber(null); // reset when component is unmounted.
     };
-  }, []);
+  }, [setContainerByNumber]);
 
   // centers form both vertically and horizantally.
 
