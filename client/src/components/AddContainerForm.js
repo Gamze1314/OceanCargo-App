@@ -75,7 +75,7 @@ function AddContainerForm() {
       setShowAddContainerForm(false);
       setSelectedShipmentId(null);
     };
-  }, [])
+  }, [setSelectedShipmentId, setShowAddContainerForm]);
 
   
 
