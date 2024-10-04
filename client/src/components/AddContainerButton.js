@@ -1,5 +1,5 @@
 // AddContainer button will display for each shipment to add container.
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Context } from "../context/Context";
 
 function AddContainerButton({ shipmentId }) {
