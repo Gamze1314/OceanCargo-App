@@ -15,6 +15,16 @@ from models import db, Shipment, Container, Customer
 # create a Flask application object
 app = Flask(__name__)
 
+#static_url_path, static_folder, template_folder
+#backend will hit these routes in static folder.
+
+app = Flask(
+    __name__,
+    static_url_path='',
+    static_folder='..client/build', #js, css, img, fonts
+    template_folder='..client/build' #html (Jinja templating engine)
+)
+
 
 # 1. development => configure a database connection to the local file app.db
 # 2. production => set DATABASE_URI to os.environ.get('DATABASE_URI')
@@ -31,6 +41,12 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 api = Api(app)
+
+#handle Client side routing
+@app.route('/')
+# @app.route('/<int:id>') => for dynamic segments
+def index():
+    return render_template("index.html") # from build folder, this will redirect them to static folder.
 
 
 
