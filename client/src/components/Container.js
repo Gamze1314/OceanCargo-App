@@ -25,8 +25,7 @@ const Container = React.memo(({ container, shipmentId, index }) => {
       setSelectedShipmentId(shipmentId); // Also update shipmentId when container is selected for editing.
       setShowAddContainerForm(false); // the add form will be hidden
     }
-    console.log("selectedContainerId", selectedContainerId, "shipmentId" ,shipmentId, "container-id", container.id, "shipment-id", shipmentId)
-  }, [selectedContainerId, container.id, setSelectedContainerId, setSelectedShipmentId , shipmentId]);
+  }, [selectedContainerId, container.id, setSelectedContainerId, setSelectedShipmentId , shipmentId, setShowAddContainerForm]);
 
 
 
