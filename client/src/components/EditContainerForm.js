@@ -27,7 +27,7 @@ const validationSchema = yup.object({
 });
 
 const EditContainerForm = ({ onCancel, container }) => {
-  const { selectedShipmentId, updateContainer, showAddContainerForm , setShowAddContainerForm, setSelectedContainerId, selectedContainerId} =
+  const { selectedShipmentId, updateContainer, showAddContainerForm } =
     useContext(Context);
 
   // useFormik hook returns all Formik state and helpers(manages form state)
@@ -64,7 +64,7 @@ const EditContainerForm = ({ onCancel, container }) => {
       // Reset the form state using Formik's resetForm method
       formik.resetForm();
     };
-  }, [showAddContainerForm]); // Dependency ensures cleanup when showAddContainerForm changes
+  }, [showAddContainerForm, formik, onCancel]); // Dependency ensures cleanup when showAddContainerForm changes
 
 
 
