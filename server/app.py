@@ -1,4 +1,9 @@
-from flask import Flask, make_response, request, abort
+import os # helps to grab env variables.
+# import dotenv
+from dotenv import load_dotenv  # take environment variables from .env.
+load_dotenv()
+#import render_template
+from flask import Flask, make_response, request, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
@@ -11,11 +16,10 @@ from datetime import datetime
 # create a Flask application object
 app = Flask(__name__)
 
-# CORS(app)  # Enables CORS for all routes
 
-
-# configure a database connection to the local file app.db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# 1. development => configure a database connection to the local file app.db
+# 2. production => set DATABASE_URI to os.environ.get('DATABASE_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 
 # disable modification tracking to use less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -77,7 +81,7 @@ class Containers(Resource):
 
     def post(self):
         
-            # create new container ; data: container number, type, shipment id, and customer id default 1.
+        # create new container ; data: container number, type, shipment id, and customer id default 1.
         data = request.get_json()
         container_number = data.get('container_number')
         container_type = data.get('container_type')
@@ -217,7 +221,31 @@ class ContainerByID(Resource):
 api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
+#GET ALL CONTAINERS ABOVE CERTAIN PRICE, 5000
+# value < 3500.0 or value > 10000.0:
+# class ContainerByPrice(Resource):
+#     def get(self, price):
+#         try:
+        
+#             containers = Container.query.filter(Container.price > price).all()
+
+#             if containers:
+
+#                 response_body = [container.to_dict() for container in containers]
+
+#                 return make_response(response_body, 200)
+#             else:
+#                 return make_response({'error': f'No matching container found for the {price}.'}, 404)
+
+#         except:
+#             make_response({'error': 'Unexpected server error'}, 500)
+
+# api.add_resource(ContainerByPrice, '/container/<int:price>')
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
 
 
+# gunicorn: Required for running the application in a production WSGI server.
+# honcho start -f Procfile.dev  => to run both react and flask servers.

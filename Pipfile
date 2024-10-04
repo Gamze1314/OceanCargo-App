@@ -12,6 +12,10 @@ sqlalchemy-serializer = "*"
 faker = "*"
 ipdb = "*"
 requests = "*"
+gunicorn = "*"
+honcho = "*"
+python-dotenv = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
