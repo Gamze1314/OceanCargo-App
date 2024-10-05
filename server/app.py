@@ -22,9 +22,9 @@ CORS(app)
 app = Flask(
     __name__,
     static_url_path='',
-    static_folder='../client/build/static',  # js, css, img, fonts
+    static_folder='../client/build',  # js, css, img, fonts
     # html (Jinja templating engine)
-    template_folder='..client/build/index.html'
+    template_folder='..client/build'
 )
 
 
@@ -239,7 +239,7 @@ api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
 if __name__ == '__main__':
-    app.run(port=port)  # Bind to all IP addresses (required by Render)
+    app.run(port=5555)  # Bind to all IP addresses (required by Render)
 
 
 # gunicorn: Required for running the application in a production WSGI server.
