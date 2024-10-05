@@ -156,7 +156,7 @@ class ContainerByID(Resource):
     def get(self, id):
         try:
             # Fetch the container by id from the database
-            container = Container.query.get(id)
+            container = Container.query.filter_by(id=id).first()
 
             # Check if container is found
             if container:
