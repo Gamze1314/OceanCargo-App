@@ -23,7 +23,8 @@ app = Flask(
     __name__,
     static_url_path='',
     static_folder='../client/build/static',  # js, css, img, fonts
-    template_folder='..client/build' #html (Jinja templating engine)
+    # html (Jinja templating engine)
+    template_folder='..client/build/index.html'
 )
 
 
@@ -50,9 +51,6 @@ def index():
     return render_template("index.html") # from build folder, this will redirect them to static folder.
 
 
-@app.errorhandler(404)
-def not_found(e):
-    return render_template("index.html")
 
 class Shipments(Resource):
 
@@ -241,9 +239,7 @@ api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
 if __name__ == '__main__':
-    # Use PORT from environment or fallback to 5555
-    port = int(os.environ.get("PORT", 5555))
-    app.run(host='0.0.0.0', port=port)  # Bind to all IP addresses (required by Render)
+    app.run(port=port)  # Bind to all IP addresses (required by Render)
 
 
 # gunicorn: Required for running the application in a production WSGI server.
