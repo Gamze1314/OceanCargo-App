@@ -9,11 +9,12 @@ from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer
-# from flask_cors import CORS
+from flask_cors import CORS
 
 
 # create a Flask application object
 app = Flask(__name__)
+CORS(app)
 
 #static_url_path, static_folder, template_folder
 #backend will hit these routes in static folder.
@@ -21,7 +22,7 @@ app = Flask(__name__)
 app = Flask(
     __name__,
     static_url_path='',
-    static_folder='..client/build', #js, css, img, fonts
+    static_folder='../client/build/static',  # js, css, img, fonts
     template_folder='..client/build' #html (Jinja templating engine)
 )
 
@@ -240,7 +241,9 @@ api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    # Use PORT from environment or fallback to 5555
+    port = int(os.environ.get("PORT", 5555))
+    app.run(host='0.0.0.0', port=port)  # Bind to all IP addresses (required by Render)
 
 
 # gunicorn: Required for running the application in a production WSGI server.
