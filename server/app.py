@@ -9,12 +9,11 @@ from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
 from models import db, Shipment, Container, Customer
-from flask_cors import CORS
 
 
 # create a Flask application object
 app = Flask(__name__)
-CORS(app)
+
 
 #static_url_path, static_folder, template_folder
 #backend will hit these routes in static folder.
@@ -31,6 +30,11 @@ app = Flask(
 # 1. development => configure a database connection to the local file app.db
 # 2. production => set DATABASE_URI to os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+
+# Access the environment variable
+DATABASE_URI = os.environ.get('DATABASE_URI')
+
+#DATABASE_URI was loaded successfully, after config. export DATABASE_URI=<external database uri>
 
 # disable modification tracking to use less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
