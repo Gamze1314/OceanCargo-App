@@ -22,7 +22,7 @@ CORS(app)
 app = Flask(
     __name__,
     static_url_path='',
-    static_folder='../client/build',  # js, css, img, fonts
+    static_folder='../client/build/static',  # js, css, img, fonts
     # html (Jinja templating engine)
     template_folder='..client/build'
 )
@@ -45,12 +45,18 @@ db.init_app(app)
 api = Api(app)
 
 #handle Client side routing
-@app.route('/')
-# @app.route('/<int:id>') => for dynamic segments
-def index():
-    return render_template("index.html") # from build folder, this will redirect them to static folder.
 
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html') # from build folder, this will redirect them to static folder.
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return app.send_static_file('index.html')
 
 class Shipments(Resource):
 
