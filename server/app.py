@@ -3,7 +3,7 @@ import os # helps to grab env variables.
 # import dotenv
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
-from flask import Flask, make_response, request, abort, render_template
+from flask import Flask, make_response, request, abort, send_from_directory
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
@@ -51,7 +51,8 @@ api = Api(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    #serves react app.
+    return send_from_directory(directory=app.template_folder, path='index.html')
 
 
 class Shipments(Resource):
