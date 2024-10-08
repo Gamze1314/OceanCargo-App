@@ -3,7 +3,7 @@ import os # helps to grab env variables.
 # import dotenv
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
-from flask import Flask, make_response, request, abort, send_from_directory
+from flask import Flask, make_response, request, abort, send_from_directory, render_template
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
@@ -13,15 +13,15 @@ from models import db, Shipment, Container, Customer
 # create a Flask application object
 app = Flask(__name__)
 
-# Set the directory for static files and templates
-static_directory = os.path.join(os.getcwd(), 'client/build/static')
-template_directory = os.path.join(os.getcwd(), 'client/build')
+
+REACT_BUILD_DIR = os.path.abspath(os.path.join(os.getcwd(), '../client/build'))
+# breakpoint()
 
 app = Flask(
     __name__,
     static_url_path='',
-    static_folder= static_directory,
-    template_folder= template_directory
+    # static_folder='..client/build/static',
+    # template_folder='..client/build'
 )
 
 
@@ -51,8 +51,20 @@ api = Api(app)
 
 @app.route('/')
 def index():
-    #serves react app.
-    return send_from_directory(directory=app.template_folder, path='index.html')
+    # Serve the index.html file directly from the React build directory
+    index_path = os.path.join(REACT_BUILD_DIR, 'index.html')
+
+    # Check if the index.html exists for debugging purposes
+    if not os.path.exists(index_path):
+        return f"File not found: {index_path}", 404
+
+    return send_from_directory(REACT_BUILD_DIR, 'index.html')
+
+
+@app.route('/static/<folder>/<file>')
+def static_proxy(folder, file):
+    static_folder = os.path.join(REACT_BUILD_DIR, 'static')
+    return send_from_directory(static_folder, os.path.join(folder, file))
 
 
 class Shipments(Resource):
@@ -242,7 +254,7 @@ api.add_resource(ContainerByID, '/containers/<int:id>')
 
 
 if __name__ == '__main__':
-    app.run(port=5555)  # Bind to all IP addresses (required by Render)
+    app.run(debug=True, port=5555)
 
 
 # gunicorn: Required for running the application in a production WSGI server.
