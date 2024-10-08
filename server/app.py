@@ -20,7 +20,7 @@ template_directory = os.getcwd()+'/client/build'
 
 app = Flask(
     __name__,
-    static_url_path='/static',
+    static_url_path='',
     static_folder= static_directory,
     template_folder= template_directory
 )
