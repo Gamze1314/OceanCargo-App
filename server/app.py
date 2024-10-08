@@ -4,7 +4,7 @@ import os # helps to grab env variables.
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
 #import render_template
-from flask import Flask, make_response, request, abort, send_from_directory
+from flask import Flask, make_response, request, abort, send_from_directory, render_template
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
@@ -14,16 +14,16 @@ from models import db, Shipment, Container, Customer
 # create a Flask application object
 app = Flask(__name__)
 
-
+static_directory = os.getcwd() + '/client/build/static'
+template_directory = os.getcwd()+'/client/build'
 #static_url_path, static_folder, template_folder
 #backend will hit these routes in static folder.
 
 app = Flask(
     __name__,
-    static_url_path='',
-    static_folder='../client/build',  # js, css, img, fonts
-    # html (Jinja templating engine)
-    template_folder='..client/build'
+    static_url_path='/static',
+    static_folder= static_directory,
+    template_folder= template_directory
 )
 
 
@@ -51,10 +51,11 @@ api = Api(app)
 #handle Client side routing
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    return send_from_directory('..client/build','index.html') # from build folder, this will redirect them to static folder.
+@app.route('/')
+def index():
+    #serves react app.
+    return render_template('index.html')
+
 
 
 
