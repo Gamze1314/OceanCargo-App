@@ -54,9 +54,7 @@ api = Api(app)
 @app.route('/')
 def index():
     #serves react app.
-    return render_template('index.html')
-
-
+    return send_from_directory(app.template_folder, '/index.html')
 
 
 class Shipments(Resource):
