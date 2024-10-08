@@ -3,7 +3,7 @@ import os # helps to grab env variables.
 # import dotenv
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
-from flask import Flask, make_response, request, abort, send_from_directory
+from flask import Flask, make_response, request, abort, render_template
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
