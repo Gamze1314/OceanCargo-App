@@ -21,7 +21,7 @@ app = Flask(__name__)
 app = Flask(
     __name__,
     static_url_path='',
-    static_folder='../client/build/static',  # js, css, img, fonts
+    static_folder='../client/build',  # js, css, img, fonts
     # html (Jinja templating engine)
     template_folder='..client/build'
 )
