@@ -13,10 +13,9 @@ from models import db, Shipment, Container, Customer
 # create a Flask application object
 app = Flask(__name__)
 
-static_directory = os.getcwd() + '/client/build/static'
-template_directory = os.getcwd()+'/client/build'
-#static_url_path, static_folder, template_folder
-#backend will hit these routes in static folder.
+# Set the directory for static files and templates
+static_directory = os.path.join(os.getcwd(), 'client/build/static')
+template_directory = os.path.join(os.getcwd(), 'client/build')
 
 app = Flask(
     __name__,
@@ -52,8 +51,7 @@ api = Api(app)
 
 @app.route('/')
 def index():
-    #serves react app.
-    return send_from_directory(app.template_folder, '/index.html')
+    return render_template('index.html')
 
 
 class Shipments(Resource):
