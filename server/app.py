@@ -4,7 +4,7 @@ import os # helps to grab env variables.
 from dotenv import load_dotenv  # take environment variables from .env.
 load_dotenv()
 #import render_template
-from flask import Flask, make_response, request, abort, render_template
+from flask import Flask, make_response, request, abort, send_from_directory
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 # import models
@@ -54,13 +54,9 @@ api = Api(app)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    return render_template('index.html') # from build folder, this will redirect them to static folder.
+    return send_from_directory('..client/build','index.html') # from build folder, this will redirect them to static folder.
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    return app.send_static_file('index.html')
 
 class Shipments(Resource):
 
