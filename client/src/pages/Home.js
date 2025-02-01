@@ -16,6 +16,7 @@ function Home() {
     setShowAddContainerForm,
   } = useContext(Context);
 
+  console.log(shipments)
   // listen for selectedShipmentId, and showAddcontainerform changes to alert user to add container for a shipment one at a time.
 
   useEffect(() => {
