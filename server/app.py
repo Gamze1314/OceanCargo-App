@@ -1,7 +1,6 @@
 from datetime import datetime
-import os # helps to grab env variables.
-# import dotenv
-from dotenv import load_dotenv  # take environment variables from .env.
+import os
+from dotenv import load_dotenv
 load_dotenv()
 from flask import Flask, make_response, request, abort, send_from_directory, render_template
 from flask_restful import Api, Resource

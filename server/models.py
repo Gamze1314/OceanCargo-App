@@ -4,7 +4,7 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.sql import func
+from sqlalchemy import func
 import re
 from sqlalchemy.ext.hybrid import hybrid_property
 
