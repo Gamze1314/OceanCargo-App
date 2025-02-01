@@ -1,16 +1,12 @@
-// handles click event, and updates state for deletion of a selected shipment's container.
-
 import React, { useContext } from "react";
-import { Context } from "../context/Context"; // Import the context
+import { Context } from "../context/Context";
 
 function DeleteButton({ container, shipmentId }) {
-  const { deleteContainer } = useContext(Context); // use delete function from context.js
+  const { deleteContainer } = useContext(Context);
 
   function handleDelete() {
-    deleteContainer(container.id, shipmentId); // delete handler to be passed container id
+    deleteContainer(container.id, shipmentId);
   }
-
-
 
   return (
     <div className="flex space-x-2 mt-2">

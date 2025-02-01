@@ -6,9 +6,8 @@ import Containers from "../components/Containers.js";
 import AddContainerButton from "../components/AddContainerButton.js";
 import AddContainerForm from "../components/AddContainerForm.js";
 
-// condiitionally renders the form and button if 'addContainer' button is clicked.
+
 function Home() {
-  // use useContext hook to access shipments data from Context.
   const {
     selectedShipmentId,
     shipments,
@@ -16,18 +15,13 @@ function Home() {
     setShowAddContainerForm,
   } = useContext(Context);
 
-  console.log(shipments)
-  // listen for selectedShipmentId, and showAddcontainerform changes to alert user to add container for a shipment one at a time.
-
   useEffect(() => {
     if (selectedShipmentId && showAddContainerForm) {
-      // Trigger the alert only if a shipment is selected and the form is not currently shown
       alert("Please select one shipment at a time to add or edit a container.");
       setShowAddContainerForm(true);
     }
   }, [selectedShipmentId, showAddContainerForm, setShowAddContainerForm]);
 
-  // flexbox with 2 columns for news section and dashboard.
   return (
     <div className="flex space-x-6 pt-4 pb-4">
       <div className="bg-white shadow-lg rounded-lg p-11 w-2/3">
@@ -36,7 +30,6 @@ function Home() {
           Your Dashboard
         </h2>
         <div className="space-y-4">
-          {/* Upcoming Shipments */}
           <div className="bg-gray-50 p-2 rounded-lg border border-gray-200">
             <h3 className="text-lg font-medium text-blue-900">
               Upcoming Shipments
@@ -64,7 +57,6 @@ function Home() {
                       </span>{" "}
                       {shipmentObj.arrival_time}
                     </div>
-                    {/* Show AddContainerForm only for the selected shipment */}
                     {selectedShipmentId === shipmentObj.id &&
                     showAddContainerForm ? (
                       <AddContainerForm />
@@ -72,7 +64,6 @@ function Home() {
                       <AddContainerButton shipmentId={shipmentObj.id} />
                     )}
                   </div>
-                  {/* Render the Containers component */}
                   <Containers
                     containers={shipmentObj.containers}
                     shipmentId={shipmentObj.id}
@@ -99,6 +90,3 @@ function Home() {
 }
 
 export default Home;
-
-// Clicking on Add Container for a specific shipment sets selectedShipmentId to the ID of that shipment and opens the form for that shipment only.
-// If the shipment is not the selected, the form will not be shown. selectedShipmentId === shipmentObj.id

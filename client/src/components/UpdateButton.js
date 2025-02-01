@@ -1,5 +1,4 @@
 function UpdateButton({ onClick }) {
-  // display input field comment for update functionality.
   return (
     <div className="flex space-x-2 mt-2">
       <button

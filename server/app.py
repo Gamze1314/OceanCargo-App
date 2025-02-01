@@ -1,12 +1,12 @@
+from models import db, Shipment, Container, Customer
+from flask_migrate import Migrate
+from flask_restful import Api, Resource
+from flask import Flask, make_response, request, abort, send_from_directory, render_template
 from datetime import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv()
-from flask import Flask, make_response, request, abort, send_from_directory, render_template
-from flask_restful import Api, Resource
-from flask_migrate import Migrate
 # import models
-from models import db, Shipment, Container, Customer
 
 
 # create a Flask application object
@@ -31,7 +31,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 # Access the environment variable
 DATABASE_URI = os.environ.get('DATABASE_URI')
 
-#DATABASE_URI was loaded successfully, after config. export DATABASE_URI=<external database uri>
+# DATABASE_URI was loaded successfully, after config. export DATABASE_URI=<external database uri>
 
 # disable modification tracking to use less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -45,7 +45,7 @@ db.init_app(app)
 
 api = Api(app)
 
-#handle Client side routing
+# handle Client side routing
 
 
 @app.route('/')
@@ -67,7 +67,6 @@ def static_proxy(folder, file):
 
 
 class Shipments(Resource):
-
     def get(self):
         try:
             # Fetch all shipments from the database
@@ -111,7 +110,6 @@ class Containers(Resource):
             abort(500, e.args[0])
 
     def post(self):
-        
         # create new container
         data = request.get_json()
         container_number = data.get('container_number')
@@ -135,7 +133,7 @@ class Containers(Resource):
                 container_number=container_number,
                 container_type=container_type,
                 price=price,
-                customer_id=1, # default customer
+                customer_id=1,  # default customer
                 shipment_id=shipment_id  # selected shipment id
             )
             # Add the new container to the session and commit
@@ -148,14 +146,14 @@ class Containers(Resource):
 
         except ValueError as e:
             db.session.rollback()
-            abort(422, e.args[0]) #raises 422, and error message. Unprocessable entity.
+            # raises 422, and error message. Unprocessable entity.
+            abort(422, e.args[0])
 
 
 api.add_resource(Containers, '/containers')
 
 
 class ContainerByID(Resource):
-
 
     def get(self, id):
         try:
@@ -168,7 +166,8 @@ class ContainerByID(Resource):
                 response_body = container.to_dict()
                 return make_response(response_body, 200)
             else:
-                abort(404, description="Container not found") # raise HTTP Exception.
+                # raise HTTP Exception.
+                abort(404, description="Container not found")
 
         except ValueError as e:
             # Handle any unexpected errors
@@ -176,23 +175,23 @@ class ContainerByID(Resource):
             abort(500, e.args[0])
 
     def patch(self, id):
-            # Parse the request data to update the container
-        data = request.json #cont number and type to be updated.
+        # Parse the request data to update the container
+        data = request.json  # cont number and type to be updated.
 
-        #validate container_number
+        # validate container_number
         container_number = data.get('container_number')
 
-        if not container_number: # string(10), unique, not null
+        if not container_number:  # string(10), unique, not null
             return make_response({'error': 'Container number is required'}, 400)
         if not isinstance(container_number, str):
             return make_response({'error': 'Container number must be a string'}, 400)
         if not len(container_number) == 10:
             return make_response({'error': 'Container number must have exactly 10 characters'}, 400)
-        
-        #validate container type.
+
+        # validate container type.
         container_type = data.get('container_type')
 
-        if not container_type: # string(20), not null
+        if not container_type:  # string(20), not null
             return make_response({'error': 'Container type is required'}, 400)
         if not isinstance(container_type, str):
             return make_response({'error': 'Container type must be a string'}, 400)
@@ -202,7 +201,7 @@ class ContainerByID(Resource):
             container = Container.query.filter_by(id=id).first()
 
             if container:
-            # if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same.
+                # if type changes to 40 => or 20 , update price. Otherwise, keep the container fields same.
                 if '20' in container_type:
                     price = 4000.00
                 else:
@@ -225,8 +224,6 @@ class ContainerByID(Resource):
             # Handle any unexpected errors
             db.session.rollback()
             abort(500, e.args[0])
-        
-
 
     def delete(self, id):
         try:
@@ -254,7 +251,6 @@ api.add_resource(ContainerByID, '/containers/<int:id>')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5555)
-
 
 # gunicorn: Required for running the application in a production WSGI server.
 # honcho start -f Procfile.dev  => to run both react and flask servers.

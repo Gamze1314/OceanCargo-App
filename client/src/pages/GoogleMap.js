@@ -1,4 +1,3 @@
-//import API Provider, Map Markers vis.gl
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { arrivalMarkers, originMarkers } from "../data/portCoordinates";
 import { useState , useContext } from "react"
@@ -7,16 +6,11 @@ import { Context } from '../context/Context';
 // this components renders Google Map with customer's shipment information marked.(arrival time, freight rate, departure time.) when customer clicks on the marker.
 // user is able to scroll around the map, w zooming and panning.
 
-// ArrivalPorts: New York, Los Angeles, Houston, Atlanta, Vancouver, Oakland
-//Origin Ports: Istanbul, Guangzhou, Shanghai, Mumbai, Genoa, Hamburg
-
 function GoogleMap() {
-  console.log("GoogleMap component rendered");
   const [isOrigin, setIsOrigin] = useState(false);
   const [selectedShipment, setSelectedShipment] = useState([]);
   const { shipments } = useContext(Context);
 
-  // update state to show updated information on Map, if a shipment gets deleted or updated.
 
   // Handle arrival port click
   function handleArrivalPortClick(port) {
@@ -39,21 +33,20 @@ function GoogleMap() {
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
       <Map
-        // center={{ lat: 40.7128, lng: -74.006 }}, center removed, to fix zoomin in to new york only. default is set to new york.
         style={{ width: "100vw", height: "100vh" }}
-        defaultCenter={{ lat: 22.54992, lng: 0 }} // initial center
-        defaultZoom={3} // inital zoom when map first loads.
-        gestureHandling={"greedy"} // map will capture all gestures, zoom in, scrolling, and panning for touch-screen devices.
+        defaultCenter={{ lat: 22.54992, lng: 0 }}
+        defaultZoom={3}
+        gestureHandling={"greedy"}
         onClick={() =>
           alert("Click on the markers to see the details of each shipment.")
-        } // Add map click event
+        }
       >
         {/* update marker labels depending on arrival or origin port */}
         {arrivalMarkers.map((marker, index) => (
           <Marker
             key={index}
             position={marker.position} // to see a marker on the map, position property needs to be set.
-            label={marker.label} // label to differentiate markers:
+            label={marker.label}
             clickable={true}
             onClick={() => handleArrivalPortClick(marker.label)}
           />
@@ -61,7 +54,7 @@ function GoogleMap() {
         {originMarkers.map((marker, index) => (
           <Marker
             key={index}
-            position={marker.position} // to see a marker on the map, position property needs to be set.
+            position={marker.position}
             label={marker.label} // label to differentiate ports
             clickable={true}
             onClick={() => handleOriginPortClick(marker.label)}
@@ -89,7 +82,6 @@ return (
           <li className="text-md text-blue-800">
             Ocean rate: ${s.freight_rate}
           </li>
-          {/* Check if containers exist */}
           {s.containers.length > 0 ? (
             s.containers.map((c, containerIndex) => (
               <li key={containerIndex} className="text-md text-blue-800">
@@ -105,7 +97,6 @@ return (
             </li>
           )}
         </ul>
-        {/* Conditionally render Arrival Port or Departure Port based on isOrigin */}
         {isOrigin ? (
           <div className="text-md text-blue-800">
             Arrival Port: {s.arrival_port}

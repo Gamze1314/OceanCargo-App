@@ -1,4 +1,3 @@
-// index.js is the root file
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
@@ -12,6 +11,3 @@ root.render(
       <RouterProvider router={router} />
     </MyProvider>
 );
-
-
-// wraps the RouterProvider with MyProvider(Context)

@@ -5,7 +5,6 @@ function NavBar({ logo }) {
     "hover:underline text-blue-900 text-md font-light-Times New Roman";
 
 
-  // tailwind flex utility class to position Links to left.
   return (
     <div className="flex md:flex md:flex-grow flex-row justify space-x-1">
       <img src={logo} alt="logo" style={{ height: "70px", width: "auto" }} />

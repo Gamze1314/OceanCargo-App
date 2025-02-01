@@ -1,11 +1,9 @@
+import re
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-# validates => decorator to validate columns.
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy import func
-import re
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -19,17 +17,7 @@ convention = {
 }
 
 metadata = MetaData(naming_convention=convention)
-
 db = SQLAlchemy(metadata=metadata)
-
-
-# customer has many containers => one to many
-# shipment has many containers.
-# container belongs to a shipment
-# container belongs to a customer
-# shipment has many customers through containers.
-# customer has many shipments through containers.
-
 
 # Customer model with SQL Alchemy constraints and relationships
 class Customer(db.Model, SerializerMixin):
@@ -48,19 +36,13 @@ class Customer(db.Model, SerializerMixin):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    # check constraint => compares name and username columns.
-    # Explicit check constraint with SQL-style string comparison
     __table_args__ = (
         db.CheckConstraint('name != username', name='check_name_not_username'),
     )
 
-    # Relationships
-    # customer has many containers => one to many
     containers = db.relationship(
         'Container', back_populates='customer', cascade='all')
-    # back_populates='customer' => opposite relationship(reciprocal)
 
-    # customer's shipments through containers(relationship property)
     shipments = association_proxy(
         'containers', 'shipment', creator=lambda s: Container(shipment=s))
 
@@ -82,7 +64,6 @@ class Customer(db.Model, SerializerMixin):
     # Validations: application-level => whenever new instance is created, and committed to db, validations executed.
     @validates('username')
     def validate_username(self, key, value):
-        # Username must be between 5 and 10 characters long and not empty
         if not value:
             raise ValueError(f'{key} can not be empty.')
 
@@ -105,7 +86,6 @@ class Customer(db.Model, SerializerMixin):
         return f'Customer (id: {self.id}, name: {self.name} username: {self.username}, passw_hash: {self.password_hash} email: {self.email}, credit_amount: {self.credit_amount})'
 
 
-# Container model with relationships
 class Container(db.Model, SerializerMixin):
     __tablename__ = 'containers'
 
@@ -121,24 +101,16 @@ class Container(db.Model, SerializerMixin):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    # foreign keys to set up the relationships
-    # container belongs to a customer.
     customer_id = db.Column(db.Integer, db.ForeignKey(
         'customers.id'), nullable=False)
 
-    # shipment_id fk; Container belongs to a shipment.
     shipment_id = db.Column(db.Integer, db.ForeignKey(
         'shipments.id'), nullable=False)
 
-    # relationship to customer
     customer = db.relationship('Customer', back_populates='containers')
 
-    # relationship to shipment
     shipment = db.relationship('Shipment', back_populates='containers')
 
-    # validations
-
-    # container number includes 4 letters(first 4) and 6 digits.
     @validates('container_number')
     def validate_container_number(self, key, value):
         if not value:
@@ -169,8 +141,6 @@ class Container(db.Model, SerializerMixin):
             raise ValueError(f'{key} must be between 3500 and 10000.')
         return value
 
-    # calculate the total cost for each container, shipment's freight rate plus container price.
-
     @hybrid_property
     def total_cost(self):
         # if shipment exists, add freight rate else 0.00.
@@ -180,12 +150,11 @@ class Container(db.Model, SerializerMixin):
         return f'Container(id={self.id}, container_number={self.container_number}, container_type={self.container_type}, price={self.price}, created_at={self.created_at}, updated_at={self.updated_at})'
 
 
-# Shipment model with relationships
 class Shipment(db.Model, SerializerMixin):
 
     __tablename__ = 'shipments'
 
-    serialize_rules = ('-containers.shipment',)  # avoid circular references.
+    serialize_rules = ('-containers.shipment',)
 
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(250), nullable=False)
@@ -200,26 +169,19 @@ class Shipment(db.Model, SerializerMixin):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    # arrival date can not be equal to departure date
     __table_args__ = (
         db.CheckConstraint('arrival_time != departure_time',
                            name='check_arrival_and_departure_date'),
     )
 
-    # Relationship
-    # if a shipment is deleted, deletes all associated containers.
     containers = db.relationship(
         'Container', back_populates='shipment', cascade='all')
 
-    # shipment's customers through containers.(containers=> connector: relationship property, 'customer'=> model ,connecting to containers.)
     customers = association_proxy(
         'containers', 'customer', creator=lambda c: Container(customer=c))
 
-    # validations
-
     @validates('status')
     def validate_status(self, key, value):
-        # status max 250 char. , not empty
         if not value:
             raise ValueError(f'{key} can not be empty.')
         if not isinstance(value, str):
@@ -244,7 +206,6 @@ class Shipment(db.Model, SerializerMixin):
             raise ValueError(f'{key} must be between 3500 and 10000.')
         return value
 
-    # validate origin and arrival port, must be unique
     @validates('origin')
     def validate_origin(self, key, value):
         if not value:

@@ -1,11 +1,9 @@
-import Container from "./Container"; // Import the single Container component
+import Container from "./Container";
 
 const Containers = ({ containers, shipmentId }) => {
   return (
     <div>
-      <h4 className="text-md font-semibold text-blue-900 mt-1">
-        Containers:
-      </h4>
+      <h4 className="text-md font-semibold text-blue-900 mt-1">Containers:</h4>
       {containers.length > 0 ? (
         containers.map((container, index) => (
           <Container

@@ -4,8 +4,6 @@ import React, { useContext, useEffect } from "react";
 import { Context } from "../context/Context.js";
 import ContainerDetails from "../components/ContainerDetails.js";
 
-// search by container number, display its details
-// display a form to get container number and search button (Formik)
 
 const validationSchema = yup.object({
   container_number: yup
@@ -21,7 +19,6 @@ const validationSchema = yup.object({
 
 function Search() {
   const { searchContainer, containerByNumber , setContainerByNumber } = useContext(Context);
-    //searchContainer is a function in Context to find matching container in shipments state.
 
   const formik = useFormik({
     initialValues: {
@@ -29,22 +26,17 @@ function Search() {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
       searchContainer(values);
-      formik.resetForm(); // Reset the form after submission
+      formik.resetForm();
     },
   });
 
   useEffect(() => {
-    console.log("Component mounted or updated");
-    // set it to null if user navigates to another page.
     return () => {
-      console.log("Component unmounted");
-      setContainerByNumber(null); // reset when component is unmounted.
+      setContainerByNumber(null);
     };
   }, [setContainerByNumber]);
 
-  // centers form both vertically and horizantally.
 
   return (
     <div className="p-4 h-min-screen flex flex-col items-center justify-center mt-10">
@@ -53,7 +45,6 @@ function Search() {
           Search by Container Number
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
-          {/* Container Number Input and Search Button */}
           <div className="flex items-center space-x-2">
             <input
               type="text"
@@ -71,7 +62,6 @@ function Search() {
               Search
             </button>
           </div>
-          {/* Error Message */}
           {formik.touched.container_number &&
             formik.errors.container_number && (
               <div className="text-red-500 text-xs mt-1">
@@ -80,7 +70,6 @@ function Search() {
             )}
         </form>
       </div>
-      {/* Conditionally render ContainerDetails only if containerByNumber is not null */}
       {containerByNumber && containerByNumber.container ? (
         <ContainerDetails
           container={containerByNumber.container}

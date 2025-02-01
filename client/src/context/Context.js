@@ -13,7 +13,6 @@ const MyProvider = ({ children }) => {
   const [containerByNumber, setContainerByNumber] = useState(null);
 
   useEffect(() => {
-    // Fetch shipments data from API
     fetch("/shipments")
       .then((res) => {
         if (res.ok) {
@@ -23,9 +22,9 @@ const MyProvider = ({ children }) => {
         }
       })
       .catch((err) => {
-        console.error("Error fetching shipments:", err); // Catch any network or parsing errors, or other exceptions
+        console.error("Error fetching shipments:", err);
       });
-  }, []); // effect runs only once.
+  }, []);
 
   // add container POST request to /containers, status 201 update state, else: return error(< Add Container Form)
   const addContainer = (container) => {
@@ -38,11 +37,8 @@ const MyProvider = ({ children }) => {
     })
       .then((res) => {
         if (res.ok) {
-          // If the status code is 201 (Created), proceed with the response
           return res.json().then((container) => {
-            // Handle successful addition (update shipments)
-            setShowAddContainerForm(!showAddContainerForm); // Hide the form after adding
-            // Update shipments state
+            setShowAddContainerForm(!showAddContainerForm);
             setShipments((prev) =>
               prev.map((shipment) =>
                 shipment.id === selectedShipmentId
@@ -72,7 +68,6 @@ const MyProvider = ({ children }) => {
       method: "DELETE",
     })
       .then((res) => {
-        console.log(res)
         if (res.ok) {
           alert("The container is deleted successfully.");
           // Skip res.json() if there's no content returned
@@ -111,11 +106,7 @@ const MyProvider = ({ children }) => {
       body: JSON.stringify(container),
     }).then((res) => {
       if (res.ok) {
-        // 200-299 range => True
         return res.json().then((data) => {
-          console.log("Updated container data:", data);
-
-          // Update state with response data
           setShipments((prev) =>
             prev.map((shipment) =>
               shipment.id === container.shipment_id
@@ -123,7 +114,7 @@ const MyProvider = ({ children }) => {
                     ...shipment,
                     containers: shipment.containers.map((c) =>
                       c.id === container.id
-                        ? { ...c, ...data } // Use response data for updated container
+                        ? { ...c, ...data }
                         : c
                     ),
                   }
@@ -142,10 +133,7 @@ const MyProvider = ({ children }) => {
   };
 
   // searchContainer function to get Container by cont number. matching containers returns the container.
-
   function searchContainer(data) {
-    console.log(data);
-    //format user input
     const upperCaseContainerNumber = data.container_number.toUpperCase();
 
     // Iterate through shipments to find the container and its associated shipment
@@ -183,12 +171,12 @@ const MyProvider = ({ children }) => {
         selectedShipmentId,
         setSelectedShipmentId,
         addContainer,
-        deleteContainer, // delete handler for Delete button click
+        deleteContainer,
         updateContainer,
         selectedContainerId,
-        setSelectedContainerId, // update selectedContainerId when container is clicked for editing
+        setSelectedContainerId,
         searchContainer,
-        containerByNumber, // container by number state for search functionality.
+        containerByNumber,
         setContainerByNumber,
       }}
     >
@@ -197,5 +185,4 @@ const MyProvider = ({ children }) => {
   );
 };
 
-// value={{ shipments }} creates an object like { shipments: [...] }
 export { MyProvider, Context };

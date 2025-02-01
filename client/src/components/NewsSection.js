@@ -1,4 +1,3 @@
-// external links to show news , and images
 import { Link } from "react-router-dom";
 import img1 from "../assests/img1.jpg";
 import img2 from "../assests/img2.jpg";
@@ -13,7 +12,6 @@ function NewsSection() {
         Category: Transportation News
       </h2>
       <div className="space-y-4">
-        {/* external Links to open new page for each newsletter. */}
         <Link
           className={linkStyle}
           target="_blank"

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Context } from "../context/Context.js"; // Import context
+import { Context } from "../context/Context.js";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
@@ -7,7 +7,6 @@ const validationSchema = yup.object({
   container_number: yup
     .string()
     .transform((value) => {
-      //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;
     })
     .matches(
@@ -19,7 +18,6 @@ const validationSchema = yup.object({
   container_type: yup
     .string()
     .transform((value) => {
-      //if value is not null, then convert it to upper case
       return value !== null ? value.toUpperCase() : value;
     })
     .oneOf(["20SD", "40SD", "40HC", "20HC", "40HC"], "Invalid container type")
@@ -30,43 +28,33 @@ const EditContainerForm = ({ onCancel, container }) => {
   const { selectedShipmentId, updateContainer, showAddContainerForm } =
     useContext(Context);
 
-  // useFormik hook returns all Formik state and helpers(manages form state)
-
   const formik = useFormik({
     initialValues: {
       container_number: container.container_number,
-      container_type: container.container_type, // initial container values.
+      container_type: container.container_type,
     },
     validationSchema,
     onSubmit: (values) => {
-      // Add shipmentId to form values
       const containerData = {
         id: container.id,
         ...values,
         shipment_id: selectedShipmentId,
       };
-      updateContainer(containerData); // send container data to update function in Context.(callback)
+      updateContainer(containerData);
       onCancel();
-      // reset all inputs
       formik.resetForm();
     },
   });
 
   //cleanup function to remove editform if the edit form component is unmounted, add container form selected.
-
   useEffect(() => {
     return () => {
-      // Check if the add container form was being displayed
       if (showAddContainerForm) {
-        // Call the onCancel function to handle the cleanup logic
         onCancel();
       }
-      // Reset the form state using Formik's resetForm method
       formik.resetForm();
     };
-  }, [showAddContainerForm, formik, onCancel]); // Dependency ensures cleanup when showAddContainerForm changes
-
-
+  }, [showAddContainerForm, formik, onCancel]);
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col space-y-2">
@@ -76,7 +64,6 @@ const EditContainerForm = ({ onCancel, container }) => {
           exit.
         </h1>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
-          {/* Container Number Input */}
           <div className="flex flex-col">
             <label htmlFor="container_number" className="text-gray-700">
               Container Number
@@ -96,8 +83,6 @@ const EditContainerForm = ({ onCancel, container }) => {
                 </div>
               )}
           </div>
-
-          {/* Container Type Input */}
           <div className="flex flex-col">
             <label htmlFor="container_type" className="text-gray-700">
               Container Type
@@ -122,8 +107,6 @@ const EditContainerForm = ({ onCancel, container }) => {
               </div>
             )}
           </div>
-
-          {/* Action Buttons */}
           <div className="flex space-x-2 mt-2">
             <button
               type="submit"
